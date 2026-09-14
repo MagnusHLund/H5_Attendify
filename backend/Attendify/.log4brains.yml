@@ -1,0 +1,5 @@
+project:
+  name: VerticalSliceArchitecture
+  tz: Europe/Copenhagen
+  adrFolder: ./docs/adr
+  packages: []
