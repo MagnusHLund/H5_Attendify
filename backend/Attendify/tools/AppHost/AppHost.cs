@@ -4,6 +4,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var tunnel = builder.AddCloudflareTunnel("Lunnel");
 
+var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
+
 var postgres = builder
     .AddPostgres("postgres")
     .WithDataVolume()
@@ -24,7 +26,7 @@ var api = builder
     .WaitForCompletion(migrationService);
 
 var webapp = builder
-    .AddViteApp("webapp", "../../../../webapp/")
+    .AddViteApp("webapp", "../../../../attendify/")
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();
@@ -37,6 +39,6 @@ var gateway = builder.AddYarp("gateway")
         yarp.AddRoute("{**catch-all}", webapp);
     });
 
-// gateway.WithCloudflareTunnel(tunnel, hostname: "");
+gateway.WithCloudflareTunnel(tunnel, hostname: hostname);
 
 builder.Build().Run();
