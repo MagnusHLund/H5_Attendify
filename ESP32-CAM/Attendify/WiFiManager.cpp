@@ -35,9 +35,7 @@ void WiFiManager::connect()
     Serial.println("Connecting to WiFi...");
 
     // Configure static IP
-    if (!WiFi.config(_localIp, _gateway, _subnet, _dnsServer)) {
-        Serial.println("Failed to configure static IP!");
-    }
+    WiFi.config(_localIp, _gateway, _subnet, _dnsServer);
 
     WiFi.begin(_ssid, _password);
 
