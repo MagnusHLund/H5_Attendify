@@ -1,7 +1,7 @@
 #include "Config.h"
 #include "WiFiManager.h"
 
-WiFiManager _wifiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_STATIC_IP, WIFI_GATEWAY, WIFI_SUBNET_MASK, WIFI_DNS_SERVER);
+WiFiManager _wifiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_STATIC_IP, WIFI_GATEWAY, WIFI_SUBNET_MASK);
 
 unsigned long _lastWiFiKeepAlive = 0;
 
