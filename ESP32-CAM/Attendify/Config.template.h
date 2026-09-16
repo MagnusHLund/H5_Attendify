@@ -1,0 +1,6 @@
+#define WIFI_SSID ""
+#define WIFI_PASSWORD ""
+#define WIFI_STATIC_IP ""
+#define WIFI_SUBNET_MASK ""
+#define WIFI_GATEWAY ""
+#define WIFI_DNS_SERVER ""
