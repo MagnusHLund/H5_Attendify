@@ -1,0 +1,90 @@
+.file-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $color-text-label;
+  }
+
+  &__dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+
+    min-height: 8rem;
+    padding: 1.5rem;
+
+    border: 1.5px dashed $color-border-hover;
+    border-radius: 0.75rem;
+
+    background: $color-surface-subtle;
+
+    cursor: pointer;
+
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+
+    &:hover {
+      border-color: $color-primary;
+      background: $color-primary-surface;
+    }
+
+    input {
+      display: none;
+    }
+
+    &--disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+
+      &:hover {
+        border-color: $color-border-hover;
+        background: $color-surface-subtle;
+      }
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    border-radius: 50%;
+
+    background: $color-primary-subtle;
+    color: $color-primary;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    strong {
+      color: $color-text-label;
+      font-size: 0.9rem;
+    }
+
+    small {
+      color: $color-text-disabled;
+      font-size: 0.8rem;
+    }
+  }
+
+  &__error {
+    font-size: 0.8rem;
+    color: $color-danger;
+  }
+}

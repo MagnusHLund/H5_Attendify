@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
+import path from 'path'
 
 export default defineConfig({
   plugins: [
@@ -14,6 +15,11 @@ export default defineConfig({
     port: 38935,
     open: true,
     host: '0.0.0.0',
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
   css: {
     preprocessorOptions: {

@@ -1,0 +1,59 @@
+.dropdown-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $color-text-label;
+  }
+
+  &__control {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 0.75rem 2.5rem 0.75rem 0.9rem;
+
+    border: 1px solid $color-border;
+    border-radius: 0.6rem;
+
+    background-color: $color-surface;
+    color: $color-text;
+
+    font: inherit;
+    font-size: 0.95rem;
+
+    cursor: pointer;
+    outline: none;
+
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:hover:not(:disabled) {
+      border-color: $color-border-hover;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px $color-focus-ring;
+    }
+
+    &:disabled {
+      background: $color-disabled-background;
+      color: $color-text-disabled;
+      cursor: not-allowed;
+    }
+
+    &--error {
+      border-color: $color-danger;
+    }
+  }
+
+  &__error {
+    font-size: 0.8rem;
+    color: $color-danger;
+  }
+}
