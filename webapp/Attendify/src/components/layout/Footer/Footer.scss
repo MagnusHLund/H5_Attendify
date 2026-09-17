@@ -1,10 +1,8 @@
 .footer {
-  width: 100vw;
+  width: 100%;
+  margin-top: auto;
   background-color: $color-surface;
   border-top: 1px solid $color-border;
-
-  position: absolute;
-  bottom: 0;
 }
 
 .footer__content {

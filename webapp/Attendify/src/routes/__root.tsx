@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { Header, Footer } from '../components/layout'
 
@@ -10,10 +9,12 @@ function RootComponent() {
   // TODO: User role and logout logic should be implemented.
 
   return (
-    <React.Fragment>
+    <div className="app-shell">
       <Header userRole="administrator" onLogout={() => {}} />
-      <Outlet />
+      <main className="app-shell__content">
+        <Outlet />
+      </main>
       <Footer />
-    </React.Fragment>
+    </div>
   )
 }

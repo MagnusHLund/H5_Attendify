@@ -1,10 +1,23 @@
 html {
   font-family: 'Plus Jakarta Sans', 'Sans-Serif';
   min-height: 100vh;
-  height: 100%;
-  width: 100vw;
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-shell__content {
+  flex: 1;
 }
