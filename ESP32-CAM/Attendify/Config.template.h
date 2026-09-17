@@ -1,5 +1,9 @@
+// WiFi
 #define WIFI_SSID ""
 #define WIFI_PASSWORD ""
 #define WIFI_STATIC_IP ""
 #define WIFI_SUBNET_MASK ""
 #define WIFI_GATEWAY ""
+
+// Environment
+#define CLASSROOM ""
