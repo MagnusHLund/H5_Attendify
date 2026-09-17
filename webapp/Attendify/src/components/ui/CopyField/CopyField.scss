@@ -19,6 +19,15 @@
 
     overflow: hidden;
     background: $color-surface-subtle;
+
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:focus-within {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px $color-focus-ring;
+    }
   }
 
   &__value {

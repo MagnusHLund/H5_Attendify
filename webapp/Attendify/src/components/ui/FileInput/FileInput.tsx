@@ -1,4 +1,4 @@
-import type { ChangeEvent } from 'react'
+import type { ChangeEvent, DragEvent } from 'react'
 import './FileInput.scss'
 
 interface FileInputProps {
@@ -22,6 +22,26 @@ export function FileInput({
     onChange?.(file)
   }
 
+  function handleDragOver(event: DragEvent<HTMLLabelElement>) {
+    if (disabled) {
+      return
+    }
+
+    event.preventDefault()
+  }
+
+  function handleDrop(event: DragEvent<HTMLLabelElement>) {
+    if (disabled) {
+      return
+    }
+
+    event.preventDefault()
+
+    const file = event.dataTransfer.files[0] ?? null
+
+    onChange?.(file)
+  }
+
   return (
     <div className="file-input">
       {label && <span className="file-input__label">{label}</span>}
@@ -30,6 +50,8 @@ export function FileInput({
         className={`file-input__dropzone ${
           disabled ? 'file-input__dropzone--disabled' : ''
         }`}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
         <input
           type="file"

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import './CopyField.scss'
 
 interface CopyFieldProps {
@@ -9,6 +9,8 @@ interface CopyFieldProps {
 
 export function CopyField({ label, value, error }: CopyFieldProps) {
   const [copied, setCopied] = useState(false)
+  const inputId = useId()
+  const errorId = `${inputId}-error`
 
   async function handleCopy() {
     await navigator.clipboard.writeText(value)
@@ -22,10 +24,21 @@ export function CopyField({ label, value, error }: CopyFieldProps) {
 
   return (
     <div className="copy-field">
-      {label && <span className="copy-field__label">{label}</span>}
+      {label && (
+        <label className="copy-field__label" htmlFor={inputId}>
+          {label}
+        </label>
+      )}
 
       <div className="copy-field__container">
-        <input className="copy-field__value" value={value} readOnly />
+        <input
+          id={inputId}
+          className="copy-field__value"
+          value={value}
+          readOnly
+          aria-invalid={!!error}
+          aria-describedby={error ? errorId : undefined}
+        />
 
         <button
           type="button"
@@ -37,7 +50,11 @@ export function CopyField({ label, value, error }: CopyFieldProps) {
         </button>
       </div>
 
-      {error && <span className="copy-field__error">{error}</span>}
+      {error && (
+        <span id={errorId} className="copy-field__error">
+          {error}
+        </span>
+      )}
     </div>
   )
 }

@@ -13,11 +13,12 @@ export function Button({
   loading = false,
   disabled,
   children,
+  className,
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={`button button--${variant}`}
+      className={`button button--${variant} ${className ?? ''}`}
       disabled={disabled || loading}
       {...props}
     >
