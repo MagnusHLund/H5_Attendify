@@ -1,9 +1,24 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { isAuthenticated } from '../lib/auth'
 
 export const Route = createFileRoute('/login')({
-  component: RouteComponent,
+  beforeLoad: async () => {
+    const authenticated = await isAuthenticated()
+
+    if (authenticated) {
+      throw redirect({
+        to: '/overview',
+      })
+    }
+  },
+
+  component: LoginPage,
 })
 
-function RouteComponent() {
-  return <div>Hello "/login"!</div>
+function LoginPage() {
+  return (
+    <div>
+      <h1>Login</h1>
+    </div>
+  )
 }
