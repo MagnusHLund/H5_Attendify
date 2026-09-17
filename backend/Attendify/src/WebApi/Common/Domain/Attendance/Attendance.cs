@@ -51,6 +51,7 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
         get;
         set
         {
+            ThrowIfNullOrWhiteSpace(value, nameof(Classroom));
             field = value;
         }
     } = null!;
