@@ -7,6 +7,7 @@ public readonly partial struct AttendanceId;
 
 public sealed class Attendance : AggregateRoot<AttendanceId>
 {
+    public const int ClassroomMaxLength = 100;
 
     // TODO: Change to "UserId" once the UserId has been implemented, then make new migrations.
     public int UserId
@@ -52,6 +53,7 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
         set
         {
             ThrowIfNullOrWhiteSpace(value, nameof(Classroom));
+            ThrowIfGreaterThan(value.Length, ClassroomMaxLength, nameof(Classroom));
             field = value;
         }
     } = null!;
