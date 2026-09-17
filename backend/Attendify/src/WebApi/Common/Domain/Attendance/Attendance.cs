@@ -36,7 +36,7 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
         }
     }
 
-    public TimeOnly DepartedAt
+    public TimeOnly? DepartedAt
     {
         get;
         set
