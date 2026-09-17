@@ -11,6 +11,8 @@
     <PackageReference Include="Bogus" />
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Respawn" />
     <PackageReference Include="Testcontainers.MsSql" />

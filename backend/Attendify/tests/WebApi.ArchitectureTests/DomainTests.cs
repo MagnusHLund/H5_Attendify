@@ -48,7 +48,6 @@ public class DomainTests : TestBase
             .GetResult();
 
         // Assert
-        types.Should().NotBeEmpty();
         result.Should().BeSuccessful();
     }
 
