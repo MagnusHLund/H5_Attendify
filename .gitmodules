@@ -1,0 +1,3 @@
+[submodule ".pipeline/generic-ci"]
+	path = .pipeline/generic-ci
+	url = https://gitlab.com/Jorjo6712/cicd-template.git
