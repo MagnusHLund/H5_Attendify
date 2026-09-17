@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "CameraController.h"
 #include "img_converters.h"
 #include "fd_forward.h"
@@ -5,33 +6,47 @@
 CameraController::CameraController(Camera* camera)
   : _camera(camera), _faceDetectorConfig(mtmn_init_config()) {}
 
-void CameraController::main() {
-  camera_fb_t* picture = _camera->takePicture();
+void CameraController::main()
+{
+    camera_fb_t* picture = _camera->takePicture();
 
-  if (picture == nullptr) {
-    return;
-  }
+    if (picture == nullptr)
+    {
+        Serial.println("Picture is nullptr");
+        return;
+    }
 
-  bool isFacePresent = isFacePresentInPicture(picture);
+    if (_isHighResolutionImage)
+    {
+        Serial.println("High resolution image captured");
 
-  if (!isFacePresent) {
-    _camera->setResolution(_camera->_lowResolution);
-    _isHighResolutionImage = false;
-    return;
-  }
+        // TODO: Send image via HTTP
 
-  if(isFacePresent && !_isHighResolutionImage)
-  {
+        esp_camera_fb_return(picture);
+
+        _camera->setResolution(_camera->_lowResolution);
+        _isHighResolutionImage = false;
+
+        return;
+    }
+
+    bool isFacePresent = isFacePresentInPicture(picture);
+
+    esp_camera_fb_return(picture);
+
+    if (!isFacePresent)
+    {
+        return;
+    }
+
     _camera->setResolution(_camera->_highResolution);
     _isHighResolutionImage = true;
-    return;
-  }
-
-  // TODO: Send image via HTTP
 }
 
 bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
 {
+    Serial.println("Checking for face");
+
     dl_matrix3du_t* imageMatrix =
         dl_matrix3du_alloc(
             1,
@@ -42,6 +57,7 @@ bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
 
     if (imageMatrix == nullptr)
     {
+        Serial.println("imageMatrix is nullptr");
         return false;
     }
 
@@ -54,6 +70,7 @@ bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
 
     if (!conversionSuccessful)
     {
+        Serial.println("fmt2rgb888 failed");
         dl_matrix3du_free(imageMatrix);
         return false;
     }
@@ -67,9 +84,12 @@ bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
 
     if (boxes != nullptr)
     {
-        free(boxes->box);
-        free(boxes->landmark);
-        free(boxes);
+        Serial.println("Face detected!");
+
+        dl_lib_free(boxes->score);
+        dl_lib_free(boxes->box);
+        dl_lib_free(boxes->landmark);
+        dl_lib_free(boxes);
     }
 
     dl_matrix3du_free(imageMatrix);

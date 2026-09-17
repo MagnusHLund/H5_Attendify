@@ -20,6 +20,8 @@ void setup() {
 
   _wifiManager->connect();
   _camera->init();
+
+  Serial.println("Setup complete");
 }
 
 void loop() {

@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Camera.h"
 
 bool Camera::init()
@@ -37,11 +38,13 @@ bool Camera::init()
 
 camera_fb_t* Camera::takePicture()
 {
+    Serial.println("Taking picture");
     return esp_camera_fb_get();
 }
 
 void Camera::setResolution(framesize_t resolution)
 {
+    Serial.println("Setting resolution to " + String(resolution));
     sensor_t* sensor = esp_camera_sensor_get();
 
     if (sensor != nullptr)
