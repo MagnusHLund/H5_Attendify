@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { PageContainer, AuthCard } from '../components/layout'
+import { PageContainer } from '../components/layout'
+import { AuthCard } from '../features/auth/components'
 
 export const Route = createFileRoute('/register')({
   component: RegisterPage,
