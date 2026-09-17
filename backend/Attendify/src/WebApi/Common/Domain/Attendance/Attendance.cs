@@ -64,14 +64,18 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
         }
     }
 
+    private Attendance() { }
+
     public static Attendance Create(
             string classroom
     )
     {
+        DateTime currentDatetime = DateTime.Now;
+
         Attendance attendance = new Attendance
         {
-            AttendanceDate = DateOnly.FromDateTime(DateTime.Now),
-            ArrivedAt = TimeOnly.FromDateTime(DateTime.Now),
+            AttendanceDate = DateOnly.FromDateTime(currentDatetime),
+            ArrivedAt = TimeOnly.FromDateTime(currentDatetime),
             Classroom = classroom,
             Status = AttendanceStatus.Present
         };

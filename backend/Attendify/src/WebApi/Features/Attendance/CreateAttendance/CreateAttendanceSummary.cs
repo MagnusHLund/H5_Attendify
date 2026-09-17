@@ -1,8 +1,8 @@
 namespace Attendify.Features.Attendance.CreateAttendance;
 
-public class CreateHeroSummary : Summary<CreateAttendanceEndpoint>
+public class CreateAttendanceSummary : Summary<CreateAttendanceEndpoint>
 {
-    public CreateHeroSummary()
+    public CreateAttendanceSummary()
     {
         Summary = "Create an attendance record";
         Description = "Creates an attendance record with a classroom and arrival time. Returns a 201 and no body.";
