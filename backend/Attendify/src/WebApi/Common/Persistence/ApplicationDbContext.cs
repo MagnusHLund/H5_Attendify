@@ -15,10 +15,10 @@ public partial class ApplicationDbContext(DbContextOptions<ApplicationDbContext>
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
-        
+
         //TODO: Uncomment after defining some strongly typed ids
-        // configurationBuilder.RegisterAllInVogenEfCoreConverters();
+        configurationBuilder.RegisterAllInVogenEfCoreConverters();
     }
-    
+
     private DbSet<T> AggregateRootSet<T>() where T : class, IAggregateRoot => Set<T>();
 }

@@ -30,6 +30,7 @@ public sealed record PagingParams
     /// hands to SQL Server as the <c>OFFSET</c>. Saturating at <see cref="int.MaxValue"/> keeps a
     /// far-past-the-end page doing what every other past-the-end page does — return no rows.
     /// </remarks>
+    /// TODO: double check if this is also true for PostgreSQL
     public int Skip => (int)Math.Min((long)(Page - FirstPage) * PageSize, int.MaxValue);
 
     /// <summary>
