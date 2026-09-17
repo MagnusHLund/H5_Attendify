@@ -8,5 +8,7 @@ export const Route = createFileRoute('/_authenticated/settings')({
 })
 
 function RouteComponent() {
+  // TODO: If user is administrator, redirect to overview
+
   return <div>Hello "/settings"!</div>
 }
