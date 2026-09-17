@@ -6,6 +6,7 @@
 class CameraController {
   private:
     Camera* _camera;
+    bool _isHighResolutionImage;
     mtmn_config_t _faceDetectorConfig;
 
     bool isFacePresentInPicture(camera_fb_t* picture);

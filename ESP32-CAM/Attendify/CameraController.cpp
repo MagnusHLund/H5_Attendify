@@ -16,10 +16,18 @@ void CameraController::main() {
 
   if (!isFacePresent) {
     _camera->setResolution(_camera->_lowResolution);
+    _isHighResolutionImage = false;
     return;
   }
 
+  if(isFacePresent && !_isHighResolutionImage)
+  {
+    _camera->setResolution(_camera->_highResolution);
+    _isHighResolutionImage = true;
+    return;
+  }
 
+  // TODO: Send image via HTTP
 }
 
 bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
