@@ -5,16 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "generate-routes": "tsr generate",
+    "typecheck": "npm run generate-routes && tsc -b",
+    "build": "npm run generate-routes && tsc -b && vite build"
   },
   "dependencies": {
+    "@tanstack/react-form": "^1.27.7",
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-router": "^1.161.0",
+    "@tanstack/react-table": "^8.21.3",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-loading-skeleton": "^3.5.0",
+    "sass": "^1.104.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tanstack/eslint-plugin-query": "^5.91.2",
+    "@tanstack/router-plugin": "^1.168.40",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

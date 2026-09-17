@@ -1,0 +1,58 @@
+// Brand palette
+$color-brand-blue: #1b487d;
+$color-brand-blue-dark: #14375f;
+$color-brand-blue-light: #e8f0f7;
+$color-brand-blue-lighter: #f3f7fb;
+$color-brand-green: #429a54;
+$color-brand-green-dark: #347b43;
+$color-brand-green-light: #eaf5ec;
+
+// Neutral palette
+$color-white: #ffffff;
+$color-gray-25: #fafbfc;
+$color-gray-50: #f5f7f9;
+$color-gray-100: #edf1f4;
+$color-gray-200: #d7dfe7;
+$color-gray-300: #b8c4d0;
+$color-gray-500: #718096;
+$color-gray-600: #526174;
+$color-gray-700: #35445a;
+$color-gray-900: #1f2937;
+
+// Status palette
+$color-danger: #c74646;
+$color-danger-dark: #a93a3a;
+$color-danger-light: #fbecec;
+$color-warning: #b7791f;
+$color-warning-light: #fff7e6;
+$color-success: $color-brand-green;
+$color-success-dark: $color-brand-green-dark;
+$color-success-light: $color-brand-green-light;
+
+// Semantic application tokens
+$color-primary: $color-brand-blue;
+$color-primary-hover: $color-brand-blue-dark;
+$color-primary-subtle: $color-brand-blue-light;
+$color-primary-subtle-hover: #dce8f3;
+$color-primary-surface: $color-brand-blue-lighter;
+$color-secondary: $color-brand-green;
+$color-secondary-hover: $color-brand-green-dark;
+
+$color-background: $color-gray-50;
+$color-surface: $color-white;
+$color-surface-subtle: $color-gray-25;
+$color-text: $color-gray-900;
+$color-text-label: $color-gray-700;
+$color-text-muted: $color-gray-600;
+$color-text-disabled: $color-gray-500;
+$color-border: $color-gray-200;
+$color-border-hover: $color-gray-300;
+$color-focus-ring: rgba($color-primary, 0.18);
+$color-danger-focus-ring: rgba($color-danger, 0.18);
+$color-disabled-background: $color-gray-100;
+
+// Backwards-compatible aliases
+$primary-color: $color-primary;
+$secondary-color: $color-secondary;
+$accent-color: $color-primary-subtle;
+$background-color: $color-background;

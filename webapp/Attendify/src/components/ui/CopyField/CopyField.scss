@@ -1,0 +1,82 @@
+.copy-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $color-text-label;
+  }
+
+  &__container {
+    display: flex;
+    width: 100%;
+
+    border: 1px solid $color-border;
+    border-radius: 0.6rem;
+
+    overflow: hidden;
+    background: $color-surface-subtle;
+
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:focus-within {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px $color-focus-ring;
+    }
+  }
+
+  &__value {
+    min-width: 0;
+    flex: 1;
+
+    padding: 0.75rem 0.9rem;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: $color-text-muted;
+
+    font: inherit;
+    font-size: 0.95rem;
+  }
+
+  &__button {
+    padding: 0 1rem;
+
+    border: none;
+    border-left: 1px solid $color-border;
+
+    background: $color-surface;
+    color: $color-primary;
+
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background: $color-primary-subtle;
+      color: $color-primary-hover;
+    }
+
+    &:active {
+      background: $color-primary-subtle-hover;
+    }
+  }
+
+  &__error {
+    font-size: 0.8rem;
+    color: $color-danger;
+  }
+}
