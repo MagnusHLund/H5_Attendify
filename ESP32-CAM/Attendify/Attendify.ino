@@ -19,7 +19,12 @@ void setup() {
   _cameraController = new CameraController(_camera);
 
   _wifiManager->connect();
-  _camera->init();
+  
+  while (!_camera->init())
+  {
+      Serial.println("Camera initialization failed. Retrying...");
+      delay(1000);
+  }
 
   Serial.println("Setup complete");
 }
