@@ -1,0 +1,79 @@
+name: generic-pipeline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['*']
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/MagnusHLund/cicd-template:1.0.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Configure submodule auth
+        run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: make test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/MagnusHLund/cicd-template:1.0.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Configure submodule auth
+        run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: make build IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
+
+  push:
+    needs: build
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/MagnusHLund/cicd-template:1.0.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Configure submodule auth
+        run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: make push IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
+
+  deploy:
+    needs: push
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    environment: production
+    container:
+      image: ghcr.io/MagnusHLund/cicd-template:1.0.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Configure submodule auth
+        run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: make deploy IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
