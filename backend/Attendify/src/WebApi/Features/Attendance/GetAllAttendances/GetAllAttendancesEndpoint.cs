@@ -1,7 +1,9 @@
+using Attendify.Common.Pagination;
+
 namespace Attendify.Features.Attendance.GetAllAttendances;
 
 public class GetAllAttendancesEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<GetAllAttendancesRequest, GetAllAttendancesResponse>
+    : Endpoint<GetAllAttendancesRequest, PagedList<GetAllAttendancesResponse>>
 {
     public override void Configure()
     {

@@ -5,7 +5,7 @@ namespace Attendify.Features.Attendance.GetAllAttendances;
 public sealed record GetAllAttendancesResponse(
     DateOnly AttendanceDate,
     TimeOnly ArrivedAt,
-    TimeOnly DepartedAt,
+    TimeOnly? DepartedAt,
     string Classroom,
     string Status
 );
