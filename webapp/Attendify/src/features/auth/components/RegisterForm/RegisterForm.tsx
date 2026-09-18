@@ -54,12 +54,6 @@ export function RegisterForm() {
     setStep('details')
   }
 
-  function handleLogin() {
-    navigate({
-      to: '/login',
-    })
-  }
-
   if (step === 'details') {
     return (
       <form
