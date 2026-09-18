@@ -22,7 +22,6 @@ interface EducationalInstitute {
 }
 
 export function RegisterForm() {
-  const navigate = useNavigate()
   const [step, setStep] = useState<RegistrationStep>('details')
 
   // This will eventually come from the API.
