@@ -34,6 +34,31 @@ export function ErrorModal({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose()
+        return
+      }
+
+      if (event.key !== 'Tab' || !dialogRef.current) {
+        return
+      }
+
+      const focusableElements = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )
+
+      if (focusableElements.length === 0) {
+        event.preventDefault()
+        return
+      }
+
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
       }
     }
 
@@ -75,17 +100,16 @@ export function ErrorModal({
         <div className="error-modal__icon" aria-hidden="true">
           !
         </div>
+
         <h2 className="error-modal__title" id={titleId}>
           {title}
         </h2>
+
         <div className="error-modal__message" id={messageId}>
           {message}
         </div>
-        <Button
-          type="button"
-          variant="danger"
-          onClick={onClose}
-        >
+
+        <Button type="button" variant="danger" onClick={onClose}>
           Close
         </Button>
       </section>

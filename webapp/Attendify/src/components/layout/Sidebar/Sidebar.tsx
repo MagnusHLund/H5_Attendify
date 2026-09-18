@@ -23,6 +23,7 @@ export function Sidebar({
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
+
     document.body.style.overflow = 'hidden'
     sidebarRef.current?.focus()
 
@@ -30,6 +31,32 @@ export function Sidebar({
       if (event.key === 'Escape') {
         shouldRestoreFocusRef.current = true
         onClose()
+        return
+      }
+
+      if (event.key !== 'Tab' || !sidebarRef.current) {
+        return
+      }
+
+      const focusableElements =
+        sidebarRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        )
+
+      if (focusableElements.length === 0) {
+        event.preventDefault()
+        return
+      }
+
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
       }
     }
 
@@ -52,7 +79,7 @@ export function Sidebar({
 
   return (
     <div
-      className="mobile-sidebar__backdrop"
+      className="sidebar__backdrop"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
@@ -62,25 +89,21 @@ export function Sidebar({
     >
       <nav
         ref={sidebarRef}
-        id="mobile-navigation"
-        className="mobile-sidebar"
+        id="navigation"
+        className="sidebar"
         aria-label="User navigation"
         tabIndex={-1}
       >
-        <div className="mobile-sidebar__heading">
-          <div className="mobile-sidebar__brand">
-            <Link
-              className="mobile-sidebar__logo"
-              to="/overview"
-              onClick={onClose}
-            >
+        <div className="sidebar__heading">
+          <div className="sidebar__brand">
+            <Link className="sidebar__logo" to="/overview" onClick={onClose}>
               <Image src="/Attendify-small.png" alt="Attendify" />
             </Link>
             <span>Menu</span>
           </div>
 
           <button
-            className="mobile-sidebar__close"
+            className="sidebar__close"
             type="button"
             aria-label="Close navigation menu"
             onClick={closeFromButton}
@@ -89,18 +112,19 @@ export function Sidebar({
           </button>
         </div>
 
-        <div className="mobile-sidebar__actions">
+        <div className="sidebar__actions">
           {userRole === 'student' && (
             <Link
-              className="mobile-sidebar__action"
+              className="sidebar__action"
               to={isSettingsPage ? '/overview' : '/settings'}
               onClick={onClose}
             >
               {isSettingsPage ? 'Back to Overview' : 'Settings'}
             </Link>
           )}
+
           <button
-            className="mobile-sidebar__action mobile-sidebar__action--logout"
+            className="sidebar__action sidebar__action--logout"
             type="button"
             onClick={() => {
               onClose()

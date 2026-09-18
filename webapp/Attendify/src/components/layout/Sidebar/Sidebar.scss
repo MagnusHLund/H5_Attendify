@@ -1,4 +1,4 @@
-.mobile-sidebar__backdrop {
+.sidebar__backdrop {
   position: fixed;
   z-index: 900;
   inset: 0;
@@ -6,7 +6,7 @@
   background: rgba($color-gray-900, 0.45);
 }
 
-.mobile-sidebar {
+.sidebar {
   position: absolute;
   inset: 0 0 0 auto;
 
@@ -21,7 +21,7 @@
   }
 }
 
-.mobile-sidebar__heading {
+.sidebar__heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -34,13 +34,13 @@
   font-weight: 600;
 }
 
-.mobile-sidebar__brand {
+.sidebar__brand {
   display: flex;
   align-items: center;
   gap: 0.65rem;
 }
 
-.mobile-sidebar__logo {
+.sidebar__logo {
   display: flex;
   align-items: center;
   border-radius: 0.25rem;
@@ -58,7 +58,7 @@
   }
 }
 
-.mobile-sidebar__close {
+.sidebar__close {
   position: relative;
 
   width: 2.5rem;
@@ -110,14 +110,14 @@
   }
 }
 
-.mobile-sidebar__actions {
+.sidebar__actions {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 1.25rem;
 }
 
-.mobile-sidebar__action {
+.sidebar__action {
   display: flex;
   align-items: center;
 
@@ -148,11 +148,11 @@
 }
 
 @media (hover: hover) {
-  .mobile-sidebar__action:hover {
+  .sidebar__action:hover {
     background: $color-primary-subtle-hover;
   }
 
-  .mobile-sidebar__action--logout:hover {
+  .sidebar__action--logout:hover {
     background: $color-danger-light;
   }
 }
