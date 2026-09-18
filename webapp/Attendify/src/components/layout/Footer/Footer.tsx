@@ -21,13 +21,12 @@ export function Footer() {
           </span>
           <span className="footer__description">{t('footer.description')}</span>
         </div>
-
         <div className="footer__copyright">
           {t('footer.copyright', { year: new Date().getFullYear() })}
         </div>
-
-        <Link to="/privacy-policy">{t('footer.privacyPolicy')}</Link>
-
+        <Link to="/privacy-policy" className="footer__privacy">
+          {t('footer.privacyPolicy')}
+        </Link>
         <a
           className="footer__github"
           href="https://github.com/MagnusHLund/H5_Attendify"

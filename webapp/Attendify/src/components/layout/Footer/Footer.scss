@@ -8,7 +8,7 @@
 
 .footer__content {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   align-items: center;
 
   max-width: 1400px;
@@ -26,30 +26,64 @@
 }
 
 .footer__name {
+  display: flex;
+  align-self: center;
   font-size: 1.5rem;
   font-weight: 600;
-  align-self: center;
-  vertical-align: middle;
+  line-height: 1;
+}
 
-  .footer__name--blue {
-    color: $color-primary;
-  }
+.footer__name--blue {
+  color: $color-primary;
+}
 
-  .footer__name--green {
-    color: $color-secondary;
-  }
+.footer__name--green {
+  color: $color-secondary;
+}
 
-  .footer__logo {
-    width: auto;
-    height: 1.55rem;
-    object-fit: contain;
-    vertical-align: middle;
-  }
+.footer__logo {
+  width: auto;
+  height: 1.55rem;
+  margin-right: 0.35rem;
+
+  object-fit: contain;
 }
 
 .footer__description {
   color: $color-text-muted;
   font-size: 0.8rem;
+}
+
+.footer__copyright {
+  justify-self: center;
+
+  color: $color-text-muted;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.footer__privacy {
+  justify-self: center;
+
+  color: $color-text-label;
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  text-decoration: none;
+
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover {
+    color: $color-primary;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 3px $color-focus-ring;
+  }
 }
 
 .footer__github {
@@ -84,12 +118,27 @@
   object-fit: contain;
 }
 
-.footer__copyright {
-  justify-self: center;
+@media (max-width: 800px) {
+  .footer__content {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
 
-  color: $color-text-muted;
-  font-size: 0.8rem;
-  white-space: nowrap;
+  .footer__project {
+    justify-self: start;
+  }
+
+  .footer__copyright {
+    justify-self: end;
+  }
+
+  .footer__privacy {
+    justify-self: start;
+  }
+
+  .footer__github {
+    justify-self: end;
+  }
 }
 
 @media (max-width: 600px) {
@@ -101,8 +150,13 @@
   }
 
   .footer__project,
-  .footer__github,
-  .footer__copyright {
+  .footer__copyright,
+  .footer__privacy,
+  .footer__github {
     justify-self: center;
+  }
+
+  .footer__project {
+    align-items: center;
   }
 }
