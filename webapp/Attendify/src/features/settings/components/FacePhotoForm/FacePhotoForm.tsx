@@ -1,8 +1,16 @@
 import { useForm } from '@tanstack/react-form'
-import { Button, FileInput } from '../../../../components/ui'
+import {
+  Button,
+  FileInput,
+  useErrorModal,
+} from '../../../../components/ui'
+import { useUpdateFacePhotos } from '../../hooks/useUpdateFacePhotos'
 import './FacePhotoForm.scss'
 
 export function FacePhotoForm() {
+  const updateFacePhotos = useUpdateFacePhotos()
+  const { showError } = useErrorModal()
+
   const form = useForm({
     defaultValues: {
       straightPhoto: null as File | null,
@@ -11,9 +19,15 @@ export function FacePhotoForm() {
     },
 
     onSubmit: async ({ value }) => {
-      console.log(value)
-
-      // API call will go here.
+      try {
+        await updateFacePhotos.mutateAsync({
+          straightPhoto: value.straightPhoto!,
+          leftPhoto: value.leftPhoto!,
+          rightPhoto: value.rightPhoto!,
+        })
+      } catch (error) {
+        showError(error, 'Pictures could not be saved')
+      }
     },
   })
 
@@ -32,6 +46,11 @@ export function FacePhotoForm() {
           Update the pictures used to identify you. Please make sure your face
           is clearly visible in each picture.
         </p>
+        <ul className="face-photo-form__tips">
+          <li>Use even lighting</li>
+          <li>Remove hats and sunglasses</li>
+          <li>Keep your whole face in frame</li>
+        </ul>
       </div>
 
       <div className="face-photo-form__fields">
@@ -44,7 +63,7 @@ export function FacePhotoForm() {
         >
           {(field) => (
             <FileInput
-              label="Straight angle"
+              label="1. Looking straight ahead"
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -65,7 +84,7 @@ export function FacePhotoForm() {
         >
           {(field) => (
             <FileInput
-              label="Slight left angle"
+              label="2. Turned slightly left"
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -86,7 +105,7 @@ export function FacePhotoForm() {
         >
           {(field) => (
             <FileInput
-              label="Slight right angle"
+              label="3. Turned slightly right"
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -102,9 +121,9 @@ export function FacePhotoForm() {
       <Button
         type="submit"
         className="face-photo-form__submit"
-        disabled={form.state.isSubmitting}
+        loading={form.state.isSubmitting}
       >
-        {form.state.isSubmitting ? 'Saving...' : 'Save pictures'}
+        Save pictures
       </Button>
     </form>
   )

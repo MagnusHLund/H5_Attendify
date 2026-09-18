@@ -42,9 +42,7 @@ export function Header({ userRole, onLogout }: HeaderProps) {
   const actionLabel =
     userRole === 'administrator'
       ? 'Log out'
-      : isSettingsPage
-        ? 'Back to Overview'
-        : 'Settings'
+      : 'Settings'
 
   if (!isSettingsPage && location.pathname !== '/overview') {
     return null
@@ -59,9 +57,11 @@ export function Header({ userRole, onLogout }: HeaderProps) {
       <h1 className="header__title">{pageName}</h1>
 
       <div className="header__actions">
-        <button className="header__action" type="button" onClick={handleAction}>
-          {actionLabel}
-        </button>
+        {(userRole === 'administrator' || !isSettingsPage) && (
+          <button className="header__action" type="button" onClick={handleAction}>
+            {actionLabel}
+          </button>
+        )}
       </div>
 
       <button

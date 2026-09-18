@@ -1,9 +1,21 @@
-import { CopyField } from '../../../../components/ui'
+import { useEffect } from 'react'
+import {
+  CopyField,
+  Spinner,
+  useErrorModal,
+} from '../../../../components/ui'
 import { useStudentAccessCode } from '../../hooks/useStudentAccessCode'
 import './StudentAccessCode.scss'
 
 export function StudentAccessCode() {
-  const { data, isLoading, isError } = useStudentAccessCode()
+  const { data, error, isLoading } = useStudentAccessCode()
+  const { showError } = useErrorModal()
+
+  useEffect(() => {
+    if (error) {
+      showError(error, 'Access code could not be loaded')
+    }
+  }, [error, showError])
 
   return (
     <div className="student-access-code">
@@ -17,13 +29,10 @@ export function StudentAccessCode() {
       </div>
 
       {isLoading && (
-        <p className="student-access-code__status">Loading access code...</p>
-      )}
-
-      {isError && (
-        <p className="student-access-code__error">
-          Failed to load your student access code.
-        </p>
+        <div className="student-access-code__status">
+          <Spinner label="Loading access code" />
+          <span>Loading access code...</span>
+        </div>
       )}
 
       {data && <CopyField label="Access code" value={data.code} />}

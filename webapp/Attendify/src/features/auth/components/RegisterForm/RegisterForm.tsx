@@ -221,9 +221,9 @@ export function RegisterForm() {
         <Button
           type="submit"
           className="register-form__submit"
-          disabled={detailsForm.state.isSubmitting}
+          loading={detailsForm.state.isSubmitting}
         >
-          {detailsForm.state.isSubmitting ? 'Validating...' : 'Next'}
+          Next
         </Button>
 
         <div className="register-form__login">
@@ -312,11 +312,9 @@ export function RegisterForm() {
       <Button
         type="submit"
         className="register-form__submit"
-        disabled={photosForm.state.isSubmitting}
+        loading={photosForm.state.isSubmitting}
       >
-        {photosForm.state.isSubmitting
-          ? 'Registering...'
-          : 'Complete registration'}
+        Complete registration
       </Button>
 
       <div className="register-form__back">

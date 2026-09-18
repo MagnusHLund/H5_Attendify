@@ -21,7 +21,7 @@ export function ResetPasswordForm() {
     },
 
     // Send recovery code to the email address.
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       // TODO: Call endpoint
 
       setStep('code')
@@ -34,7 +34,7 @@ export function ResetPasswordForm() {
     },
 
     // Verify the recovery code.
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       // TODO: Call endpoint
 
       setStep('password')
@@ -48,7 +48,7 @@ export function ResetPasswordForm() {
     },
 
     // Save the new password.
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       // TODO: Call endpoint
 
       // TODO If successful then navigate to the login page. Otherwise modal with error message.
@@ -113,9 +113,9 @@ export function ResetPasswordForm() {
         <Button
           type="submit"
           className="reset-password-form__submit"
-          disabled={emailForm.state.isSubmitting}
+          loading={emailForm.state.isSubmitting}
         >
-          {emailForm.state.isSubmitting ? 'Sending...' : 'Send code'}
+          Send code
         </Button>
 
         <div className="reset-password-form__back">
@@ -169,9 +169,9 @@ export function ResetPasswordForm() {
         <Button
           type="submit"
           className="reset-password-form__submit"
-          disabled={codeForm.state.isSubmitting}
+          loading={codeForm.state.isSubmitting}
         >
-          {codeForm.state.isSubmitting ? 'Submitting...' : 'Submit'}
+          Submit
         </Button>
 
         <div className="reset-password-form__resend">
@@ -259,9 +259,9 @@ export function ResetPasswordForm() {
       <Button
         type="submit"
         className="reset-password-form__submit"
-        disabled={passwordForm.state.isSubmitting}
+        loading={passwordForm.state.isSubmitting}
       >
-        {passwordForm.state.isSubmitting ? 'Saving...' : 'Save new password'}
+        Save new password
       </Button>
 
       <div className="reset-password-form__back">

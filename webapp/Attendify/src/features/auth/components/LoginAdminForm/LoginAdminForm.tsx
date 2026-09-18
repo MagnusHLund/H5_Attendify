@@ -65,9 +65,9 @@ export function LoginAdminForm() {
       <Button
         type="submit"
         className="login-admin-form__submit"
-        disabled={form.state.isSubmitting}
+        loading={form.state.isSubmitting}
       >
-        {form.state.isSubmitting ? 'Logging in...' : 'Login'}
+        Login
       </Button>
 
       <div className="login-admin-form__student">

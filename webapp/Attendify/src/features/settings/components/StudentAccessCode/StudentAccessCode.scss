@@ -22,11 +22,9 @@
 }
 
 .student-access-code__status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin: 0;
   color: $color-text-muted;
-}
-
-.student-access-code__error {
-  margin: 0;
-  color: $color-danger;
 }

@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from 'react'
+import { Spinner } from '../Spinner/Spinner'
 import './Button.scss'
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost'
@@ -20,9 +21,11 @@ export function Button({
     <button
       className={`button button--${variant} ${className ?? ''}`}
       disabled={disabled || loading}
+      aria-busy={loading}
       {...props}
     >
-      {loading ? 'Loading...' : children}
+      {loading && <Spinner size="small" label="Loading" />}
+      {children}
     </button>
   )
 }
