@@ -15,9 +15,6 @@ export function ResetPasswordForm() {
   const navigate = useNavigate()
   const [step, setStep] = useState<ResetPasswordStep>('email')
 
-  const [email, setEmail] = useState('')
-  const [recoveryCode, setRecoveryCode] = useState('')
-
   const emailForm = useForm({
     defaultValues: {
       email: '',
@@ -27,7 +24,6 @@ export function ResetPasswordForm() {
     onSubmit: async ({ value }) => {
       // TODO: Call endpoint
 
-      setEmail(value.email)
       setStep('code')
     },
   })
@@ -41,7 +37,6 @@ export function ResetPasswordForm() {
     onSubmit: async ({ value }) => {
       // TODO: Call endpoint
 
-      setRecoveryCode(value.code)
       setStep('password')
     },
   })
