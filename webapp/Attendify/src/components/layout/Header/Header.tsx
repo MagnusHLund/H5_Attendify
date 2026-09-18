@@ -75,9 +75,9 @@ export function Header({ userRole, onLogout }: HeaderProps) {
         aria-expanded={isMenuOpen}
         onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
       >
-        <span />
-        <span />
-        <span />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
       </button>
 
       {isMenuOpen && (
