@@ -27,13 +27,27 @@ export function RegisterForm() {
   // This will eventually come from the API.
   const educationalInstitutes: EducationalInstitute[] = []
 
-  const form = useForm({
+  const detailsForm = useForm({
     defaultValues: {
       email: '',
       password: '',
       confirmPassword: '',
       educationalInstituteId: '',
       studentId: '',
+    },
+
+    onSubmit: async ({ value }) => {
+      // The details are valid, so move to the photo step.
+      setStep('photos')
+
+      // The values remain available in detailsForm while this component
+      // is mounted and can be used when the registration is completed.
+      console.log(value)
+    },
+  })
+
+  const photosForm = useForm({
+    defaultValues: {
       straightPhoto: null as File | null,
       leftPhoto: null as File | null,
       rightPhoto: null as File | null,
@@ -41,13 +55,12 @@ export function RegisterForm() {
 
     onSubmit: async ({ value }) => {
       // Registration logic will go here.
-      console.log(value)
+      console.log({
+        ...detailsForm.state.values,
+        ...value,
+      })
     },
   })
-
-  function handleNext() {
-    setStep('photos')
-  }
 
   function handleBack() {
     setStep('details')
@@ -60,13 +73,13 @@ export function RegisterForm() {
         onSubmit={(event) => {
           event.preventDefault()
           event.stopPropagation()
-          handleNext()
+          void detailsForm.handleSubmit()
         }}
       >
         <h1 className="register-form__title">Register new student</h1>
 
         <div className="register-form__fields">
-          <form.Field
+          <detailsForm.Field
             name="email"
             validators={{
               onChange: ({ value }) =>
@@ -92,9 +105,9 @@ export function RegisterForm() {
                 }
               />
             )}
-          </form.Field>
+          </detailsForm.Field>
 
-          <form.Field
+          <detailsForm.Field
             name="password"
             validators={{
               onChange: ({ value }) =>
@@ -120,9 +133,9 @@ export function RegisterForm() {
                 }
               />
             )}
-          </form.Field>
+          </detailsForm.Field>
 
-          <form.Field
+          <detailsForm.Field
             name="confirmPassword"
             validators={{
               onChangeListenTo: ['password'],
@@ -149,9 +162,9 @@ export function RegisterForm() {
                 }
               />
             )}
-          </form.Field>
+          </detailsForm.Field>
 
-          <form.Field
+          <detailsForm.Field
             name="educationalInstituteId"
             validators={{
               onChange: required('Educational institute is required'),
@@ -177,9 +190,9 @@ export function RegisterForm() {
                 }
               />
             )}
-          </form.Field>
+          </detailsForm.Field>
 
-          <form.Field
+          <detailsForm.Field
             name="studentId"
             validators={{
               onChange: required('Student ID is required'),
@@ -202,11 +215,15 @@ export function RegisterForm() {
                 }
               />
             )}
-          </form.Field>
+          </detailsForm.Field>
         </div>
 
-        <Button type="submit" className="register-form__submit">
-          Next
+        <Button
+          type="submit"
+          className="register-form__submit"
+          disabled={detailsForm.state.isSubmitting}
+        >
+          {detailsForm.state.isSubmitting ? 'Validating...' : 'Next'}
         </Button>
 
         <div className="register-form__login">
@@ -222,13 +239,13 @@ export function RegisterForm() {
       onSubmit={(event) => {
         event.preventDefault()
         event.stopPropagation()
-        form.handleSubmit()
+        void photosForm.handleSubmit()
       }}
     >
       <h1 className="register-form__title">Register new student</h1>
 
       <div className="register-form__photos">
-        <form.Field
+        <photosForm.Field
           name="straightPhoto"
           validators={{
             onChange: ({ value }) =>
@@ -247,9 +264,9 @@ export function RegisterForm() {
               }
             />
           )}
-        </form.Field>
+        </photosForm.Field>
 
-        <form.Field
+        <photosForm.Field
           name="leftPhoto"
           validators={{
             onChange: ({ value }) =>
@@ -268,9 +285,9 @@ export function RegisterForm() {
               }
             />
           )}
-        </form.Field>
+        </photosForm.Field>
 
-        <form.Field
+        <photosForm.Field
           name="rightPhoto"
           validators={{
             onChange: ({ value }) =>
@@ -289,15 +306,17 @@ export function RegisterForm() {
               }
             />
           )}
-        </form.Field>
+        </photosForm.Field>
       </div>
 
       <Button
         type="submit"
         className="register-form__submit"
-        disabled={form.state.isSubmitting}
+        disabled={photosForm.state.isSubmitting}
       >
-        {form.state.isSubmitting ? 'Registering...' : 'Complete registration'}
+        {photosForm.state.isSubmitting
+          ? 'Registering...'
+          : 'Complete registration'}
       </Button>
 
       <div className="register-form__back">
