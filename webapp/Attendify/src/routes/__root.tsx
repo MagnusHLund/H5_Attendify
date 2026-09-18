@@ -10,7 +10,7 @@ function RootComponent() {
 
   return (
     <div className="app-shell">
-      <Header userRole="administrator" onLogout={() => {}} />
+      <Header userRole="student" onLogout={() => {}} />
       <main className="app-shell__content">
         <Outlet />
       </main>
