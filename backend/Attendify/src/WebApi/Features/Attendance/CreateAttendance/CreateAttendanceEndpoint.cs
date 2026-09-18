@@ -13,7 +13,5 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext) : Endpoint
 
     public override async Task HandleAsync(CreateAttendanceRequest req, CancellationToken ct)
     {
-
-        // var attendance =  attendanceClass.Attendance.Create(req.Classroom);
     }
 }
