@@ -39,10 +39,7 @@ export function Header({ userRole, onLogout }: HeaderProps) {
     })
   }
 
-  const actionLabel =
-    userRole === 'administrator'
-      ? 'Log out'
-      : 'Settings'
+  const actionLabel = userRole === 'administrator' ? 'Log out' : 'Settings'
 
   if (!isSettingsPage && location.pathname !== '/overview') {
     return null
@@ -51,14 +48,18 @@ export function Header({ userRole, onLogout }: HeaderProps) {
   return (
     <header className="header">
       <Link className="header__logo" to="/overview">
-        <Image src="/Attendify-large.png" alt="Attendify" />
+        <Image src="/internal/logos/Attendify-large.png" alt="Attendify" />
       </Link>
 
       <h1 className="header__title">{pageName}</h1>
 
       <div className="header__actions">
         {(userRole === 'administrator' || !isSettingsPage) && (
-          <button className="header__action" type="button" onClick={handleAction}>
+          <button
+            className="header__action"
+            type="button"
+            onClick={handleAction}
+          >
             {actionLabel}
           </button>
         )}

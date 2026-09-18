@@ -97,7 +97,10 @@ export function Sidebar({
         <div className="sidebar__heading">
           <div className="sidebar__brand">
             <Link className="sidebar__logo" to="/overview" onClick={onClose}>
-              <Image src="/Attendify-small.png" alt="Attendify" />
+              <Image
+                src="/internal/logos/Attendify-small.png"
+                alt="Attendify"
+              />
             </Link>
             <span>Menu</span>
           </div>

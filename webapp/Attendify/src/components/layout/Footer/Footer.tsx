@@ -8,7 +8,7 @@ export function Footer() {
         <div className="footer__project">
           <span className="footer__name">
             <Image
-              src="/Attendify-small.png"
+              src="/internal/logos/Attendify-small.png"
               alt="Attendify Logo"
               className="footer__logo"
             />
@@ -29,7 +29,11 @@ export function Footer() {
           rel="noopener noreferrer"
           aria-label="View Attendify on GitHub"
         >
-          <Image src="/Github.png" alt="" className="footer__github-icon" />
+          <Image
+            src="/external/github/Github.png"
+            alt="Github logo"
+            className="footer__github-icon"
+          />
           <span>View on GitHub</span>
         </a>
       </div>

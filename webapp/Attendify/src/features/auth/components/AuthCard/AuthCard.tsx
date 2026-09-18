@@ -10,7 +10,7 @@ export function AuthCard({ children }: AuthCardProps) {
   return (
     <div className="auth-card">
       <Image
-        src="/Attendify-large.png"
+        src="/internal/logos/Attendify-large.png"
         alt="Attendify"
         className="auth-card__logo"
       />
