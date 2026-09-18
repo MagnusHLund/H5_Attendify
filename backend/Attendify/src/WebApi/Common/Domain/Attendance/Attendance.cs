@@ -70,13 +70,15 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
     private Attendance() { }
 
     public static Attendance Create(
-            string classroom
+            string classroom,
+            int userId //TODO: Change UserId type here as well
     )
     {
         DateTime currentDatetime = DateTime.Now;
 
         Attendance attendance = new Attendance
         {
+            UserId = userId,
             AttendanceDate = DateOnly.FromDateTime(currentDatetime),
             ArrivedAt = TimeOnly.FromDateTime(currentDatetime),
             Classroom = classroom,
