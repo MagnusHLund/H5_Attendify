@@ -1,6 +1,7 @@
 import { Image } from '../../ui'
 import { useTranslation } from '../../../lib/i18n'
 import './Footer.scss'
+import { Link } from '@tanstack/react-router'
 
 export function Footer() {
   const { t } = useTranslation()
@@ -18,13 +19,15 @@ export function Footer() {
             <span className="footer__name--blue">Attend</span>
             <span className="footer__name--green">ify</span>
           </span>
-          <span className="footer__description">
-            {t('footer.description')}
-          </span>
+          <span className="footer__description">{t('footer.description')}</span>
         </div>
+
         <div className="footer__copyright">
           {t('footer.copyright', { year: new Date().getFullYear() })}
         </div>
+
+        <Link to="/privacy-policy">{t('footer.privacyPolicy')}</Link>
+
         <a
           className="footer__github"
           href="https://github.com/MagnusHLund/H5_Attendify"
