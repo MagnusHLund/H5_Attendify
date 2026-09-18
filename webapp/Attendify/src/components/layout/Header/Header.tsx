@@ -4,6 +4,9 @@ import {
   useMatches,
   useNavigate,
 } from '@tanstack/react-router'
+import { useRef, useState } from 'react'
+import { Image } from '../../ui'
+import { Sidebar } from '../Sidebar/Sidebar'
 
 import './Header.scss'
 
@@ -16,6 +19,8 @@ export function Header({ userRole, onLogout }: HeaderProps) {
   const location = useLocation()
   const matches = useMatches()
   const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const isSettingsPage = location.pathname === '/settings'
 
@@ -48,7 +53,7 @@ export function Header({ userRole, onLogout }: HeaderProps) {
   return (
     <header className="header">
       <Link className="header__logo" to="/overview">
-        <img src="/Attendify-large.png" alt="Attendify" />
+        <Image src="/Attendify-large.png" alt="Attendify" />
       </Link>
 
       <h1 className="header__title">{pageName}</h1>
@@ -58,6 +63,32 @@ export function Header({ userRole, onLogout }: HeaderProps) {
           {actionLabel}
         </button>
       </div>
+
+      <button
+        ref={menuButtonRef}
+        className="header__menu-button"
+        type="button"
+        aria-label={
+          isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'
+        }
+        aria-controls="mobile-navigation"
+        aria-expanded={isMenuOpen}
+        onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      {isMenuOpen && (
+        <Sidebar
+          isSettingsPage={isSettingsPage}
+          menuButtonRef={menuButtonRef}
+          userRole={userRole}
+          onClose={() => setIsMenuOpen(false)}
+          onLogout={onLogout}
+        />
+      )}
     </header>
   )
 }
