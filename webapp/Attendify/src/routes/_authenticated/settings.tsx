@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-
+import { PageContainer } from '../../components/layout'
 export const Route = createFileRoute('/_authenticated/settings')({
   staticData: {
     pageName: 'Settings',
@@ -10,5 +10,5 @@ export const Route = createFileRoute('/_authenticated/settings')({
 function RouteComponent() {
   // TODO: If user is administrator, redirect to overview
 
-  return <div>Hello "/settings"!</div>
+  return <PageContainer>Hello "/settings"!</PageContainer>
 }

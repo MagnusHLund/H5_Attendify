@@ -1,0 +1,38 @@
+.auth-card {
+  width: 100%;
+  max-width: 28rem;
+  padding: 2.5rem;
+  height: fit-content;
+  align-self: center;
+
+  background-color: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 0.75rem;
+
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.auth-card__logo {
+  display: block;
+
+  width: auto;
+  height: 8rem;
+
+  margin: 0 auto 2rem;
+  object-fit: contain;
+}
+
+.auth-card__content {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    max-width: none;
+    padding: 2rem 1.5rem;
+
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

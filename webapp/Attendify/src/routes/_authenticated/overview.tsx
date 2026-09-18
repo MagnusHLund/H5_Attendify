@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-
+import { PageContainer } from '../../components/layout'
 export const Route = createFileRoute('/_authenticated/overview')({
   staticData: {
     pageName: 'Overview',
@@ -8,5 +8,5 @@ export const Route = createFileRoute('/_authenticated/overview')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/overview"!</div>
+  return <PageContainer>Hello "/overview"!</PageContainer>
 }

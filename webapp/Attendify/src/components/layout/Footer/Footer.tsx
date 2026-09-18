@@ -18,7 +18,9 @@ export function Footer() {
             Secure absence monitoring and authentication
           </span>
         </div>
-
+        <div className="footer__copyright">
+          © {new Date().getFullYear()} Attendify
+        </div>
         <a
           className="footer__github"
           href="https://github.com/MagnusHLund/H5_Attendify"
@@ -29,10 +31,6 @@ export function Footer() {
           <img src="/Github.png" alt="" className="footer__github-icon" />
           <span>View on GitHub</span>
         </a>
-
-        <div className="footer__copyright">
-          © {new Date().getFullYear()} Attendify
-        </div>
       </div>
     </footer>
   )

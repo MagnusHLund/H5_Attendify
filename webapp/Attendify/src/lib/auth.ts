@@ -4,5 +4,5 @@ export async function isAuthenticated(): Promise<boolean> {
     credentials: 'include',
   })
 
-  return response.ok
+  return !response.ok
 }
