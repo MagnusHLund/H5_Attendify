@@ -1,0 +1,83 @@
+.face-photo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  padding: 2rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba($color-gray-900, 0.05);
+}
+
+.face-photo-form__header {
+  h2 {
+    margin: 0 0 0.5rem;
+    color: $color-text;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.face-photo-form__tips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+
+  margin: 1rem 0 0;
+  padding: 0;
+  color: $color-text-label;
+  font-size: 0.8rem;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    &::before {
+      width: 0.45rem;
+      height: 0.45rem;
+      background: $color-secondary;
+      border-radius: 50%;
+      content: '';
+    }
+  }
+}
+
+.face-photo-form__fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.face-photo-form__submit {
+  align-self: flex-start;
+}
+
+@media (max-width: 800px) {
+  .face-photo-form {
+    padding: 1.5rem;
+  }
+
+  .face-photo-form__fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .face-photo-form {
+    padding: 1.25rem;
+  }
+
+  .face-photo-form__submit {
+    width: 100%;
+  }
+}

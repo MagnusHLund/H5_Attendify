@@ -1,0 +1,30 @@
+.student-access-code {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.student-access-code__header {
+  h2 {
+    margin: 0 0 0.5rem;
+    color: $color-text;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  p {
+    max-width: 42rem;
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.student-access-code__status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  color: $color-text-muted;
+}

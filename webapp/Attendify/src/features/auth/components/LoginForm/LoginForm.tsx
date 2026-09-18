@@ -95,9 +95,9 @@ export function LoginForm() {
       <Button
         type="submit"
         className="login-form__submit"
-        disabled={form.state.isSubmitting}
+        loading={form.state.isSubmitting}
       >
-        {form.state.isSubmitting ? 'Logging in...' : 'Login'}
+        Login
       </Button>
 
       <div className="login-form__register">

@@ -1,0 +1,19 @@
+.overview-page {
+  width: 100%;
+}
+
+.overview-page__loading {
+  display: grid;
+  place-items: center;
+  min-height: 16rem;
+}
+
+.overview-page__student {
+  margin: 0 0 1.5rem;
+  color: $color-text-muted;
+  font-size: 0.9rem;
+}
+
+.overview-page__filters {
+  margin-bottom: 1rem;
+}

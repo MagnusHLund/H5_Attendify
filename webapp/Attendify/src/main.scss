@@ -19,5 +19,7 @@ body {
 }
 
 .app-shell__content {
-  flex: 1;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
 }

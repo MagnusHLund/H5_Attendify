@@ -1,4 +1,5 @@
 .footer {
+  flex-shrink: 0;
   width: 100%;
   margin-top: auto;
   background-color: $color-surface;
@@ -14,6 +15,7 @@
   min-height: 4.5rem;
   margin: 0 auto;
   padding: 1rem 2rem;
+  box-sizing: border-box;
 }
 
 .footer__project {
