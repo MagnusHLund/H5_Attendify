@@ -1,9 +1,5 @@
-import { useEffect } from 'react'
-import {
-  CopyField,
-  Spinner,
-  useErrorModal,
-} from '../../../../components/ui'
+import { useEffect, useRef } from 'react'
+import { CopyField, Spinner, useErrorModal } from '../../../../components/ui'
 import { useStudentAccessCode } from '../../hooks/useStudentAccessCode'
 import { useTranslation } from '../../../../lib/i18n'
 import './StudentAccessCode.scss'
@@ -13,13 +9,19 @@ export function StudentAccessCode() {
   const { showError } = useErrorModal()
   const { t } = useTranslation()
 
+  const handledErrorRef = useRef<Error | null>(null)
+
   useEffect(() => {
-    if (error) {
-      showError(
-        new Error(t('error.accessCodeMessage')),
-        t('error.accessCodeTitle'),
-      )
+    if (!error || handledErrorRef.current === error) {
+      return
     }
+
+    handledErrorRef.current = error
+
+    showError(
+      new Error(t('error.accessCodeMessage')),
+      t('error.accessCodeTitle'),
+    )
   }, [error, showError, t])
 
   return (

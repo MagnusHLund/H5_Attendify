@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Spinner, useErrorModal } from '../../components/ui'
 import { AttendanceTable } from './components/AttendanceTable/AttendanceTable'
 import type { AttendanceRecord } from './types/AttendanceRecord'
@@ -20,6 +20,9 @@ export function OverviewPage() {
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
 
+  const handledUserErrorRef = useRef<Error | null>(null)
+  const handledAttendanceErrorRef = useRef<Error | null>(null)
+
   const isAdministrator = user?.role === 'administrator'
   const studentId = user?.studentId
 
@@ -36,18 +39,29 @@ export function OverviewPage() {
   const attendanceRecords: AttendanceRecord[] = attendanceData?.items ?? []
 
   useEffect(() => {
-    if (userError) {
-      showError(new Error(t('error.userMessage')), t('error.userTitle'))
+    if (!userError || handledUserErrorRef.current === userError) {
+      return
     }
+
+    handledUserErrorRef.current = userError
+
+    showError(new Error(t('error.userMessage')), t('error.userTitle'))
   }, [showError, t, userError])
 
   useEffect(() => {
-    if (attendanceError) {
-      showError(
-        new Error(t('error.attendanceMessage')),
-        t('error.attendanceTitle'),
-      )
+    if (
+      !attendanceError ||
+      handledAttendanceErrorRef.current === attendanceError
+    ) {
+      return
     }
+
+    handledAttendanceErrorRef.current = attendanceError
+
+    showError(
+      new Error(t('error.attendanceMessage')),
+      t('error.attendanceTitle'),
+    )
   }, [attendanceError, showError, t])
 
   function handlePageSizeChange(newPageSize: number) {
