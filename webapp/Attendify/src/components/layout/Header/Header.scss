@@ -74,3 +74,69 @@
     box-shadow: 0 0 0 3px $color-focus-ring;
   }
 }
+
+.header__menu-button {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .header {
+    grid-template-columns: auto 1fr auto;
+    padding: 0 1rem;
+  }
+
+  .header__logo img {
+    width: 2.5rem;
+    object-fit: cover;
+    object-position: left;
+  }
+
+  .header__title {
+    padding: 0 0.75rem;
+    font-size: 1.1rem;
+  }
+
+  .header__actions {
+    display: none;
+  }
+
+  .header__menu-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.55rem;
+
+    background: transparent;
+    border: 1px solid $color-border;
+    border-radius: 0.5rem;
+
+    appearance: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+
+    span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: $color-text;
+      border-radius: 1px;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px $color-focus-ring;
+    }
+
+    &:focus:not(:focus-visible),
+    &:active {
+      outline: none;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+}

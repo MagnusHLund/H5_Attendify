@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Image } from '../../../../components/ui'
 import './AuthCard.scss'
 
 interface AuthCardProps {
@@ -8,7 +9,7 @@ interface AuthCardProps {
 export function AuthCard({ children }: AuthCardProps) {
   return (
     <div className="auth-card">
-      <img
+      <Image
         src="/Attendify-large.png"
         alt="Attendify"
         className="auth-card__logo"

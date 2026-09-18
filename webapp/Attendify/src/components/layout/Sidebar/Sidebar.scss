@@ -1,0 +1,158 @@
+.sidebar__backdrop {
+  position: fixed;
+  z-index: 900;
+  inset: 0;
+
+  background: rgba($color-gray-900, 0.45);
+}
+
+.sidebar {
+  position: absolute;
+  inset: 0 0 0 auto;
+
+  width: min(20rem, 85vw);
+  padding: 1.25rem;
+
+  background: $color-surface;
+  box-shadow: -0.5rem 0 2rem rgba($color-gray-900, 0.18);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.sidebar__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $color-border;
+
+  color: $color-text;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  border-radius: 0.25rem;
+
+  img {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px $color-focus-ring;
+  }
+}
+
+.sidebar__close {
+  position: relative;
+
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+
+  background: transparent;
+  border: 0;
+  border-radius: 0.5rem;
+
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+
+  span,
+  span::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: block;
+    width: 1.25rem;
+    height: 2px;
+
+    background: $color-text-muted;
+    border-radius: 1px;
+    content: '';
+  }
+
+  span {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  span::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px $color-focus-ring;
+  }
+
+  &:focus:not(:focus-visible),
+  &:active {
+    outline: none;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.sidebar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.sidebar__action {
+  display: flex;
+  align-items: center;
+
+  min-height: 2.75rem;
+  padding: 0 1rem;
+
+  background: $color-primary-subtle;
+  border: 1px solid $color-primary-subtle-hover;
+  border-radius: 0.5rem;
+  color: $color-primary;
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px $color-focus-ring;
+  }
+
+  &--logout {
+    background: $color-danger-light;
+    border-color: $color-danger-light;
+    color: $color-danger-dark;
+  }
+}
+
+@media (hover: hover) {
+  .sidebar__action:hover {
+    background: $color-primary-subtle-hover;
+  }
+
+  .sidebar__action--logout:hover {
+    background: $color-danger-light;
+  }
+}
