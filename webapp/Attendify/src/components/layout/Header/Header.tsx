@@ -5,28 +5,34 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { useRef, useState } from 'react'
-import { Image } from '../../ui'
+import { Image, LanguageSwitcher } from '../../ui'
+import { useTranslation } from '../../../lib/i18n'
 import { Sidebar } from '../Sidebar/Sidebar'
+import { useCurrentUser } from '../../../features/auth/hooks/useCurrentUser'
 
 import './Header.scss'
 
 type HeaderProps = {
-  userRole: 'student' | 'administrator'
   onLogout: () => void
 }
 
-export function Header({ userRole, onLogout }: HeaderProps) {
+export function Header({ onLogout }: HeaderProps) {
   const location = useLocation()
   const matches = useMatches()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const isSettingsPage = location.pathname === '/settings'
+  const isOverviewPage = location.pathname === '/overview'
+  const { data: user } = useCurrentUser(isSettingsPage || isOverviewPage)
+  const userRole = user?.role ?? 'student'
 
-  const pageName =
-    [...matches].reverse().find((match) => match.staticData.pageName)
-      ?.staticData.pageName ?? 'Attendify'
+  const pageNameKey = [...matches]
+    .reverse()
+    .find((match) => match.staticData.pageNameKey)?.staticData.pageNameKey
+  const pageName = pageNameKey ? t(pageNameKey) : t('common.attendifyLogo')
 
   const handleAction = () => {
     if (userRole === 'administrator') {
@@ -39,21 +45,28 @@ export function Header({ userRole, onLogout }: HeaderProps) {
     })
   }
 
-  const actionLabel = userRole === 'administrator' ? 'Log out' : 'Settings'
+  const actionLabel =
+    userRole === 'administrator'
+      ? t('navigation.logout')
+      : t('navigation.settings')
 
-  if (!isSettingsPage && location.pathname !== '/overview') {
+  if (!isSettingsPage && !isOverviewPage) {
     return null
   }
 
   return (
     <header className="header">
       <Link className="header__logo" to="/overview">
-        <Image src="/internal/logos/Attendify-large.png" alt="Attendify" />
+        <Image
+          src="/internal/logos/Attendify-large.png"
+          alt={t('common.attendifyLogo')}
+        />
       </Link>
 
       <h1 className="header__title">{pageName}</h1>
 
       <div className="header__actions">
+        {userRole === 'administrator' && <LanguageSwitcher compact />}
         {(userRole === 'administrator' || !isSettingsPage) && (
           <button
             className="header__action"
@@ -70,7 +83,7 @@ export function Header({ userRole, onLogout }: HeaderProps) {
         className="header__menu-button"
         type="button"
         aria-label={
-          isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'
+          isMenuOpen ? t('navigation.closeMenu') : t('navigation.openMenu')
         }
         aria-controls="mobile-navigation"
         aria-expanded={isMenuOpen}

@@ -8,6 +8,7 @@ export {
 } from './ErrorModal/ErrorModalProvider'
 export { FileInput } from './FileInput/FileInput'
 export { Image } from './Image/Image'
+export { LanguageSwitcher } from './LanguageSwitcher/LanguageSwitcher'
 export { Spinner } from './Spinner/Spinner'
 export { TextInput } from './TextInput/TextInput'
 

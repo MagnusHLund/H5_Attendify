@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Image } from '../../../../components/ui'
+import { useTranslation } from '../../../../lib/i18n'
 import './AuthCard.scss'
 
 interface AuthCardProps {
@@ -7,11 +8,13 @@ interface AuthCardProps {
 }
 
 export function AuthCard({ children }: AuthCardProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="auth-card">
       <Image
         src="/internal/logos/Attendify-large.png"
-        alt="Attendify"
+        alt={t('common.attendifyLogo')}
         className="auth-card__logo"
       />
 

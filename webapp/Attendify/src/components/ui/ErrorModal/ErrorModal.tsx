@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../Button/Button'
+import { useTranslation } from '../../../lib/i18n'
 import './ErrorModal.scss'
 
 interface ErrorModalProps {
@@ -14,8 +15,9 @@ export function ErrorModal({
   isOpen,
   message,
   onClose,
-  title = 'Something went wrong',
+  title,
 }: ErrorModalProps) {
+  const { t } = useTranslation()
   const titleId = useId()
   const messageId = useId()
   const dialogRef = useRef<HTMLElement>(null)
@@ -102,7 +104,7 @@ export function ErrorModal({
         </div>
 
         <h2 className="error-modal__title" id={titleId}>
-          {title}
+          {title ?? t('error.defaultTitle')}
         </h2>
 
         <div className="error-modal__message" id={messageId}>
@@ -110,7 +112,7 @@ export function ErrorModal({
         </div>
 
         <Button type="button" variant="danger" onClick={onClose}>
-          Close
+          {t('common.close')}
         </Button>
       </section>
     </div>,

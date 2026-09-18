@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 import { ErrorModal } from './ErrorModal'
+import { useTranslation } from '../../../lib/i18n'
 
 interface ErrorDetails {
   message: string
@@ -24,14 +25,15 @@ interface ErrorModalProviderProps {
 }
 
 export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
+  const { t } = useTranslation()
   const [errorDetails, setErrorDetails] = useState<ErrorDetails | null>(null)
 
   const showError = useCallback((error: unknown, title?: string) => {
     const message =
-      error instanceof Error ? error.message : 'An unexpected error occurred.'
+      error instanceof Error ? error.message : t('error.unexpected')
 
     setErrorDetails({ message, title })
-  }, [])
+  }, [t])
 
   const contextValue = useMemo(() => ({ showError }), [showError])
 

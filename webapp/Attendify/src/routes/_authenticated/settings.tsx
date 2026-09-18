@@ -3,7 +3,7 @@ import { PageContainer } from '../../components/layout'
 import { SettingsPage } from '../../features/settings/SettingsPage'
 export const Route = createFileRoute('/_authenticated/settings')({
   staticData: {
-    pageName: 'Settings',
+    pageNameKey: 'navigation.settings',
   },
   component: RouteComponent,
 })

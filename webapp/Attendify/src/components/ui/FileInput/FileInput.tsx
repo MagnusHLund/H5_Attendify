@@ -6,6 +6,7 @@ import {
   type DragEvent,
 } from 'react'
 import { Image } from '../Image/Image'
+import { useTranslation } from '../../../lib/i18n'
 import './FileInput.scss'
 
 interface FileInputProps {
@@ -61,6 +62,7 @@ export function FileInput({
   disabled = false,
   onChange,
 }: FileInputProps) {
+  const { t } = useTranslation()
   const inputId = useId()
   const errorId = `${inputId}-error`
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -84,8 +86,8 @@ export function FileInput({
     if (file && !isAcceptedFile(file, accept)) {
       setInternalError(
         accept?.toLowerCase().includes('image/')
-          ? 'Please select an image file'
-          : 'Please select an accepted file type',
+          ? t('file.invalidImage')
+          : t('file.invalidType'),
       )
       return
     }
@@ -154,7 +156,9 @@ export function FileInput({
           <Image
             className="file-input__preview"
             src={previewUrl}
-            alt={`Preview of ${selectedFile?.name ?? 'selected image'}`}
+            alt={t('file.preview', {
+              name: selectedFile?.name ?? t('file.choosePicture'),
+            })}
           />
         ) : (
           <span className="file-input__icon" aria-hidden="true">
@@ -163,9 +167,9 @@ export function FileInput({
         )}
 
         <span className="file-input__text">
-          <strong>{selectedFile?.name ?? 'Choose a picture'}</strong>
+          <strong>{selectedFile?.name ?? t('file.choosePicture')}</strong>
           <small>
-            {selectedFile ? 'Click to replace' : 'or drag and drop it here'}
+            {selectedFile ? t('file.replace') : t('file.dragDrop')}
           </small>
         </span>
       </label>

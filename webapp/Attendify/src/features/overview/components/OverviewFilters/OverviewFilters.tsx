@@ -1,4 +1,5 @@
 import { Dropdown } from '../../../../components/ui'
+import { useTranslation } from '../../../../lib/i18n'
 import './OverviewFilters.scss'
 
 interface OverviewFiltersProps {
@@ -10,10 +11,12 @@ export function OverviewFilters({
   pageSize,
   onPageSizeChange,
 }: OverviewFiltersProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="overview-filters">
       <Dropdown
-        label="Rows per page"
+        label={t('overview.rowsPerPage')}
         value={String(pageSize)}
         options={[
           { value: '10', label: '10' },

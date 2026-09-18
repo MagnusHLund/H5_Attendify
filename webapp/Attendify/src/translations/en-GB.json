@@ -1,0 +1,131 @@
+{
+  "common": {
+    "loading": "Loading",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "email": "Email",
+    "password": "Password",
+    "copy": "Copy",
+    "copied": "Copied",
+    "attendifyLogo": "Attendify"
+  },
+  "navigation": {
+    "overview": "Overview",
+    "settings": "Settings",
+    "logout": "Log out",
+    "menu": "Menu",
+    "userNavigation": "User navigation",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu"
+  },
+  "footer": {
+    "description": "Secure absence monitoring and authentication",
+    "copyright": "© {year} Attendify",
+    "github": "View on GitHub"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "danish": "Danish",
+    "changeTo": "Change language to {language}"
+  },
+  "auth": {
+    "loginStudent": "Login as student",
+    "loginAdministrator": "Login as administrator",
+    "login": "Login",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Not a user yet? Sign up",
+    "studentAccessCode": "Student access code",
+    "registerTitle": "Register new student",
+    "confirmPassword": "Confirm password",
+    "educationalInstitute": "Educational institute",
+    "selectEducationalInstitute": "Select an educational institute",
+    "studentId": "Student ID",
+    "alreadyUser": "Already got a user? Login",
+    "completeRegistration": "Complete registration",
+    "photoStraight": "Take a photo of your face from a straight angle",
+    "photoLeft": "Take a photo of your face from a slight left angle",
+    "photoRight": "Take a photo of your face from a slight right angle"
+  },
+  "reset": {
+    "forgotTitle": "Forgot password",
+    "sendCode": "Send code",
+    "codeTitle": "Enter recovery code",
+    "code": "Code",
+    "submit": "Submit",
+    "resendCode": "Resend code",
+    "passwordTitle": "Enter new password",
+    "newPassword": "New password",
+    "repeatPassword": "Re-enter new password",
+    "savePassword": "Save new password"
+  },
+  "validation": {
+    "required": "This field is required",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "passwordLength": "Password must be at least {length} characters",
+    "passwordMismatch": "Passwords do not match",
+    "accessCodeRequired": "Student access code is required",
+    "recoveryCodeRequired": "Recovery code is required",
+    "instituteRequired": "Educational institute is required",
+    "studentIdRequired": "Student ID is required",
+    "photoRequired": "A photo is required",
+    "invalidEmail": "Enter a valid email address"
+  },
+  "file": {
+    "choosePicture": "Choose a picture",
+    "replace": "Click to replace",
+    "dragDrop": "or drag and drop it here",
+    "invalidImage": "Please select an image file",
+    "invalidType": "Please select an accepted file type",
+    "preview": "Preview of {name}"
+  },
+  "settings": {
+    "title": "Settings",
+    "languageTitle": "Language",
+    "languageDescription": "Choose the language used throughout Attendify.",
+    "facePictures": "Face pictures",
+    "faceDescription": "Update the pictures used to identify you. Please make sure your face is clearly visible in each picture.",
+    "tipLighting": "Use even lighting",
+    "tipAccessories": "Remove hats and sunglasses",
+    "tipFrame": "Keep your whole face in frame",
+    "straight": "1. Looking straight ahead",
+    "left": "2. Turned slightly left",
+    "right": "3. Turned slightly right",
+    "savePictures": "Save pictures",
+    "accessCodeTitle": "Student access code",
+    "accessCodeDescription": "Use this code when an administrator needs access to your attendance information.",
+    "loadingAccessCode": "Loading access code...",
+    "accessCode": "Access code"
+  },
+  "overview": {
+    "student": "Looking at student: {studentId}",
+    "rowsPerPage": "Rows per page",
+    "date": "Date",
+    "arrived": "Arrived at",
+    "departed": "Departed at",
+    "classroom": "Classroom",
+    "status": "Status",
+    "empty": "No attendance records found.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {current} of {total}",
+    "loading": "Loading attendance"
+  },
+  "error": {
+    "defaultTitle": "Something went wrong",
+    "unexpected": "An unexpected error occurred.",
+    "userTitle": "User details could not be loaded",
+    "userMessage": "Failed to fetch current user",
+    "attendanceTitle": "Attendance could not be loaded",
+    "attendanceMessage": "Failed to fetch attendance",
+    "picturesTitle": "Pictures could not be saved",
+    "picturesMessage": "Failed to update face pictures",
+    "accessCodeTitle": "Access code could not be loaded",
+    "accessCodeMessage": "Failed to fetch student access code"
+  },
+  "accessibility": {
+    "copyValue": "Copy value"
+  }
+}
