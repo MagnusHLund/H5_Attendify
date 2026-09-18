@@ -7,12 +7,14 @@ import {
   validEmail,
   minPasswordLength,
 } from '../../../../lib/validation'
+import { useTranslation } from '../../../../lib/i18n'
 import './ResetPasswordForm.scss'
 
 type ResetPasswordStep = 'email' | 'code' | 'password'
 
 export function ResetPasswordForm() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [step, setStep] = useState<ResetPasswordStep>('email')
 
   const emailForm = useForm({
@@ -78,7 +80,7 @@ export function ResetPasswordForm() {
           emailForm.handleSubmit()
         }}
       >
-        <h1 className="reset-password-form__title">Forgot password</h1>
+        <h1 className="reset-password-form__title">{t('reset.forgotTitle')}</h1>
 
         <div className="reset-password-form__fields">
           <emailForm.Field
@@ -86,13 +88,13 @@ export function ResetPasswordForm() {
             validators={{
               onChange: ({ value }) =>
                 !value.trim()
-                  ? required('Email is required')({ value })
-                  : validEmail()({ value }),
+                  ? required(t('validation.emailRequired'))({ value })
+                  : validEmail(t('validation.invalidEmail'))({ value }),
             }}
           >
             {(field) => (
               <TextInput
-                label="Email"
+                label={t('common.email')}
                 type="email"
                 name={field.name}
                 value={field.state.value}
@@ -115,12 +117,12 @@ export function ResetPasswordForm() {
           className="reset-password-form__submit"
           loading={emailForm.state.isSubmitting}
         >
-          Send code
+          {t('reset.sendCode')}
         </Button>
 
         <div className="reset-password-form__back">
           <Button type="button" variant="secondary" onClick={handleBack}>
-            Back
+            {t('common.back')}
           </Button>
         </div>
       </form>
@@ -137,18 +139,18 @@ export function ResetPasswordForm() {
           codeForm.handleSubmit()
         }}
       >
-        <h1 className="reset-password-form__title">Enter recovery code</h1>
+        <h1 className="reset-password-form__title">{t('reset.codeTitle')}</h1>
 
         <div className="reset-password-form__fields">
           <codeForm.Field
             name="code"
             validators={{
-              onChange: required('Recovery code is required'),
+              onChange: required(t('validation.recoveryCodeRequired')),
             }}
           >
             {(field) => (
               <TextInput
-                label="Code"
+                label={t('reset.code')}
                 type="text"
                 name={field.name}
                 value={field.state.value}
@@ -171,18 +173,18 @@ export function ResetPasswordForm() {
           className="reset-password-form__submit"
           loading={codeForm.state.isSubmitting}
         >
-          Submit
+          {t('reset.submit')}
         </Button>
 
         <div className="reset-password-form__resend">
           <button type="button" onClick={handleResendCode}>
-            Resend code
+            {t('reset.resendCode')}
           </button>
         </div>
 
         <div className="reset-password-form__back">
           <Button type="button" variant="secondary" onClick={handleBack}>
-            Back
+            {t('common.back')}
           </Button>
         </div>
       </form>
@@ -198,18 +200,23 @@ export function ResetPasswordForm() {
         passwordForm.handleSubmit()
       }}
     >
-      <h1 className="reset-password-form__title">Enter new password</h1>
+      <h1 className="reset-password-form__title">
+        {t('reset.passwordTitle')}
+      </h1>
 
       <div className="reset-password-form__fields">
         <passwordForm.Field
           name="password"
           validators={{
-            onChange: minPasswordLength(8),
+            onChange: minPasswordLength(
+              8,
+              t('validation.passwordLength', { length: 8 }),
+            ),
           }}
         >
           {(field) => (
             <TextInput
-              label="New password"
+              label={t('reset.newPassword')}
               type="password"
               name={field.name}
               value={field.state.value}
@@ -232,13 +239,13 @@ export function ResetPasswordForm() {
             onChangeListenTo: ['password'],
             onChange: ({ value, fieldApi }) =>
               value !== fieldApi.form.getFieldValue('password')
-                ? 'Passwords do not match'
+                ? t('validation.passwordMismatch')
                 : undefined,
           }}
         >
           {(field) => (
             <TextInput
-              label="Re-enter new password"
+              label={t('reset.repeatPassword')}
               type="password"
               name={field.name}
               value={field.state.value}
@@ -261,12 +268,12 @@ export function ResetPasswordForm() {
         className="reset-password-form__submit"
         loading={passwordForm.state.isSubmitting}
       >
-        Save new password
+        {t('reset.savePassword')}
       </Button>
 
       <div className="reset-password-form__back">
         <Button type="button" variant="secondary" onClick={handleBack}>
-          Back
+          {t('common.back')}
         </Button>
       </div>
     </form>

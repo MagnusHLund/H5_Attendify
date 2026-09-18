@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { useEffect, useRef, type MouseEvent, type RefObject } from 'react'
-import { Image } from '../../ui'
+import { Image, LanguageSwitcher } from '../../ui'
+import { useTranslation } from '../../../lib/i18n'
 import './Sidebar.scss'
 
 interface SidebarProps {
@@ -18,6 +19,7 @@ export function Sidebar({
   onLogout,
   userRole,
 }: SidebarProps) {
+  const { t } = useTranslation()
   const sidebarRef = useRef<HTMLElement>(null)
   const shouldRestoreFocusRef = useRef(false)
 
@@ -91,21 +93,24 @@ export function Sidebar({
         ref={sidebarRef}
         id="navigation"
         className="sidebar"
-        aria-label="User navigation"
+        aria-label={t('navigation.userNavigation')}
         tabIndex={-1}
       >
         <div className="sidebar__heading">
           <div className="sidebar__brand">
             <Link className="sidebar__logo" to="/overview" onClick={onClose}>
-              <Image src="/Attendify-small.png" alt="Attendify" />
+              <Image
+                src="/internal/logos/Attendify-small.png"
+                alt={t('common.attendifyLogo')}
+              />
             </Link>
-            <span>Menu</span>
+            <span>{t('navigation.menu')}</span>
           </div>
 
           <button
             className="sidebar__close"
             type="button"
-            aria-label="Close navigation menu"
+            aria-label={t('navigation.closeMenu')}
             onClick={closeFromButton}
           >
             <span aria-hidden="true" />
@@ -113,15 +118,17 @@ export function Sidebar({
         </div>
 
         <div className="sidebar__actions">
-          {userRole === 'student' && (
+          {userRole === 'student' && !isSettingsPage && (
             <Link
               className="sidebar__action"
-              to={isSettingsPage ? '/overview' : '/settings'}
+              to="/settings"
               onClick={onClose}
             >
-              {isSettingsPage ? 'Back to Overview' : 'Settings'}
+              {t('navigation.settings')}
             </Link>
           )}
+
+          {userRole === 'administrator' && <LanguageSwitcher />}
 
           <button
             className="sidebar__action sidebar__action--logout"
@@ -131,7 +138,7 @@ export function Sidebar({
               onLogout()
             }}
           >
-            Log out
+            {t('navigation.logout')}
           </button>
         </div>
       </nav>

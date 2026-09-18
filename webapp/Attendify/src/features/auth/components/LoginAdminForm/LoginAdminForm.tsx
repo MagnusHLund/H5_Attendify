@@ -2,10 +2,12 @@ import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
 import { Button, TextInput } from '../../../../components/ui'
 import { required } from '../../../../lib/validation'
+import { useTranslation } from '../../../../lib/i18n'
 import './LoginAdminForm.scss'
 
 export function LoginAdminForm() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const form = useForm({
     defaultValues: {
@@ -33,18 +35,20 @@ export function LoginAdminForm() {
         form.handleSubmit()
       }}
     >
-      <h1 className="login-admin-form__title">Login as administrator</h1>
+      <h1 className="login-admin-form__title">
+        {t('auth.loginAdministrator')}
+      </h1>
 
       <div className="login-admin-form__fields">
         <form.Field
           name="accessCode"
           validators={{
-            onChange: required('Student access code is required'),
+            onChange: required(t('validation.accessCodeRequired')),
           }}
         >
           {(field) => (
             <TextInput
-              label="Student access code"
+              label={t('auth.studentAccessCode')}
               type="text"
               name={field.name}
               value={field.state.value}
@@ -67,12 +71,12 @@ export function LoginAdminForm() {
         className="login-admin-form__submit"
         loading={form.state.isSubmitting}
       >
-        Login
+        {t('auth.login')}
       </Button>
 
       <div className="login-admin-form__student">
         <Button type="button" variant="secondary" onClick={handleStudentLogin}>
-          Login as student
+          {t('auth.loginStudent')}
         </Button>
       </div>
     </form>

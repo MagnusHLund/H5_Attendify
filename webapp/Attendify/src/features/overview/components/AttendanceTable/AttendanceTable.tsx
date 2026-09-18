@@ -5,7 +5,9 @@ import {
   useReactTable,
   type ColumnDef,
 } from '@tanstack/react-table'
+import { useMemo } from 'react'
 import { Button } from '../../../../components/ui'
+import { useTranslation } from '../../../../lib/i18n'
 import type { AttendanceRecord } from '../../types/AttendanceRecord'
 import './AttendanceTable.scss'
 
@@ -16,35 +18,24 @@ interface AttendanceTableProps {
   onPageChange: (pageIndex: number) => void
 }
 
-const columns: ColumnDef<AttendanceRecord>[] = [
-  {
-    accessorKey: 'date',
-    header: 'Date',
-  },
-  {
-    accessorKey: 'arrivedAt',
-    header: 'Arrived at',
-  },
-  {
-    accessorKey: 'departedAt',
-    header: 'Departed at',
-  },
-  {
-    accessorKey: 'classroom',
-    header: 'Classroom',
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-  },
-]
-
 export function AttendanceTable({
   data,
   pageIndex,
   pageSize,
   onPageChange,
 }: AttendanceTableProps) {
+  const { t } = useTranslation()
+  const columns = useMemo<ColumnDef<AttendanceRecord>[]>(
+    () => [
+      { accessorKey: 'date', header: t('overview.date') },
+      { accessorKey: 'arrivedAt', header: t('overview.arrived') },
+      { accessorKey: 'departedAt', header: t('overview.departed') },
+      { accessorKey: 'classroom', header: t('overview.classroom') },
+      { accessorKey: 'status', header: t('overview.status') },
+    ],
+    [t],
+  )
+
   const table = useReactTable({
     data,
     columns,
@@ -107,7 +98,7 @@ export function AttendanceTable({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length}>No attendance records found.</td>
+                <td colSpan={columns.length}>{t('overview.empty')}</td>
               </tr>
             )}
           </tbody>
@@ -121,11 +112,14 @@ export function AttendanceTable({
           disabled={!table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
-          Previous
+          {t('overview.previous')}
         </Button>
 
         <span className="attendance-table__page">
-          Page {pageIndex + 1} of {Math.max(table.getPageCount(), 1)}
+          {t('overview.page', {
+            current: pageIndex + 1,
+            total: Math.max(table.getPageCount(), 1),
+          })}
         </span>
 
         <Button
@@ -134,7 +128,7 @@ export function AttendanceTable({
           disabled={!table.getCanNextPage()}
           onClick={() => table.nextPage()}
         >
-          Next
+          {t('overview.next')}
         </Button>
       </div>
     </div>

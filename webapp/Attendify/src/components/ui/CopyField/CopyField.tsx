@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import { useTranslation } from '../../../lib/i18n'
 import './CopyField.scss'
 
 interface CopyFieldProps {
@@ -8,6 +9,7 @@ interface CopyFieldProps {
 }
 
 export function CopyField({ label, value, error }: CopyFieldProps) {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
   const inputId = useId()
   const errorId = `${inputId}-error`
@@ -44,9 +46,9 @@ export function CopyField({ label, value, error }: CopyFieldProps) {
           type="button"
           className="copy-field__button"
           onClick={handleCopy}
-          aria-label="Copy value"
+          aria-label={t('accessibility.copyValue')}
         >
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? t('common.copied') : t('common.copy')}
         </button>
       </div>
 

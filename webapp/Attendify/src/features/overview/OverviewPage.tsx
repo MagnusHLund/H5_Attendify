@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Spinner, useErrorModal } from '../../components/ui'
 import { AttendanceTable } from './components/AttendanceTable/AttendanceTable'
 import type { AttendanceRecord } from './types/AttendanceRecord'
 import { OverviewFilters } from './components/OverviewFilters/OverviewFilters'
 import { useCurrentUser } from '../auth/hooks/useCurrentUser'
 import { useAttendance } from './hooks/useAttendance'
+import { useTranslation } from '../../lib/i18n'
 import './OverviewPage.scss'
 
 export function OverviewPage() {
@@ -14,9 +15,13 @@ export function OverviewPage() {
     isLoading: isUserLoading,
   } = useCurrentUser()
   const { showError } = useErrorModal()
+  const { t } = useTranslation()
 
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
+
+  const handledUserErrorRef = useRef<Error | null>(null)
+  const handledAttendanceErrorRef = useRef<Error | null>(null)
 
   const isAdministrator = user?.role === 'administrator'
   const studentId = user?.studentId
@@ -34,16 +39,30 @@ export function OverviewPage() {
   const attendanceRecords: AttendanceRecord[] = attendanceData?.items ?? []
 
   useEffect(() => {
-    if (userError) {
-      showError(userError, 'User details could not be loaded')
+    if (!userError || handledUserErrorRef.current === userError) {
+      return
     }
-  }, [showError, userError])
+
+    handledUserErrorRef.current = userError
+
+    showError(new Error(t('error.userMessage')), t('error.userTitle'))
+  }, [showError, t, userError])
 
   useEffect(() => {
-    if (attendanceError) {
-      showError(attendanceError, 'Attendance could not be loaded')
+    if (
+      !attendanceError ||
+      handledAttendanceErrorRef.current === attendanceError
+    ) {
+      return
     }
-  }, [attendanceError, showError])
+
+    handledAttendanceErrorRef.current = attendanceError
+
+    showError(
+      new Error(t('error.attendanceMessage')),
+      t('error.attendanceTitle'),
+    )
+  }, [attendanceError, showError, t])
 
   function handlePageSizeChange(newPageSize: number) {
     setPageSize(newPageSize)
@@ -54,13 +73,13 @@ export function OverviewPage() {
     <div className="overview-page">
       {(isUserLoading || isAttendanceLoading) && (
         <div className="overview-page__loading">
-          <Spinner size="large" label="Loading attendance" />
+          <Spinner size="large" label={t('overview.loading')} />
         </div>
       )}
 
       {isAdministrator && studentId && (
         <p className="overview-page__student">
-          Looking at student: {studentId}
+          {t('overview.student', { studentId })}
         </p>
       )}
 

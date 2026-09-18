@@ -5,11 +5,13 @@ import {
   useErrorModal,
 } from '../../../../components/ui'
 import { useUpdateFacePhotos } from '../../hooks/useUpdateFacePhotos'
+import { useTranslation } from '../../../../lib/i18n'
 import './FacePhotoForm.scss'
 
 export function FacePhotoForm() {
   const updateFacePhotos = useUpdateFacePhotos()
   const { showError } = useErrorModal()
+  const { t } = useTranslation()
 
   const form = useForm({
     defaultValues: {
@@ -26,7 +28,7 @@ export function FacePhotoForm() {
           rightPhoto: value.rightPhoto!,
         })
       } catch (error) {
-        showError(error, 'Pictures could not be saved')
+        showError(new Error(t('error.picturesMessage')), t('error.picturesTitle'))
       }
     },
   })
@@ -41,15 +43,12 @@ export function FacePhotoForm() {
       }}
     >
       <div className="face-photo-form__header">
-        <h2>Face pictures</h2>
-        <p>
-          Update the pictures used to identify you. Please make sure your face
-          is clearly visible in each picture.
-        </p>
+        <h2>{t('settings.facePictures')}</h2>
+        <p>{t('settings.faceDescription')}</p>
         <ul className="face-photo-form__tips">
-          <li>Use even lighting</li>
-          <li>Remove hats and sunglasses</li>
-          <li>Keep your whole face in frame</li>
+          <li>{t('settings.tipLighting')}</li>
+          <li>{t('settings.tipAccessories')}</li>
+          <li>{t('settings.tipFrame')}</li>
         </ul>
       </div>
 
@@ -58,12 +57,12 @@ export function FacePhotoForm() {
           name="straightPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : 'A photo is required',
+              value ? undefined : t('validation.photoRequired'),
           }}
         >
           {(field) => (
             <FileInput
-              label="1. Looking straight ahead"
+              label={t('settings.straight')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -79,12 +78,12 @@ export function FacePhotoForm() {
           name="leftPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : 'A photo is required',
+              value ? undefined : t('validation.photoRequired'),
           }}
         >
           {(field) => (
             <FileInput
-              label="2. Turned slightly left"
+              label={t('settings.left')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -100,12 +99,12 @@ export function FacePhotoForm() {
           name="rightPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : 'A photo is required',
+              value ? undefined : t('validation.photoRequired'),
           }}
         >
           {(field) => (
             <FileInput
-              label="3. Turned slightly right"
+              label={t('settings.right')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -123,7 +122,7 @@ export function FacePhotoForm() {
         className="face-photo-form__submit"
         loading={form.state.isSubmitting}
       >
-        Save pictures
+        {t('settings.savePictures')}
       </Button>
     </form>
   )

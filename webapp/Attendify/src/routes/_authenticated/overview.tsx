@@ -3,7 +3,7 @@ import { PageContainer } from '../../components/layout'
 import { OverviewPage } from '../../features/overview/OverviewPage'
 export const Route = createFileRoute('/_authenticated/overview')({
   staticData: {
-    pageName: 'Overview',
+    pageNameKey: 'navigation.overview',
   },
   component: RouteComponent,
 })

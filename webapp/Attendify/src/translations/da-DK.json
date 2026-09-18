@@ -1,0 +1,131 @@
+{
+  "common": {
+    "loading": "Indlæser",
+    "close": "Luk",
+    "back": "Tilbage",
+    "next": "Næste",
+    "email": "E-mail",
+    "password": "Adgangskode",
+    "copy": "Kopiér",
+    "copied": "Kopieret",
+    "attendifyLogo": "Attendify"
+  },
+  "navigation": {
+    "overview": "Oversigt",
+    "settings": "Indstillinger",
+    "logout": "Log ud",
+    "menu": "Menu",
+    "userNavigation": "Brugernavigation",
+    "openMenu": "Åbn navigationsmenu",
+    "closeMenu": "Luk navigationsmenu"
+  },
+  "footer": {
+    "description": "Sikker fraværsregistrering og godkendelse",
+    "copyright": "© {year} Attendify",
+    "github": "Se på GitHub"
+  },
+  "language": {
+    "label": "Sprog",
+    "english": "Engelsk",
+    "danish": "Dansk",
+    "changeTo": "Skift sprog til {language}"
+  },
+  "auth": {
+    "loginStudent": "Log ind som elev",
+    "loginAdministrator": "Log ind som administrator",
+    "login": "Log ind",
+    "forgotPassword": "Glemt adgangskode?",
+    "noAccount": "Er du ikke bruger endnu? Opret dig",
+    "studentAccessCode": "Elevadgangskode",
+    "registerTitle": "Opret ny elev",
+    "confirmPassword": "Bekræft adgangskode",
+    "educationalInstitute": "Uddannelsesinstitution",
+    "selectEducationalInstitute": "Vælg en uddannelsesinstitution",
+    "studentId": "Elev-ID",
+    "alreadyUser": "Har du allerede en bruger? Log ind",
+    "completeRegistration": "Færdiggør oprettelse",
+    "photoStraight": "Tag et billede af dit ansigt lige forfra",
+    "photoLeft": "Tag et billede af dit ansigt let drejet mod venstre",
+    "photoRight": "Tag et billede af dit ansigt let drejet mod højre"
+  },
+  "reset": {
+    "forgotTitle": "Glemt adgangskode",
+    "sendCode": "Send kode",
+    "codeTitle": "Indtast gendannelseskode",
+    "code": "Kode",
+    "submit": "Indsend",
+    "resendCode": "Send koden igen",
+    "passwordTitle": "Indtast ny adgangskode",
+    "newPassword": "Ny adgangskode",
+    "repeatPassword": "Gentag ny adgangskode",
+    "savePassword": "Gem ny adgangskode"
+  },
+  "validation": {
+    "required": "Feltet er påkrævet",
+    "emailRequired": "E-mail er påkrævet",
+    "passwordRequired": "Adgangskode er påkrævet",
+    "passwordLength": "Adgangskoden skal være mindst {length} tegn",
+    "passwordMismatch": "Adgangskoderne er ikke ens",
+    "accessCodeRequired": "Elevadgangskoden er påkrævet",
+    "recoveryCodeRequired": "Gendannelseskoden er påkrævet",
+    "instituteRequired": "Uddannelsesinstitution er påkrævet",
+    "studentIdRequired": "Elev-ID er påkrævet",
+    "photoRequired": "Et billede er påkrævet",
+    "invalidEmail": "Indtast en gyldig e-mailadresse"
+  },
+  "file": {
+    "choosePicture": "Vælg et billede",
+    "replace": "Klik for at udskifte",
+    "dragDrop": "eller træk og slip det her",
+    "invalidImage": "Vælg venligst en billedfil",
+    "invalidType": "Vælg venligst en accepteret filtype",
+    "preview": "Forhåndsvisning af {name}"
+  },
+  "settings": {
+    "title": "Indstillinger",
+    "languageTitle": "Sprog",
+    "languageDescription": "Vælg det sprog, der bruges i hele Attendify.",
+    "facePictures": "Ansigtsbilleder",
+    "faceDescription": "Opdatér de billeder, der bruges til at genkende dig. Sørg for, at dit ansigt er tydeligt på hvert billede.",
+    "tipLighting": "Brug jævn belysning",
+    "tipAccessories": "Fjern hat og solbriller",
+    "tipFrame": "Hold hele ansigtet inden for rammen",
+    "straight": "1. Kig lige frem",
+    "left": "2. Drej let mod venstre",
+    "right": "3. Drej let mod højre",
+    "savePictures": "Gem billeder",
+    "accessCodeTitle": "Elevadgangskode",
+    "accessCodeDescription": "Brug denne kode, når en administrator skal have adgang til dine fremmødeoplysninger.",
+    "loadingAccessCode": "Indlæser adgangskode...",
+    "accessCode": "Adgangskode"
+  },
+  "overview": {
+    "student": "Viser elev: {studentId}",
+    "rowsPerPage": "Rækker pr. side",
+    "date": "Dato",
+    "arrived": "Ankommet",
+    "departed": "Forladt",
+    "classroom": "Klasselokale",
+    "status": "Status",
+    "empty": "Ingen fremmøderegistreringer fundet.",
+    "previous": "Forrige",
+    "next": "Næste",
+    "page": "Side {current} af {total}",
+    "loading": "Indlæser fremmøde"
+  },
+  "error": {
+    "defaultTitle": "Noget gik galt",
+    "unexpected": "Der opstod en uventet fejl.",
+    "userTitle": "Brugeroplysninger kunne ikke indlæses",
+    "userMessage": "Brugeren kunne ikke hentes",
+    "attendanceTitle": "Fremmøde kunne ikke indlæses",
+    "attendanceMessage": "Fremmøde kunne ikke hentes",
+    "picturesTitle": "Billederne kunne ikke gemmes",
+    "picturesMessage": "Ansigtsbillederne kunne ikke opdateres",
+    "accessCodeTitle": "Adgangskoden kunne ikke indlæses",
+    "accessCodeMessage": "Elevadgangskoden kunne ikke hentes"
+  },
+  "accessibility": {
+    "copyValue": "Kopiér værdi"
+  }
+}

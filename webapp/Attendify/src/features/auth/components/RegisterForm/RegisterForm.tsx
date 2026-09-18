@@ -12,6 +12,7 @@ import {
   required,
   validEmail,
 } from '../../../../lib/validation'
+import { useTranslation } from '../../../../lib/i18n'
 import './RegisterForm.scss'
 
 type RegistrationStep = 'details' | 'photos'
@@ -23,6 +24,7 @@ interface EducationalInstitute {
 
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
+  const { t } = useTranslation()
 
   // This will eventually come from the API.
   const educationalInstitutes: EducationalInstitute[] = []
@@ -76,7 +78,7 @@ export function RegisterForm() {
           void detailsForm.handleSubmit()
         }}
       >
-        <h1 className="register-form__title">Register new student</h1>
+        <h1 className="register-form__title">{t('auth.registerTitle')}</h1>
 
         <div className="register-form__fields">
           <detailsForm.Field
@@ -84,13 +86,13 @@ export function RegisterForm() {
             validators={{
               onChange: ({ value }) =>
                 !value.trim()
-                  ? required('Email is required')({ value })
-                  : validEmail()({ value }),
+                  ? required(t('validation.emailRequired'))({ value })
+                  : validEmail(t('validation.invalidEmail'))({ value }),
             }}
           >
             {(field) => (
               <TextInput
-                label="Email"
+                label={t('common.email')}
                 type="email"
                 name={field.name}
                 value={field.state.value}
@@ -112,13 +114,16 @@ export function RegisterForm() {
             validators={{
               onChange: ({ value }) =>
                 !value
-                  ? 'Password is required'
-                  : minPasswordLength(8)({ value }),
+                  ? t('validation.passwordRequired')
+                  : minPasswordLength(
+                      8,
+                      t('validation.passwordLength', { length: 8 }),
+                    )({ value }),
             }}
           >
             {(field) => (
               <TextInput
-                label="Password"
+                label={t('common.password')}
                 type="password"
                 name={field.name}
                 value={field.state.value}
@@ -141,13 +146,13 @@ export function RegisterForm() {
               onChangeListenTo: ['password'],
               onChange: ({ value, fieldApi }) =>
                 value !== fieldApi.form.getFieldValue('password')
-                  ? 'Passwords do not match'
+                  ? t('validation.passwordMismatch')
                   : undefined,
             }}
           >
             {(field) => (
               <TextInput
-                label="Confirm password"
+                label={t('auth.confirmPassword')}
                 type="password"
                 name={field.name}
                 value={field.state.value}
@@ -167,19 +172,19 @@ export function RegisterForm() {
           <detailsForm.Field
             name="educationalInstituteId"
             validators={{
-              onChange: required('Educational institute is required'),
+              onChange: required(t('validation.instituteRequired')),
             }}
           >
             {(field) => (
               <Dropdown
-                label="Educational institute"
+                label={t('auth.educationalInstitute')}
                 name={field.name}
                 value={field.state.value}
                 options={educationalInstitutes.map((institute) => ({
                   value: institute.id,
                   label: institute.name,
                 }))}
-                placeholder="Select an educational institute"
+                placeholder={t('auth.selectEducationalInstitute')}
                 required
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.target.value)}
@@ -195,12 +200,12 @@ export function RegisterForm() {
           <detailsForm.Field
             name="studentId"
             validators={{
-              onChange: required('Student ID is required'),
+              onChange: required(t('validation.studentIdRequired')),
             }}
           >
             {(field) => (
               <TextInput
-                label="Student ID"
+                label={t('auth.studentId')}
                 type="text"
                 name={field.name}
                 value={field.state.value}
@@ -223,11 +228,11 @@ export function RegisterForm() {
           className="register-form__submit"
           loading={detailsForm.state.isSubmitting}
         >
-          Next
+          {t('common.next')}
         </Button>
 
         <div className="register-form__login">
-          <Link to="/login">Already got a user? Login</Link>
+          <Link to="/login">{t('auth.alreadyUser')}</Link>
         </div>
       </form>
     )
@@ -242,19 +247,19 @@ export function RegisterForm() {
         void photosForm.handleSubmit()
       }}
     >
-      <h1 className="register-form__title">Register new student</h1>
+      <h1 className="register-form__title">{t('auth.registerTitle')}</h1>
 
       <div className="register-form__photos">
         <photosForm.Field
           name="straightPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : 'A photo is required',
+              value ? undefined : t('validation.photoRequired'),
           }}
         >
           {(field) => (
             <FileInput
-              label="Take a photo of your face from a straight angle"
+              label={t('auth.photoStraight')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -270,12 +275,12 @@ export function RegisterForm() {
           name="leftPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : 'A photo is required',
+              value ? undefined : t('validation.photoRequired'),
           }}
         >
           {(field) => (
             <FileInput
-              label="Take a photo of your face from a slight left angle"
+              label={t('auth.photoLeft')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -291,12 +296,12 @@ export function RegisterForm() {
           name="rightPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : 'A photo is required',
+              value ? undefined : t('validation.photoRequired'),
           }}
         >
           {(field) => (
             <FileInput
-              label="Take a photo of your face from a slight right angle"
+              label={t('auth.photoRight')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -314,12 +319,12 @@ export function RegisterForm() {
         className="register-form__submit"
         loading={photosForm.state.isSubmitting}
       >
-        Complete registration
+        {t('auth.completeRegistration')}
       </Button>
 
       <div className="register-form__back">
         <Button type="button" variant="secondary" onClick={handleBack}>
-          Back
+          {t('common.back')}
         </Button>
       </div>
     </form>
