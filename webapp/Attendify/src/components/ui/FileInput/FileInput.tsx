@@ -16,6 +16,44 @@ interface FileInputProps {
   onChange?: (file: File | null) => void
 }
 
+function isAcceptedFile(file: File, accept?: string): boolean {
+  if (!accept) {
+    return true
+  }
+
+  const acceptedTypes = accept
+    .split(',')
+    .map((type) => type.trim().toLowerCase())
+    .filter(Boolean)
+
+  if (acceptedTypes.length === 0) {
+    return true
+  }
+
+  const fileType = file.type.toLowerCase()
+  const extensionSeparatorIndex = file.name.lastIndexOf('.')
+  const fileExtension =
+    extensionSeparatorIndex >= 0
+      ? file.name.slice(extensionSeparatorIndex).toLowerCase()
+      : ''
+
+  return acceptedTypes.some((acceptedType) => {
+    if (acceptedType === '*/*') {
+      return true
+    }
+
+    if (acceptedType.endsWith('/*')) {
+      return fileType.startsWith(acceptedType.slice(0, -1))
+    }
+
+    if (acceptedType.startsWith('.')) {
+      return fileExtension === acceptedType
+    }
+
+    return fileType === acceptedType
+  })
+}
+
 export function FileInput({
   label,
   accept,
@@ -27,6 +65,8 @@ export function FileInput({
   const errorId = `${inputId}-error`
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [internalError, setInternalError] = useState<string>()
+  const displayError = error ?? internalError
 
   useEffect(() => {
     if (!selectedFile?.type.startsWith('image/')) {
@@ -41,6 +81,16 @@ export function FileInput({
   }, [selectedFile])
 
   function selectFile(file: File | null) {
+    if (file && !isAcceptedFile(file, accept)) {
+      setInternalError(
+        accept?.toLowerCase().includes('image/')
+          ? 'Please select an image file'
+          : 'Please select an accepted file type',
+      )
+      return
+    }
+
+    setInternalError(undefined)
     setSelectedFile(file)
     onChange?.(file)
   }
@@ -84,7 +134,7 @@ export function FileInput({
           'file-input__dropzone',
           disabled ? 'file-input__dropzone--disabled' : '',
           previewUrl ? 'file-input__dropzone--selected' : '',
-          error ? 'file-input__dropzone--error' : '',
+          displayError ? 'file-input__dropzone--error' : '',
         ].join(' ')}
         htmlFor={inputId}
         onDragOver={handleDragOver}
@@ -95,8 +145,8 @@ export function FileInput({
           type="file"
           accept={accept}
           disabled={disabled}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? errorId : undefined}
+          aria-invalid={displayError ? true : undefined}
+          aria-describedby={displayError ? errorId : undefined}
           onChange={handleChange}
         />
 
@@ -120,9 +170,9 @@ export function FileInput({
         </span>
       </label>
 
-      {error && (
-        <span id={errorId} className="file-input__error">
-          {error}
+      {displayError && (
+        <span id={errorId} className="file-input__error" role="alert">
+          {displayError}
         </span>
       )}
     </div>
