@@ -22,7 +22,8 @@
   "footer": {
     "description": "Sikker fraværsregistrering og godkendelse",
     "copyright": "© {year} Attendify",
-    "github": "Se på GitHub"
+    "github": "Se på GitHub",
+    "privacyPolicy": "Privatlivspolitik"
   },
   "language": {
     "label": "Sprog",
@@ -127,5 +128,97 @@
   },
   "accessibility": {
     "copyValue": "Kopiér værdi"
+  },
+  "privacy": {
+    "title": "Privatlivspolitik",
+    "lastUpdated": "Sidst opdateret: september 2026",
+
+    "introduction": {
+      "title": "Introduktion",
+      "text": "Attendify er et system til overvågning af fremmøde, der er udviklet til at hjælpe uddannelsesinstitutioner med at registrere og administrere elevers fremmøde. Denne privatlivspolitik forklarer, hvilke personoplysninger Attendify behandler, hvorfor de behandles, hvordan de beskyttes, og hvilke rettigheder du har."
+    },
+
+    "controller": {
+      "title": "Dataansvarlig",
+      "text": "Den dataansvarlige for dine personoplysninger er den uddannelsesinstitution, der anvender Attendify."
+    },
+
+    "dataCollected": {
+      "title": "Personoplysninger, vi indsamler",
+      "account": "Kontooplysninger",
+      "accountDescription": "Dette kan omfatte din e-mailadresse, dit elev-ID og oplysninger om godkendelse og login.",
+      "facial": "Ansigtsdata",
+      "facialDescription": "Under registrering og ved opdatering af din profil kan Attendify indsamle ansigtsbilleder til den ansigtsgenkendelsesfunktion, der anvendes af fremmødesystemet.",
+      "attendance": "Fremmødedata",
+      "attendanceDescription": "Dette kan omfatte fremmødehændelser, ankomst- og afgangstidspunkter, oplysninger om undervisningslokaler og relateret fremmødestatus.",
+      "telemetry": "Systemtelemetri",
+      "telemetryDescription": "Systemet kan behandle tekniske oplysninger, der genereres af fremmødesystemet, med henblik på drift, overvågning og sikkerhed."
+    },
+
+    "purposes": {
+      "title": "Sådan bruger vi dine oplysninger",
+      "text": "Personoplysninger behandles kun til definerede formål relateret til overvågning af fremmøde, administration af konti, identifikation af elever, systemdrift og sikkerhed."
+    },
+
+    "legalBasis": {
+      "title": "Retsgrundlag",
+      "text": "Hver behandlingsaktivitet har et passende retsgrundlag i henhold til artikel 6 i databeskyttelsesforordningen (GDPR). Hvis ansigtsdata udgør biometriske data, der anvendes til entydigt at identificere en person, fastlægges en relevant betingelse i henhold til artikel 9, inden denne behandling finder sted."
+    },
+
+    "facialData": {
+      "title": "Ansigtsdata og biometriske data",
+      "text": "Behandling af ansigtsdata anvendes udelukkende til funktionaliteten til overvågning af fremmøde. Attendify vurderer, om behandlingen udgør biometrisk databehandling i henhold til GDPR. Hvis artikel 9 finder anvendelse, sker behandlingen på grundlag af en relevant betingelse i artikel 9 og med yderligere sikkerhedsforanstaltninger."
+    },
+
+    "retention": {
+      "title": "Opbevaring af data",
+      "text": "Personoplysninger opbevares kun, så længe det er nødvendigt for de formål, de blev indsamlet til, eller så længe det på anden måde kræves i henhold til gældende lovgivning. Data slettes, når de ikke længere er nødvendige, med forbehold for eventuelle retlige forpligtelser."
+    },
+
+    "sharing": {
+      "title": "Hvem kan få adgang til dine oplysninger",
+      "text": "Adgangen til personoplysninger begrænses ud fra brugerens rolle og systemets formål. Administratorer på uddannelsesinstitutionen kan få adgang til oplysninger om fremmøde, når de er autoriseret til det. Eksterne tjenesteudbydere må kun behandle personoplysninger, når det er nødvendigt for at levere tjenester til Attendify, og under passende kontraktlige og databeskyttelsesmæssige krav."
+    },
+
+    "internationalTransfers": {
+      "title": "Internationale dataoverførsler",
+      "text": "Hvis personoplysninger overføres uden for Det Europæiske Økonomiske Samarbejdsområde (EØS), anvendes passende sikkerhedsforanstaltninger i overensstemmelse med GDPR."
+    },
+
+    "security": {
+      "title": "Sikkerhed",
+      "text": "Attendify anvender passende tekniske og organisatoriske foranstaltninger til at beskytte personoplysninger mod uautoriseret adgang, ændring, tab eller videregivelse. Disse foranstaltninger omfatter godkendelse, adgangskontrol, sikker transmission og passende beskyttelse af data under opbevaring."
+    },
+
+    "yourRights": {
+      "title": "Dine rettigheder",
+      "intro": "Afhængigt af omstændighederne og gældende lovkrav kan du have følgende rettigheder:",
+      "access": "Ret til indsigt i dine personoplysninger.",
+      "rectification": "Ret til at få urigtige personoplysninger rettet.",
+      "erasure": "Ret til at få dine personoplysninger slettet, når betingelserne for sletning er opfyldt.",
+      "restriction": "Ret til at anmode om begrænsning af behandlingen under visse omstændigheder.",
+      "objection": "Ret til at gøre indsigelse mod visse former for behandling.",
+      "portability": "Ret til dataportabilitet, hvor det er relevant."
+    },
+
+    "requests": {
+      "title": "Udøvelse af dine rettigheder",
+      "text": "Hvis du ønsker at udøve dine rettigheder eller anmode om oplysninger om dine personoplysninger, skal du kontakte den uddannelsesinstitution, der er ansvarlig for din Attendify-konto."
+    },
+
+    "privacyByDesign": {
+      "title": "Databeskyttelse gennem design",
+      "text": "Attendify er designet til at minimere indsamlingen af personoplysninger, begrænse adgangen til følsomme oplysninger, begrænse opbevaringsperioder og undgå lagring af unødvendige ansigtsoplysninger."
+    },
+
+    "dpia": {
+      "title": "Konsekvensanalyse for databeskyttelse",
+      "text": "Behandlingen af ansigtsdata og computer vision vurderes gennem en konsekvensanalyse for databeskyttelse (DPIA) for at vurdere nødvendighed, proportionalitet, risici og passende foranstaltninger til risikoreduktion."
+    },
+
+    "changes": {
+      "title": "Ændringer i denne politik",
+      "text": "Denne privatlivspolitik kan blive opdateret, når systemet, behandlingsaktiviteterne eller gældende krav ændres. Den seneste version vil være tilgængelig gennem Attendify."
+    }
   }
 }

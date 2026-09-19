@@ -25,3 +25,4 @@ dist-ssr
 
 # Tanstack route tree
 routeTree.gen.ts
+.tanstack/
