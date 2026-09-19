@@ -71,7 +71,6 @@ export function RegisterForm() {
         message={t('error.educationalInstitutesNotFound')}
         isOpen={true}
         onClose={() => {
-          // TODO: Fix  this navigation. Does not work.
           navigate({ to: '/login' })
         }}
       />
