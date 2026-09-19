@@ -15,6 +15,7 @@ export default defineConfig({
     port: 38935,
     open: true,
     host: '0.0.0.0',
+    allowedHosts: ['aspire.dev.internal'],
   },
   resolve: {
     alias: {

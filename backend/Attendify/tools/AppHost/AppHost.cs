@@ -26,7 +26,7 @@ var api = builder
     .WaitForCompletion(migrationService);
 
 var webapp = builder
-    .AddViteApp("webapp", "../../../../webapp/attendify")
+    .AddViteApp("webapp", "../../../../webapp/Attendify")
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();
