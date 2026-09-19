@@ -123,7 +123,9 @@
     "picturesTitle": "Pictures could not be saved",
     "picturesMessage": "Failed to update face pictures",
     "accessCodeTitle": "Access code could not be loaded",
-    "accessCodeMessage": "Failed to fetch student access code"
+    "accessCodeMessage": "Failed to fetch student access code",
+    "educationalInstitutesNotFoundTitle": "Educational institutes could not be loaded",
+    "educationalInstitutesNotFound": "No educational institutes were found"
   },
   "accessibility": {
     "copyValue": "Copy value"

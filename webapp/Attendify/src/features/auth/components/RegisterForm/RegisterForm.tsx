@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
 import {
   Button,
   Dropdown,
+  ErrorModal,
   FileInput,
   TextInput,
 } from '../../../../components/ui'
@@ -17,17 +19,11 @@ import './RegisterForm.scss'
 
 type RegistrationStep = 'details' | 'photos'
 
-interface EducationalInstitute {
-  id: string
-  name: string
-}
-
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
+  const navigate = useNavigate()
+  const { data: educationalInstitutes } = useEducationalInstitutes()
   const { t } = useTranslation()
-
-  // This will eventually come from the API.
-  const educationalInstitutes: EducationalInstitute[] = []
 
   const detailsForm = useForm({
     defaultValues: {
@@ -66,6 +62,20 @@ export function RegisterForm() {
 
   function handleBack() {
     setStep('details')
+  }
+
+  if (!educationalInstitutes) {
+    return (
+      <ErrorModal
+        title={t('error.educationalInstitutesNotFoundTitle')}
+        message={t('error.educationalInstitutesNotFound')}
+        isOpen={true}
+        onClose={() => {
+          // TODO: Fix  this navigation. Does not work.
+          navigate({ to: '/login' })
+        }}
+      />
+    )
   }
 
   if (step === 'details') {
