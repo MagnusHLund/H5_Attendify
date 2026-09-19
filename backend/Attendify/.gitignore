@@ -481,3 +481,6 @@ $RECYCLE.BIN/
 .claude/plans/
 .claude/worktrees/
 *.lscache
+
+# Appsettings for specific environments
+appsettings.*.json
