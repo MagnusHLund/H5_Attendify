@@ -1,3 +1,3 @@
 namespace Attendify.Features.Auth.Logout;
 
-public class LogoutSummary { }
+public class LogoutSummary : Summary<LogoutEndpoint> { }

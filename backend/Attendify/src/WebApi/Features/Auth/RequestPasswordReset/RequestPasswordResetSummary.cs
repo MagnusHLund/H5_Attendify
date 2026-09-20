@@ -1,3 +1,3 @@
 namespace Attendify.Features.Auth.RequestPasswordReset;
 
-public sealed class RequestPasswordResetSummary { }
+public sealed class RequestPasswordResetSummary : Summary<RequestPasswordResetEndpoint> { }
