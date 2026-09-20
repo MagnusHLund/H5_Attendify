@@ -1,3 +1,5 @@
+using Attendify.Common.Authentication;
+
 namespace Attendify.Features.Auth.GetCurrentUser;
 
-public sealed class GetCurrentUserResponse { }
+public sealed record GetCurrentUserResponse(UserType UserType, string StudentId);

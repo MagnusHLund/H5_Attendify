@@ -5,6 +5,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 var tunnel = builder.AddCloudflareTunnel("Lunnel");
 
 var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
+var jwtSigningKey = builder.AddParameter("SigningKey", secret: true);
 
 var postgres = builder
     .AddPostgres("postgres")
@@ -23,6 +24,7 @@ var api = builder
     .AddProject<WebApi>("api")
     .WithExternalHttpEndpoints()
     .WithReference(db)
+    .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WaitForCompletion(migrationService);
 
 var webapp = builder

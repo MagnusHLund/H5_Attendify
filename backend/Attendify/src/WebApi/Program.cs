@@ -31,6 +31,9 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseCustomFastEndpoints();
 app.UseSwaggerGen();
 app.UseEventualConsistencyMiddleware();
