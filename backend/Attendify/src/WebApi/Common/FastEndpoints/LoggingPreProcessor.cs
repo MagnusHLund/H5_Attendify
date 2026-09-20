@@ -4,9 +4,9 @@ namespace Attendify.Common.FastEndpoints;
 
 public class LoggingPreProcessor : IGlobalPreProcessor
 {
-    private readonly ILogger _logger;
+    private readonly Microsoft.Extensions.Logging.ILogger _logger;
 
-    public LoggingPreProcessor(ILogger<LoggingPreProcessor> logger)
+    public LoggingPreProcessor(Microsoft.Extensions.Logging.ILogger<LoggingPreProcessor> logger)
     {
         _logger = logger;
     }
@@ -29,5 +29,10 @@ public class LoggingPreProcessor : IGlobalPreProcessor
 internal static partial class LoggingPreProcessorLog
 {
     [LoggerMessage(LogLevel.Information, "WebApi Request: {Name} {@UserId} {@Request}")]
-    public static partial void WebApiRequest(this ILogger logger, string? name, string userId, string? request);
+    public static partial void WebApiRequest(
+        this Microsoft.Extensions.Logging.ILogger logger,
+        string? name,
+        string userId,
+        string? request
+    );
 }

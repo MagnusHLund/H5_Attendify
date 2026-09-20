@@ -22,6 +22,8 @@
     <PackageReference Include="FastEndpoints"></PackageReference>
     <PackageReference Include="FaceAiSharp.Bundle"></PackageReference>
     <PackageReference Include="Microsoft.ML.OnnxRuntime"></PackageReference>
+    <PackageReference Include="Serilog.AspNetCore"></PackageReference>
+    <PackageReference Include="Serilog.Sinks.File"></PackageReference>
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Attendify.ArchitectureTests"></InternalsVisibleTo>
