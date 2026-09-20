@@ -27,6 +27,8 @@
     <PackageVersion Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1"></PackageVersion>
     <PackageVersion Include="Bogus" Version="35.6.5"></PackageVersion>
     <PackageVersion Include="FastEndpoints" Version="7.1.1"></PackageVersion>
+    <PackageVersion Include="FaceAiSharp.Bundle" Version="0.6.35"></PackageVersion>
+    <PackageVersion Include="Microsoft.ML.OnnxRuntime" Version="1.30.0"></PackageVersion>
     <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.5.0"></PackageVersion>
     <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.4.6"></PackageVersion>
     <PackageVersion Include="MessagePack" Version="2.5.302"></PackageVersion>

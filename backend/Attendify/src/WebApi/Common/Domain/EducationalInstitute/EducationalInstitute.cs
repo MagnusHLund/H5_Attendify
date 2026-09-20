@@ -1,11 +1,24 @@
 using Attendify.Common.Domain.Base;
+using Attendify.Common.Domain.Users;
 
 namespace Attendify.Common.Domain.EducationalInstitute;
 
-[ValueObject<Guid>]
-public readonly partial struct EducationalInstituteId;
-
-public class EducationalInstitute : AggregateRoot<EducationalInstituteId>
+public sealed class EducationalInstitute : AggregateRoot<Guid>
 {
-    public string Name { get; set; } = null!;
+    public const int NameMaxLength = 256;
+
+    public string Name
+    {
+        get;
+        set
+        {
+            ThrowIfNullOrWhiteSpace(value, nameof(Name));
+            ThrowIfGreaterThan(value.Length, NameMaxLength, nameof(Name));
+            field = value;
+        }
+    } = null!;
+
+    public ICollection<User> Users { get; } = [];
+
+    private EducationalInstitute() { }
 }

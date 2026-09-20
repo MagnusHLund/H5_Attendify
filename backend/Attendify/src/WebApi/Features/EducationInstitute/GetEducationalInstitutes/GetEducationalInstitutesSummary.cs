@@ -5,8 +5,7 @@ public sealed class GetEducationalInstitutesSummary : Summary<GetEducationalInst
     public GetEducationalInstitutesSummary()
     {
         Summary = "Gets all educational institutes";
-        Description = "Retrieves all educational institutes available for student registration.";
-
+        Description = "Retrieves the educational institutes available during student registration.";
         Response<IReadOnlyList<GetEducationalInstitutesResponse>>(
             200,
             "The available educational institutes."

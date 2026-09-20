@@ -1,9 +1,12 @@
 ﻿using System.Text;
 using Attendify.Common.Authentication;
+using Attendify.Common.Domain.Users;
+using Attendify.Common.FacialRecognition;
 using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Attendify.Host;
@@ -17,6 +20,20 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddDataProtection();
+        services.AddSingleton<IStudentIdProtector, StudentIdProtector>();
+        services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddSingleton<IFacialEmbeddingService, FaceAiSharpEmbeddingService>();
+        services.AddSingleton<IEmbeddingEncryptor, AesGcmEmbeddingEncryptor>();
+
+        IConfigurationSection facialEmbeddingSection = builder.Configuration.GetRequiredSection(
+            FacialEmbeddingEncryptionOptions.SectionName
+        );
+        services
+            .AddOptions<FacialEmbeddingEncryptionOptions>()
+            .Bind(facialEmbeddingSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         IConfigurationSection jwtSection = builder.Configuration.GetRequiredSection(
             JwtOptions.SectionName

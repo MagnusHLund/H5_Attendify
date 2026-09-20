@@ -6,6 +6,7 @@ var tunnel = builder.AddCloudflareTunnel("Lunnel");
 
 var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
 var jwtSigningKey = builder.AddParameter("SigningKey", secret: true);
+var facialEmbeddingEncryptionKey = builder.AddParameter("FacialEmbeddingEncryptionKey", secret: true);
 
 var postgres = builder
     .AddPostgres("postgres")
@@ -25,6 +26,7 @@ var api = builder
     .WithExternalHttpEndpoints()
     .WithReference(db)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
+    .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
     .WaitForCompletion(migrationService);
 
 var webapp = builder

@@ -13,4 +13,11 @@ public sealed class FacialEmbedding : AggregateRoot<int>
     public FacialProfile FacialProfile { get; set; } = null!;
 
     private FacialEmbedding() { }
+
+    public static FacialEmbedding Create(byte[] encryptedEmbedding, byte[] nonce) =>
+        new()
+        {
+            EncryptedEmbedding = encryptedEmbedding,
+            Nonce = nonce,
+        };
 }

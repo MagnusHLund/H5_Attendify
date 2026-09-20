@@ -30,9 +30,9 @@ public sealed class UserConfiguration : AuditableConfiguration<User>
 
         builder.HasIndex(user => user.Email).IsUnique();
 
-        builder.HasOne(user => user.School)
-            .WithMany(school => school.Users)
-            .HasForeignKey(user => user.SchoolId)
+        builder.HasOne(user => user.EducationalInstitute)
+            .WithMany(institute => institute.Users)
+            .HasForeignKey(user => user.EducationalInstituteId)
             .IsRequired();
 
         builder.HasOne(user => user.FacialProfile)

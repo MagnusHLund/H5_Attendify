@@ -13,10 +13,9 @@ public sealed class GetEducationalInstitutesEndpoint(ApplicationDbContext dbCont
     public override async Task HandleAsync(CancellationToken ct)
     {
         IReadOnlyList<GetEducationalInstitutesResponse> educationalInstitutes = await dbContext
-            .EducationalInstitutes.Select(x => new GetEducationalInstitutesResponse(
-                x.Id.Value,
-                x.Name
-            ))
+            .EducationalInstitutes
+            .OrderBy(institute => institute.Name)
+            .Select(institute => new GetEducationalInstitutesResponse(institute.Id, institute.Name))
             .ToListAsync(ct);
 
         await Send.OkAsync(educationalInstitutes, ct);

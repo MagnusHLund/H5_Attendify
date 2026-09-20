@@ -2,7 +2,8 @@ using Attendify.Common.Domain.Base;
 using Attendify.Common.Domain.Attendance;
 using Attendify.Common.Domain.Authentication;
 using Attendify.Common.Domain.FacialRecognition;
-using Attendify.Common.Domain.Schools;
+using Attendify.Common.Domain.EducationalInstitute;
+using EducationalInstituteEntity = Attendify.Common.Domain.EducationalInstitute.EducationalInstitute;
 
 namespace Attendify.Common.Domain.Users;
 
@@ -12,7 +13,7 @@ public sealed class User : AggregateRoot<int>
     public const int PasswordHashMaxLength = 512;
     public const int EncryptedStudentIdMaxLength = 512;
 
-    public Guid SchoolId { get; set; }
+    public Guid EducationalInstituteId { get; set; }
 
     public string Email
     {
@@ -49,7 +50,7 @@ public sealed class User : AggregateRoot<int>
 
     public bool AttendanceEnabled { get; set; }
 
-    public School School { get; set; } = null!;
+    public EducationalInstituteEntity EducationalInstitute { get; set; } = null!;
 
     public FacialProfile? FacialProfile { get; set; }
 
@@ -62,4 +63,19 @@ public sealed class User : AggregateRoot<int>
     public ICollection<RefreshToken> RefreshTokens { get; } = [];
 
     private User() { }
+
+    public static User Create(
+        Guid educationalInstituteId,
+        string email,
+        string passwordHash,
+        string encryptedStudentId
+    ) =>
+        new()
+        {
+            EducationalInstituteId = educationalInstituteId,
+            Email = email.Trim().ToLowerInvariant(),
+            PasswordHash = passwordHash,
+            EncryptedStudentId = encryptedStudentId,
+            AttendanceEnabled = true,
+        };
 }

@@ -7,15 +7,15 @@ public sealed class EducationalInstituteConfiguration : AuditableConfiguration<E
 {
     public override void PostConfigure(EntityTypeBuilder<EducationalInstitute> builder)
     {
-        builder.HasKey(x => x.Id);
+        builder.HasKey(institute => institute.Id);
 
-        builder.HasIndex(x => x.Name).IsUnique();
+        builder.Property(institute => institute.Id)
+            .ValueGeneratedOnAdd();
 
-        builder
-            .Property(x => x.Id)
-            .ValueGeneratedOnAdd()
-            .HasConversion(id => id.Value, value => EducationalInstituteId.From(value));
+        builder.Property(institute => institute.Name)
+            .HasMaxLength(EducationalInstitute.NameMaxLength)
+            .IsRequired();
 
-        builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
+        builder.HasIndex(institute => institute.Name).IsUnique();
     }
 }

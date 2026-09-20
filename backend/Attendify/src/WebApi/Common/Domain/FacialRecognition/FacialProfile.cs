@@ -12,4 +12,10 @@ public sealed class FacialProfile : AggregateRoot<int>
     public ICollection<FacialEmbedding> FacialEmbeddings { get; } = [];
 
     private FacialProfile() { }
+
+    public static FacialProfile Create(User user) =>
+        new()
+        {
+            User = user,
+        };
 }

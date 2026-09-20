@@ -20,6 +20,8 @@
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"></PackageReference>
     <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL"></PackageReference>
     <PackageReference Include="FastEndpoints"></PackageReference>
+    <PackageReference Include="FaceAiSharp.Bundle"></PackageReference>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime"></PackageReference>
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Attendify.ArchitectureTests"></InternalsVisibleTo>
