@@ -9,13 +9,13 @@ public sealed class AdminAccessCode : AggregateRoot<int>
 
     public int UserId { get; set; }
 
-    public string Code
+    public string HashedAccessCode
     {
         get;
         set
         {
-            ThrowIfNullOrWhiteSpace(value, nameof(Code));
-            ThrowIfGreaterThan(value.Length, CodeMaxLength, nameof(Code));
+            ThrowIfNullOrWhiteSpace(value, nameof(HashedAccessCode));
+            ThrowIfGreaterThan(value.Length, CodeMaxLength, nameof(HashedAccessCode));
             field = value;
         }
     } = null!;
@@ -38,7 +38,7 @@ public sealed class AdminAccessCode : AggregateRoot<int>
         return new AdminAccessCode
         {
             UserId = userId,
-            Code = code,
+            HashedAccessCode = code,
             GeneratedAt = generatedAt,
             ExpiresAt = expiresAt,
         };

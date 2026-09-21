@@ -9,18 +9,21 @@ public sealed class AdminAccessCodeConfiguration : AuditableConfiguration<AdminA
     {
         builder.HasKey(accessCode => accessCode.Id);
 
-        builder.Property(accessCode => accessCode.Id)
+        builder
+            .Property(accessCode => accessCode.Id)
             .ValueGeneratedOnAdd()
             .UseIdentityByDefaultColumn();
 
-        builder.Property(accessCode => accessCode.Code)
+        builder
+            .Property(accessCode => accessCode.HashedAccessCode)
             .HasMaxLength(AdminAccessCode.CodeMaxLength)
             .IsRequired();
 
         builder.Property(accessCode => accessCode.GeneratedAt).IsRequired();
         builder.Property(accessCode => accessCode.ExpiresAt).IsRequired();
 
-        builder.HasOne(accessCode => accessCode.User)
+        builder
+            .HasOne(accessCode => accessCode.User)
             .WithMany(user => user.AdminAccessCodes)
             .HasForeignKey(accessCode => accessCode.UserId)
             .IsRequired();
