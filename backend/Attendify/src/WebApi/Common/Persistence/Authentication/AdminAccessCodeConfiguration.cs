@@ -15,7 +15,7 @@ public sealed class AdminAccessCodeConfiguration : AuditableConfiguration<AdminA
             .UseIdentityByDefaultColumn();
 
         builder
-            .Property(accessCode => accessCode.HashedAccessCode)
+            .Property(accessCode => accessCode.EncryptedAccessCode)
             .HasMaxLength(AdminAccessCode.CodeMaxLength)
             .IsRequired();
 
