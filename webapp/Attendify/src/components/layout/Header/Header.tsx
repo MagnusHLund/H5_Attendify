@@ -26,6 +26,7 @@ export function Header({ onLogout }: HeaderProps) {
 
   const isSettingsPage = location.pathname === '/settings'
   const isOverviewPage = location.pathname === '/overview'
+
   const { data: user } = useCurrentUser(isSettingsPage || isOverviewPage)
   const userRole = user?.role ?? 'student'
 

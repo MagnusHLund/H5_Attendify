@@ -7,6 +7,7 @@ import {
   Dropdown,
   ErrorModal,
   FileInput,
+  Spinner,
   TextInput,
 } from '../../../../components/ui'
 import {
@@ -26,7 +27,11 @@ export function RegisterForm() {
     null,
   )
   const navigate = useNavigate()
-  const { data: educationalInstitutes } = useEducationalInstitutes()
+  const {
+    data: educationalInstitutes,
+    isPending,
+    isError,
+  } = useEducationalInstitutes()
   const { t } = useTranslation()
 
   const detailsForm = useForm({
@@ -95,6 +100,23 @@ export function RegisterForm() {
         message={registrationError}
         isOpen={true}
         onClose={() => setRegistrationError(null)}
+      />
+    )
+  }
+
+  if (isPending) {
+    return <Spinner />
+  }
+
+  if (isError || educationalInstitutes?.length === 0) {
+    return (
+      <ErrorModal
+        title={t('error.educationalInstitutesNotFoundTitle')}
+        message={t('error.educationalInstitutesNotFound')}
+        isOpen={true}
+        onClose={() => {
+          navigate({ to: '/login' })
+        }}
       />
     )
   }

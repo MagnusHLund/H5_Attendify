@@ -7,14 +7,14 @@ public sealed class GetEducationalInstitutesEndpoint(ApplicationDbContext dbCont
     {
         Get("/");
         Group<EducationalInstitutesGroup>();
+        AllowAnonymous();
         Description(x => x.WithName("GetAllEducationalInstitutes"));
     }
 
     public override async Task HandleAsync(CancellationToken ct)
     {
         IReadOnlyList<GetEducationalInstitutesResponse> educationalInstitutes = await dbContext
-            .EducationalInstitutes
-            .OrderBy(institute => institute.Name)
+            .EducationalInstitutes.OrderBy(institute => institute.Name)
             .Select(institute => new GetEducationalInstitutesResponse(institute.Id, institute.Name))
             .ToListAsync(ct);
 
