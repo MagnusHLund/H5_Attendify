@@ -125,7 +125,9 @@
     "accessCodeTitle": "Adgangskoden kunne ikke indlæses",
     "accessCodeMessage": "Elevadgangskoden kunne ikke hentes",
     "educationalInstitutesNotFoundTitle": "Uddannelsesinstitutioner kunne ikke indlæses",
-    "educationalInstitutesNotFound": "Ingen uddannelsesinstitutioner blev fundet"
+    "educationalInstitutesNotFound": "Ingen uddannelsesinstitutioner blev fundet",
+    "registrationFailedTitle": "Registrering mislykkedes",
+    "registrationFailed": "Der opstod en fejl under oprettelsen af din konto. Prøv venligst igen."
   },
   "accessibility": {
     "copyValue": "Kopiér værdi"

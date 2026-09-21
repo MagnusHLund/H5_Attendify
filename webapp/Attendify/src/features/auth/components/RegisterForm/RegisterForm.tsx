@@ -22,6 +22,9 @@ type RegistrationStep = 'details' | 'photos'
 
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
+  const [registrationError, setRegistrationError] = useState<string | null>(
+    null,
+  )
   const navigate = useNavigate()
   const { data: educationalInstitutes } = useEducationalInstitutes()
   const { t } = useTranslation()
@@ -57,21 +60,43 @@ export function RegisterForm() {
         return
       }
 
-      await registerStudent({
-        email: detailsForm.state.values.email,
-        password: detailsForm.state.values.password,
-        educationalInstituteId: detailsForm.state.values.educationalInstituteId,
-        studentId: detailsForm.state.values.studentId,
-        straightPhoto: value.straightPhoto,
-        leftPhoto: value.leftPhoto,
-        rightPhoto: value.rightPhoto,
-      })
-      await navigate({ to: '/login' })
+      try {
+        setRegistrationError(null)
+
+        await registerStudent({
+          email: detailsForm.state.values.email,
+          password: detailsForm.state.values.password,
+          educationalInstituteId:
+            detailsForm.state.values.educationalInstituteId,
+          studentId: detailsForm.state.values.studentId,
+          straightPhoto: value.straightPhoto,
+          leftPhoto: value.leftPhoto,
+          rightPhoto: value.rightPhoto,
+        })
+        await navigate({ to: '/login' })
+      } catch (error) {
+        setRegistrationError(
+          error instanceof Error
+            ? error.message
+            : t('error.registrationFailed'),
+        )
+      }
     },
   })
 
   function handleBack() {
     setStep('details')
+  }
+
+  if (registrationError) {
+    return (
+      <ErrorModal
+        title={t('error.registrationFailedTitle')}
+        message={registrationError}
+        isOpen={true}
+        onClose={() => setRegistrationError(null)}
+      />
+    )
   }
 
   if (!educationalInstitutes) {
