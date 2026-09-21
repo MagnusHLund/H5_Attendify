@@ -7,14 +7,15 @@ interface SpinnerProps {
 }
 
 export function Spinner({
+  className,
   label,
   size = 'medium',
-}: SpinnerProps) {
+}: SpinnerProps & { className?: string }) {
   const { t } = useTranslation()
 
   return (
     <span
-      className={`spinner spinner--${size}`}
+      className={`spinner spinner--${size} ${className ?? ''}`}
       role="status"
       aria-label={label ?? t('common.loading')}
     >
