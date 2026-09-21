@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using Microsoft.EntityFrameworkCore;
 using Respawn;
 using Attendify.Common.Persistence;
@@ -11,7 +11,7 @@ namespace Attendify.IntegrationTests.Common.Infrastructure.Database;
 /// </summary>
 public class TestDatabase : IAsyncDisposable
 {
-    private readonly SqlServerContainer _sqlServer = new();
+    private readonly PostgreSqlTestContainer _npgsqlContainer = new();
     private Respawner _checkpoint = null!;
     private string _connectionString = null!;
 
@@ -20,39 +20,36 @@ public class TestDatabase : IAsyncDisposable
     /// </summary>
     public async Task InitializeAsync()
     {
-        await _sqlServer.InitializeAsync();
+        await _npgsqlContainer.InitializeAsync();
 
-        var builder = new SqlConnectionStringBuilder(_sqlServer.Connection!.ConnectionString)
-        {
-            InitialCatalog = "WebApi-IntegrationTests"
-        };
+        var builder = new NpgsqlConnectionStringBuilder(_npgsqlContainer.Connection!.ConnectionString);
 
         _connectionString = builder.ConnectionString;
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(_connectionString)
+            .UseNpgsql(_connectionString)
             .Options;
 
         using var dbContext = new ApplicationDbContext(options);
         await dbContext.Database.MigrateAsync();
 
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         _checkpoint = await Respawner.CreateAsync(connection,
             new RespawnerOptions { TablesToIgnore = ["__EFMigrationsHistory"] });
     }
 
-    public DbConnection DbConnection => new SqlConnection(_connectionString);
+    public DbConnection DbConnection => new NpgsqlConnection(_connectionString);
 
     public async Task ResetAsync()
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         await _checkpoint.ResetAsync(connection);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _sqlServer.DisposeAsync();
+        await _npgsqlContainer.DisposeAsync();
     }
 }
