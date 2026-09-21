@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost"></PackageReference>
     <PackageReference Include="Aspire.Hosting.JavaScript"></PackageReference>
+    <PackageReference Include="Aspire.Hosting.Kubernetes" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL"></PackageReference>
     <PackageReference Include="Aspire.Hosting.Yarp"></PackageReference>
     <PackageReference Include="Shirubasoft.Aspire.CloudflareTunnels"></PackageReference>

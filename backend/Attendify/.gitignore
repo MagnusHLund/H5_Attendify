@@ -484,3 +484,7 @@ $RECYCLE.BIN/
 
 # Appsettings for specific environments
 appsettings.*.json
+
+# Aspire publish artifacts
+**/aspire-output/
+**/k8s-artifacts/

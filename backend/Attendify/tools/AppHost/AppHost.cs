@@ -1,6 +1,7 @@
+using Aspire.Hosting.Yarp.Transforms;
 using Projects;
 
-var builder = DistributedApplication.CreateBuilder(args);
+#pragma warning disable ASPIRECOMPUTE003
 
 var resendApiKey = builder.AddParameter("ResendApiKey", secret: true);
 var emailFromAddress = builder.AddParameter("EmailFromAddress");
@@ -18,8 +19,9 @@ var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
     throw new InvalidOperationException("CloudflareTunnelName is required.");
+var builder = DistributedApplication.CreateBuilder(args);
 
-var tunnel = builder.AddCloudflareTunnel(tunnelName);
+var tunnel = builder.AddCloudflareTunnel("lunnel");
 
 var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
 if (string.IsNullOrWhiteSpace(hostname))
@@ -31,8 +33,19 @@ var facialEmbeddingEncryptionKey = builder.AddParameter(
     secret: true
 );
 
+var endpoint = builder.AddParameter("registry-endpoint");
+var repository = builder.AddParameter("registry-repository");
+var registry = builder.AddContainerRegistry("registry", endpoint, repository);
+var postgresPassword = builder.AddParameter(
+    "postgres-password",
+    secret: true);
+
+var k8s = builder.AddKubernetesEnvironment("k8s")
+    .WithContainerRegistry(registry);
+
 var postgres = builder
-    .AddPostgres("postgres")
+    .AddPostgres("postgres",
+        password: postgresPassword)
     .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 
@@ -40,11 +53,13 @@ var db = postgres.AddDatabase("AppDb", "app-db");
 
 var migrationService = builder
     .AddProject<MigrationService>("migrations")
+    .WithContainerRegistry(registry)
     .WithReference(db)
     .WaitFor(postgres);
 
 var api = builder
     .AddProject<WebApi>("api")
+    .WithContainerRegistry(registry)
     .WithExternalHttpEndpoints()
     .WithReference(db)
     .WithEnvironment("Resend__ApiKey", resendApiKey)
@@ -65,16 +80,17 @@ var webapp = builder
     .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
     .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
     .WithReference(api)
+    .WithContainerRegistry(registry)
     .WaitFor(api)
     .WithExternalHttpEndpoints();
 
-var gateway = builder
-    .AddYarp("gateway")
+var gateway = builder.AddYarp("gateway")
+    .WithHttpEndpoint(port: 80, targetPort: 5000, name: "http")
     .WithConfiguration(yarp =>
     {
         yarp.AddRoute("/api/{**catch-all}", api);
         yarp.AddRoute("{**catch-all}", webapp);
-    });
+    }).PublishWithStaticFiles(webapp);
 
 gateway.WithCloudflareTunnel(tunnel, hostname: hostname);
 
