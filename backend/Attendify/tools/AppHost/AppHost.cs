@@ -2,10 +2,16 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
+var tunnelName =
+    builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"]
+    ?? throw new InvalidOperationException("CloudflareTunnelName is required.");
+
 var tunnel = builder.AddCloudflareTunnel(tunnelName);
 
-var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
+var hostname =
+    builder.Configuration.GetSection("Parameters")["Hostname"]
+    ?? throw new InvalidOperationException("Hostname is required.");
+
 var jwtSigningKey = builder.AddParameter("SigningKey", secret: true);
 var facialEmbeddingEncryptionKey = builder.AddParameter(
     "FacialEmbeddingEncryptionKey",

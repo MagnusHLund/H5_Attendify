@@ -10,6 +10,8 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  Parameters__CloudflareTunnelName: AttendifyCiCd
+  Parameters__Hostname: attendify.online
 
 jobs:
   test:
