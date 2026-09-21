@@ -7,6 +7,7 @@ using Attendify.Common.Services;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Attendify.Host;
@@ -29,6 +30,12 @@ public static class DependencyInjection
         IConfigurationSection facialEmbeddingSection = builder.Configuration.GetRequiredSection(
             FacialEmbeddingEncryptionOptions.SectionName
         );
+
+        services.AddSingleton<
+            IValidateOptions<FacialEmbeddingEncryptionOptions>,
+            FacialEmbeddingEncryptionOptionsValidator
+        >();
+
         services
             .AddOptions<FacialEmbeddingEncryptionOptions>()
             .Bind(facialEmbeddingSection)
