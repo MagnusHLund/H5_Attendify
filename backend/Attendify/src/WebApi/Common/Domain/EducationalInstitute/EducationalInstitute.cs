@@ -21,4 +21,9 @@ public sealed class EducationalInstitute : AggregateRoot<Guid>
     public ICollection<User> Users { get; } = [];
 
     private EducationalInstitute() { }
+
+    public static EducationalInstitute Create(string name)
+    {
+        return new EducationalInstitute { Name = name };
+    }
 }

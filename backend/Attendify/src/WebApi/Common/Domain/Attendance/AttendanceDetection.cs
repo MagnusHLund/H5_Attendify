@@ -25,4 +25,18 @@ public sealed class AttendanceDetection : AggregateRoot<int>
     public User User { get; set; } = null!;
 
     private AttendanceDetection() { }
+
+    public static AttendanceDetection Create(
+        int userId,
+        string classroom,
+        DateTimeOffset detectedAt
+    )
+    {
+        return new AttendanceDetection
+        {
+            UserId = userId,
+            Classroom = classroom,
+            DetectedAt = detectedAt,
+        };
+    }
 }

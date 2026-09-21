@@ -27,4 +27,20 @@ public sealed class AdminAccessCode : AggregateRoot<int>
     public User User { get; set; } = null!;
 
     private AdminAccessCode() { }
+
+    public static AdminAccessCode Create(
+        int userId,
+        string code,
+        DateTimeOffset generatedAt,
+        DateTimeOffset expiresAt
+    )
+    {
+        return new AdminAccessCode
+        {
+            UserId = userId,
+            Code = code,
+            GeneratedAt = generatedAt,
+            ExpiresAt = expiresAt,
+        };
+    }
 }

@@ -31,4 +31,24 @@ public sealed class AttendanceRecord : AggregateRoot<int>
     public User User { get; set; } = null!;
 
     private AttendanceRecord() { }
+
+    public static AttendanceRecord Create(
+        int userId,
+        string classroom,
+        TimeOnly arrivalTime,
+        TimeOnly departureTime,
+        bool departureKnown,
+        DateOnly attendanceDate
+    )
+    {
+        return new AttendanceRecord
+        {
+            UserId = userId,
+            Classroom = classroom,
+            ArrivalTime = arrivalTime,
+            DepartureTime = departureTime,
+            DepartureKnown = departureKnown,
+            AttendanceDate = attendanceDate,
+        };
+    }
 }

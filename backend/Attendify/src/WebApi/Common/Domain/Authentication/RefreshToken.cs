@@ -27,4 +27,20 @@ public sealed class RefreshToken : AggregateRoot<int>
     public User User { get; set; } = null!;
 
     private RefreshToken() { }
+
+    public static RefreshToken Create(
+        int userId,
+        string tokenHash,
+        DateTimeOffset expiresAt,
+        DateTimeOffset? revokedAt
+    )
+    {
+        return new RefreshToken
+        {
+            UserId = userId,
+            TokenHash = tokenHash,
+            ExpiresAt = expiresAt,
+            RevokedAt = revokedAt,
+        };
+    }
 }
