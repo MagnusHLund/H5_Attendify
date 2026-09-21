@@ -3,9 +3,9 @@ interface RegisterStudentOptions {
   password: string
   educationalInstituteId: string
   studentId: string
-  straightPhoto: File
-  leftPhoto: File
-  rightPhoto: File
+  straightPhoto: string
+  leftPhoto: string
+  rightPhoto: string
 }
 
 export async function registerStudent({
@@ -17,18 +17,22 @@ export async function registerStudent({
   leftPhoto,
   rightPhoto,
 }: RegisterStudentOptions): Promise<void> {
-  const formData = new FormData()
-  formData.append('email', email)
-  formData.append('password', password)
-  formData.append('educationalInstituteId', educationalInstituteId)
-  formData.append('studentId', studentId)
-  formData.append('straightPhoto', straightPhoto)
-  formData.append('leftPhoto', leftPhoto)
-  formData.append('rightPhoto', rightPhoto)
+  const payload = {
+    email,
+    password,
+    educationalInstituteId,
+    studentId,
+    straightPhoto,
+    leftPhoto,
+    rightPhoto,
+  }
 
   const response = await fetch('/api/auth/register', {
     method: 'POST',
-    body: formData,
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
   if (!response.ok) {

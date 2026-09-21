@@ -10,6 +10,7 @@ import {
   Spinner,
   TextInput,
 } from '../../../../components/ui'
+import { fileToBase64 } from '../../../../lib/encoding/base64'
 import {
   minPasswordLength,
   required,
@@ -43,13 +44,9 @@ export function RegisterForm() {
       studentId: '',
     },
 
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       // The details are valid, so move to the photo step.
       setStep('photos')
-
-      // The values remain available in detailsForm while this component
-      // is mounted and can be used when the registration is completed.
-      console.log(value)
     },
   })
 
@@ -74,11 +71,11 @@ export function RegisterForm() {
           educationalInstituteId:
             detailsForm.state.values.educationalInstituteId,
           studentId: detailsForm.state.values.studentId,
-          straightPhoto: value.straightPhoto,
-          leftPhoto: value.leftPhoto,
-          rightPhoto: value.rightPhoto,
+          straightPhoto: await fileToBase64(value.straightPhoto),
+          leftPhoto: await fileToBase64(value.leftPhoto),
+          rightPhoto: await fileToBase64(value.rightPhoto),
         })
-        await navigate({ to: '/login' })
+        await navigate({ to: '/overview' })
       } catch (error) {
         setRegistrationError(
           error instanceof Error
@@ -108,20 +105,7 @@ export function RegisterForm() {
     return <Spinner className="register-form__spinner" />
   }
 
-  if (isError || educationalInstitutes?.length === 0) {
-    return (
-      <ErrorModal
-        title={t('error.educationalInstitutesNotFoundTitle')}
-        message={t('error.educationalInstitutesNotFound')}
-        isOpen={true}
-        onClose={() => {
-          navigate({ to: '/login' })
-        }}
-      />
-    )
-  }
-
-  if (!educationalInstitutes) {
+  if (isError || !educationalInstitutes || educationalInstitutes.length === 0) {
     return (
       <ErrorModal
         title={t('error.educationalInstitutesNotFoundTitle')}

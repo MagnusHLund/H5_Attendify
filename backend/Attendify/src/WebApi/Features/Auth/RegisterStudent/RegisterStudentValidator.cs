@@ -6,13 +6,13 @@ public sealed class RegisterStudentValidator : Validator<RegisterStudentRequest>
 {
     public RegisterStudentValidator()
     {
-        /*
         RuleFor(request => request.Email)
             .NotEmpty()
             .EmailAddress()
             .MaximumLength(User.EmailMaxLength);
 
         RuleFor(request => request.Password)
+            .NotEmpty()
             .MinimumLength(8)
             .MaximumLength(128);
 
@@ -24,14 +24,12 @@ public sealed class RegisterStudentValidator : Validator<RegisterStudentRequest>
             .MaximumLength(128);
 
         RuleFor(request => request.StraightPhoto)
-            .NotNull();
+            .NotEmpty();
 
         RuleFor(request => request.LeftPhoto)
-            .NotNull();
+            .NotEmpty();
 
         RuleFor(request => request.RightPhoto)
-            .NotNull();
-
-            */
+            .NotEmpty();
     }
 }

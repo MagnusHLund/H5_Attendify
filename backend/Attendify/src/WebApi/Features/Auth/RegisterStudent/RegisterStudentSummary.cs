@@ -6,6 +6,6 @@ public sealed class RegisterStudentSummary : Summary<RegisterStudentEndpoint>
     {
         Summary = "Registers a student";
         Description = "Creates a student account for an existing educational institute.";
-        Response<RegisterStudentResponse>(201, "The newly registered user.");
+        Response(201);
     }
 }
