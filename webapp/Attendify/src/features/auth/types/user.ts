@@ -1,7 +1,6 @@
-export type UserRole = 'student' | 'administrator'
+export type UserRole = 'student' | 'school_administrator'
 
 export interface CurrentUser {
-  id: string
   studentId: string
   role: UserRole
 }
