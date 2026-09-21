@@ -12,6 +12,7 @@ public class PostgreSqlTestContainer : IAsyncDisposable
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
         .WithImage("postgres:18.3-bookworm")
         .WithName($"WebApi-IntegrationTests-{Guid.NewGuid()}")
+        .WithDatabase("WebApi-IntegrationTests")
         .WithPassword("Password123")
         .WithPortBinding(5432, true)
         .WithAutoRemove(true)

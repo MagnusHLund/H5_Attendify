@@ -22,10 +22,7 @@ public class TestDatabase : IAsyncDisposable
     {
         await _npgsqlContainer.InitializeAsync();
 
-        var builder = new NpgsqlConnectionStringBuilder(_npgsqlContainer.Connection!.ConnectionString)
-        {
-            Database = "WebApi-IntegrationTests"
-        };
+        var builder = new NpgsqlConnectionStringBuilder(_npgsqlContainer.Connection!.ConnectionString);
 
         _connectionString = builder.ConnectionString;
 
