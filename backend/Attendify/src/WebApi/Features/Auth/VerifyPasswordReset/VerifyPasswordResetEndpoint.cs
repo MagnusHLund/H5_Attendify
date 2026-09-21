@@ -7,6 +7,7 @@ public sealed class VerifyPasswordResetEndpoint(ApplicationDbContext dbContext)
     {
         Post("/password-reset/verify");
         Group<AuthenticationGroup>();
+        AllowAnonymous();
         Description(x => x.WithName("VerifyPasswordReset"));
     }
 

@@ -7,6 +7,7 @@ public sealed class RequestPasswordResetEndpoint(ApplicationDbContext dbContext)
     {
         Post("/password-reset/request");
         Group<AuthenticationGroup>();
+        AllowAnonymous();
         Description(x => x.WithName("RequestPasswordReset"));
     }
 

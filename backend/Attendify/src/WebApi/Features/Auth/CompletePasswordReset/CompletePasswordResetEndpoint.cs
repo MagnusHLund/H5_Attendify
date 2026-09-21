@@ -7,6 +7,7 @@ public sealed class CompletePasswordResetEndpoint(ApplicationDbContext dbContext
     {
         Post("/password-reset/complete");
         Group<AuthenticationGroup>();
+        AllowAnonymous();
         Description(x => x.WithName("CompletePasswordReset"));
     }
 

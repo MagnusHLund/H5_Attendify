@@ -7,6 +7,7 @@ public sealed class LoginWithPasswordEndpoint(ApplicationDbContext dbContext)
     {
         Post("/login");
         Group<AuthenticationGroup>();
+        AllowAnonymous();
         Description(x => x.WithName("LoginWithPassword"));
     }
 

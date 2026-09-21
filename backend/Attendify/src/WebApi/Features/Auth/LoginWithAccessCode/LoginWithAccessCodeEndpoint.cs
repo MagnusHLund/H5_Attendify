@@ -7,6 +7,7 @@ public sealed class LoginWithAccessCodeEndpoint(ApplicationDbContext dbContext)
     {
         Post("/login/access-code");
         Group<AuthenticationGroup>();
+        AllowAnonymous();
         Description(x => x.WithName("LoginWithAccessCode"));
     }
 
