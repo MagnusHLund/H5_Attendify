@@ -45,8 +45,8 @@
     "alreadyUser": "Har du allerede en bruger? Log ind",
     "completeRegistration": "Færdiggør oprettelse",
     "photoStraight": "Tag et billede af dit ansigt lige forfra",
-    "photoLeft": "Tag et billede af dit ansigt let drejet mod venstre",
-    "photoRight": "Tag et billede af dit ansigt let drejet mod højre"
+    "photoLeft": "Tag et billede af dit ansigt, der kigger let mod venstre",
+    "photoRight": "Tag et billede af dit ansigt, der kigger let mod højre"
   },
   "reset": {
     "forgotTitle": "Glemt adgangskode",
