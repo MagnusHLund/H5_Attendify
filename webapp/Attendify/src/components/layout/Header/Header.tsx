@@ -26,6 +26,7 @@ export function Header({ onLogout }: HeaderProps) {
 
   const isSettingsPage = location.pathname === '/settings'
   const isOverviewPage = location.pathname === '/overview'
+
   const { data: user } = useCurrentUser(isSettingsPage || isOverviewPage)
   const userRole = user?.role ?? 'student'
 
@@ -35,7 +36,7 @@ export function Header({ onLogout }: HeaderProps) {
   const pageName = pageNameKey ? t(pageNameKey) : t('common.attendifyLogo')
 
   const handleAction = () => {
-    if (userRole === 'administrator') {
+    if (userRole === 'school_administrator') {
       onLogout()
       return
     }
@@ -46,7 +47,7 @@ export function Header({ onLogout }: HeaderProps) {
   }
 
   const actionLabel =
-    userRole === 'administrator'
+    userRole === 'school_administrator'
       ? t('navigation.logout')
       : t('navigation.settings')
 
@@ -66,8 +67,8 @@ export function Header({ onLogout }: HeaderProps) {
       <h1 className="header__title">{pageName}</h1>
 
       <div className="header__actions">
-        {userRole === 'administrator' && <LanguageSwitcher compact />}
-        {(userRole === 'administrator' || !isSettingsPage) && (
+        {userRole === 'school_administrator' && <LanguageSwitcher compact />}
+        {(userRole === 'school_administrator' || !isSettingsPage) && (
           <button
             className="header__action"
             type="button"

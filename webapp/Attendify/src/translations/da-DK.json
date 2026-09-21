@@ -123,7 +123,11 @@
     "picturesTitle": "Billederne kunne ikke gemmes",
     "picturesMessage": "Ansigtsbillederne kunne ikke opdateres",
     "accessCodeTitle": "Adgangskoden kunne ikke indlæses",
-    "accessCodeMessage": "Elevadgangskoden kunne ikke hentes"
+    "accessCodeMessage": "Elevadgangskoden kunne ikke hentes",
+    "educationalInstitutesNotFoundTitle": "Uddannelsesinstitutioner kunne ikke indlæses",
+    "educationalInstitutesNotFound": "Ingen uddannelsesinstitutioner blev fundet",
+    "registrationFailedTitle": "Registrering mislykkedes",
+    "registrationFailed": "Der opstod en fejl under oprettelsen af din konto. Prøv venligst igen."
   },
   "accessibility": {
     "copyValue": "Kopiér værdi"

@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
 import {
   Button,
   Dropdown,
+  ErrorModal,
   FileInput,
+  Spinner,
   TextInput,
 } from '../../../../components/ui'
 import {
@@ -13,21 +16,23 @@ import {
   validEmail,
 } from '../../../../lib/validation'
 import { useTranslation } from '../../../../lib/i18n'
+import { registerStudent } from '../../api/registerStudent'
 import './RegisterForm.scss'
 
 type RegistrationStep = 'details' | 'photos'
 
-interface EducationalInstitute {
-  id: string
-  name: string
-}
-
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
+  const [registrationError, setRegistrationError] = useState<string | null>(
+    null,
+  )
+  const navigate = useNavigate()
+  const {
+    data: educationalInstitutes,
+    isPending,
+    isError,
+  } = useEducationalInstitutes()
   const { t } = useTranslation()
-
-  // This will eventually come from the API.
-  const educationalInstitutes: EducationalInstitute[] = []
 
   const detailsForm = useForm({
     defaultValues: {
@@ -56,16 +61,77 @@ export function RegisterForm() {
     },
 
     onSubmit: async ({ value }) => {
-      // Registration logic will go here.
-      console.log({
-        ...detailsForm.state.values,
-        ...value,
-      })
+      if (!value.straightPhoto || !value.leftPhoto || !value.rightPhoto) {
+        return
+      }
+
+      try {
+        setRegistrationError(null)
+
+        await registerStudent({
+          email: detailsForm.state.values.email,
+          password: detailsForm.state.values.password,
+          educationalInstituteId:
+            detailsForm.state.values.educationalInstituteId,
+          studentId: detailsForm.state.values.studentId,
+          straightPhoto: value.straightPhoto,
+          leftPhoto: value.leftPhoto,
+          rightPhoto: value.rightPhoto,
+        })
+        await navigate({ to: '/login' })
+      } catch (error) {
+        setRegistrationError(
+          error instanceof Error
+            ? error.message
+            : t('error.registrationFailed'),
+        )
+      }
     },
   })
 
   function handleBack() {
     setStep('details')
+  }
+
+  if (registrationError) {
+    return (
+      <ErrorModal
+        title={t('error.registrationFailedTitle')}
+        message={registrationError}
+        isOpen={true}
+        onClose={() => setRegistrationError(null)}
+      />
+    )
+  }
+
+  if (isPending) {
+    return <Spinner />
+  }
+
+  if (isError || educationalInstitutes?.length === 0) {
+    return (
+      <ErrorModal
+        title={t('error.educationalInstitutesNotFoundTitle')}
+        message={t('error.educationalInstitutesNotFound')}
+        isOpen={true}
+        onClose={() => {
+          navigate({ to: '/login' })
+        }}
+      />
+    )
+  }
+
+  if (!educationalInstitutes) {
+    return (
+      <ErrorModal
+        title={t('error.educationalInstitutesNotFoundTitle')}
+        message={t('error.educationalInstitutesNotFound')}
+        isOpen={true}
+        onClose={() => {
+          navigate({ to: '/login' })
+        }}
+      />
+    )
   }
 
   if (step === 'details') {

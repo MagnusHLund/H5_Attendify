@@ -2,11 +2,20 @@ using System.Reflection;
 using FastEndpoints.Swagger;
 using Attendify.Host.Extensions;
 using Attendify.Host;
+using Serilog;
 
 var appAssembly = Assembly.GetExecutingAssembly();
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
 builder.AddServiceDefaults();
+
+builder.Logging.ClearProviders();
+builder.Host.UseSerilog();
 
 builder.Services.AddCustomProblemDetails();
 
@@ -30,6 +39,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseCustomFastEndpoints();
 app.UseSwaggerGen();

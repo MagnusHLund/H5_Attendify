@@ -123,7 +123,11 @@
     "picturesTitle": "Pictures could not be saved",
     "picturesMessage": "Failed to update face pictures",
     "accessCodeTitle": "Access code could not be loaded",
-    "accessCodeMessage": "Failed to fetch student access code"
+    "accessCodeMessage": "Failed to fetch student access code",
+    "educationalInstitutesNotFoundTitle": "Educational institutes could not be loaded",
+    "educationalInstitutesNotFound": "No educational institutes were found",
+    "registrationFailedTitle": "Registration failed",
+    "registrationFailed": "Something went wrong while creating your account. Please try again."
   },
   "accessibility": {
     "copyValue": "Copy value"

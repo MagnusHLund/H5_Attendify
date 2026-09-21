@@ -3,7 +3,7 @@ using Attendify.Common.Domain.Attendance;
 
 namespace Attendify.Common.Persistence;
 
-public class AttendanceConfiguration : AuditableConfiguration<Attendance>
+public sealed class AttendanceConfiguration : AuditableConfiguration<Attendance>
 {
     public override void PostConfigure(EntityTypeBuilder<Attendance> builder)
     {

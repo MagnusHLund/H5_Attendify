@@ -8,17 +8,23 @@
     <PackageReference Include="FastEndpoints.Swagger"></PackageReference>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions"></PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi"></PackageReference>
+    <PackageReference Include="FastEndpoints.Security"></PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"></PackageReference>
     <PackageReference Include="ErrorOr"></PackageReference>
+    <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Vogen"></PackageReference>
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore"></PackageReference>
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"></PackageReference>
     <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL"></PackageReference>
     <PackageReference Include="FastEndpoints"></PackageReference>
+    <PackageReference Include="FaceAiSharp.Bundle"></PackageReference>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime"></PackageReference>
+    <PackageReference Include="Serilog.AspNetCore"></PackageReference>
+    <PackageReference Include="Serilog.Sinks.File"></PackageReference>
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Attendify.ArchitectureTests"></InternalsVisibleTo>

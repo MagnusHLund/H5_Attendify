@@ -1,8 +1,9 @@
+using attendanceClass = Attendify.Common.Domain.Attendance;
+
 namespace Attendify.Features.Attendance.CreateAttendance;
 
-using attendanceClass = Common.Domain.Attendance;
-
-public class CreateAttendanceEndpoint(ApplicationDbContext dbContext) : Endpoint<CreateAttendanceRequest> //TODO: inherit from endpoint with request response  
+public class CreateAttendanceEndpoint(ApplicationDbContext dbContext)
+    : Endpoint<CreateAttendanceRequest> //TODO: inherit from endpoint with request response
 {
     public override void Configure()
     {
