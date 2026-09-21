@@ -104,7 +104,7 @@ export function RegisterForm() {
     )
   }
 
-  if (true) {
+  if (isPending) {
     return <Spinner className="register-form__spinner" />
   }
 
