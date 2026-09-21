@@ -1,30 +1,30 @@
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using Polly;
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 
 namespace Attendify.IntegrationTests.Common.Infrastructure.Database;
 
 /// <summary>
-/// Wrapper for SQL Server container
+/// Wrapper for PostgreSqlTest container
 /// </summary>
-public class SqlServerContainer : IAsyncDisposable
+public class PostgreSqlTestContainer : IAsyncDisposable
 {
-    private readonly MsSqlContainer _container = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
+        .WithImage("postgres:18.3-bookworm")
         .WithName($"WebApi-IntegrationTests-{Guid.NewGuid()}")
         .WithPassword("Password123")
-        .WithPortBinding(1433, true)
+        .WithPortBinding(5432, true)
         .WithAutoRemove(true)
         .Build();
 
     private const int MaxRetries = 5;
 
-    public SqlConnection? Connection { get; private set; }
+    public NpgsqlConnection? Connection { get; private set; }
 
     public async Task InitializeAsync()
     {
         await StartWithRetry();
-        Connection = new SqlConnection(_container.GetConnectionString());
+        Connection = new NpgsqlConnection(_container.GetConnectionString());
     }
 
     private async Task StartWithRetry()
