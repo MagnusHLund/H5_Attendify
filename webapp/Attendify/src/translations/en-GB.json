@@ -45,8 +45,8 @@
     "alreadyUser": "Already got a user? Login",
     "completeRegistration": "Complete registration",
     "photoStraight": "Take a photo of your face from a straight angle",
-    "photoLeft": "Take a photo of your face from a slight left angle",
-    "photoRight": "Take a photo of your face from a slight right angle"
+    "photoLeft": "Take a photo of your face looking slightly towards the left",
+    "photoRight": "Take a photo of your face looking slightly towards the right"
   },
   "reset": {
     "forgotTitle": "Forgot password",

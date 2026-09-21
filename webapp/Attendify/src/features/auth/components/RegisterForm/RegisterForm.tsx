@@ -105,7 +105,7 @@ export function RegisterForm() {
   }
 
   if (isPending) {
-    return <Spinner />
+    return <Spinner className="register-form__spinner" />
   }
 
   if (isError || educationalInstitutes?.length === 0) {
