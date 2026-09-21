@@ -7,8 +7,10 @@ namespace Attendify.Common.FacialRecognition;
 public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
 {
     private const int RequiredPhotoCount = 3;
+
     private readonly IFaceDetectorWithLandmarks _faceDetector =
         FaceAiSharpBundleFactory.CreateFaceDetectorWithLandmarks();
+
     private readonly IFaceEmbeddingsGenerator _embeddingsGenerator =
         FaceAiSharpBundleFactory.CreateFaceEmbeddingsGenerator();
 
@@ -27,21 +29,39 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
         foreach (IFormFile photo in photos)
         {
             await using Stream stream = photo.OpenReadStream();
-            using Image<Rgb24> image = await Image.LoadAsync<Rgb24>(stream, cancellationToken);
-            FaceDetectorResult[] faces = _faceDetector.DetectFaces(image).ToArray();
 
-            if (faces.Length != 1 || faces[0].Landmarks is not IReadOnlyList<PointF> landmarks)
+            Image<Rgb24> image;
+
+            try
             {
-                throw new FacePhotoValidationException(
-                    "Each photo must contain exactly one clearly visible face."
-                );
+                image = await Image.LoadAsync<Rgb24>(stream, cancellationToken);
+            }
+            catch (UnknownImageFormatException)
+            {
+                throw new FacePhotoValidationException("Each face photo must be a valid image.");
             }
 
-            _embeddingsGenerator.AlignFaceUsingLandmarks(image, landmarks);
-            float[] embedding = _embeddingsGenerator.GenerateEmbedding(image);
-            byte[] embeddingBytes = new byte[embedding.Length * sizeof(float)];
-            Buffer.BlockCopy(embedding, 0, embeddingBytes, 0, embeddingBytes.Length);
-            embeddings.Add(embeddingBytes);
+            using (image)
+            {
+                FaceDetectorResult[] faces = _faceDetector.DetectFaces(image).ToArray();
+
+                if (faces.Length != 1 || faces[0].Landmarks is not IReadOnlyList<PointF> landmarks)
+                {
+                    throw new FacePhotoValidationException(
+                        "Each photo must contain exactly one clearly visible face."
+                    );
+                }
+
+                _embeddingsGenerator.AlignFaceUsingLandmarks(image, landmarks);
+
+                float[] embedding = _embeddingsGenerator.GenerateEmbedding(image);
+
+                byte[] embeddingBytes = new byte[embedding.Length * sizeof(float)];
+
+                Buffer.BlockCopy(embedding, 0, embeddingBytes, 0, embeddingBytes.Length);
+
+                embeddings.Add(embeddingBytes);
+            }
         }
 
         return embeddings;
