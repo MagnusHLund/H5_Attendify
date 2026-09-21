@@ -21,8 +21,8 @@ public sealed class RegisterStudentEndpoint(
     {
         Post("/register");
         Group<AuthenticationGroup>();
-        AllowFormData(true);
-        AllowFileUploads(true);
+        AllowFormData();
+        AllowFileUploads();
         Description(x => x.WithName("RegisterStudent"));
     }
 

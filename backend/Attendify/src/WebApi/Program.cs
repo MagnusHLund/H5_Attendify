@@ -2,6 +2,7 @@ using System.Reflection;
 using FastEndpoints.Swagger;
 using Attendify.Host.Extensions;
 using Attendify.Host;
+using Serilog;
 
 var appAssembly = Assembly.GetExecutingAssembly();
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +12,10 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .CreateLogger();
 
-builder.Host.UseSerilog();
-
 builder.AddServiceDefaults();
+
+builder.Logging.ClearProviders();
+builder.Host.UseSerilog();
 
 builder.Services.AddCustomProblemDetails();
 

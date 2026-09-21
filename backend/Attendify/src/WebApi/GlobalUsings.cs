@@ -8,6 +8,4 @@ global using ErrorOr;
 global using FastEndpoints;
 global using FluentValidation;
 global using Microsoft.EntityFrameworkCore;
-global using Serilog;
 global using Vogen;
-global using ILogger = Serilog.ILogger;

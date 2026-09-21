@@ -2,19 +2,22 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
-var tunnel = builder.AddCloudflareTunnel("Lunnel");
+var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
+var tunnel = builder.AddCloudflareTunnel(tunnelName);
 
 var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
 var jwtSigningKey = builder.AddParameter("SigningKey", secret: true);
-var facialEmbeddingEncryptionKey = builder.AddParameter("FacialEmbeddingEncryptionKey", secret: true);
+var facialEmbeddingEncryptionKey = builder.AddParameter(
+    "FacialEmbeddingEncryptionKey",
+    secret: true
+);
 
 var postgres = builder
     .AddPostgres("postgres")
     .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 
-var db = postgres
-    .AddDatabase("AppDb", "app-db");
+var db = postgres.AddDatabase("AppDb", "app-db");
 
 var migrationService = builder
     .AddProject<MigrationService>("migrations")
@@ -35,8 +38,8 @@ var webapp = builder
     .WaitFor(api)
     .WithExternalHttpEndpoints();
 
-
-var gateway = builder.AddYarp("gateway")
+var gateway = builder
+    .AddYarp("gateway")
     .WithConfiguration(yarp =>
     {
         yarp.AddRoute("/api/{**catch-all}", api);

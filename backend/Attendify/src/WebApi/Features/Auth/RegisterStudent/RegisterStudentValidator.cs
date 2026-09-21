@@ -6,6 +6,7 @@ public sealed class RegisterStudentValidator : Validator<RegisterStudentRequest>
 {
     public RegisterStudentValidator()
     {
+        /*
         RuleFor(request => request.Email)
             .NotEmpty()
             .EmailAddress()
@@ -30,5 +31,7 @@ public sealed class RegisterStudentValidator : Validator<RegisterStudentRequest>
 
         RuleFor(request => request.RightPhoto)
             .NotNull();
+
+            */
     }
 }
