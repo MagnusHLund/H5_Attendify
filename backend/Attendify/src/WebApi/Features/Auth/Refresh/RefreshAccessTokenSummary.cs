@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+namespace Attendify.Features.Auth.Refresh;
 
-namespace Attendify.Features.Auth.Refresh
+public class RefreshAccessTokenSummary : Summary<RefreshAccessTokenEndpoint>
 {
-    public class RefreshAccessTokenSummary
+    public RefreshAccessTokenSummary()
     {
-        
+        Summary = "Refreshes an access token";
+        Description = "Generates a new access token using a valid refresh token.";
+        Response(204);
     }
 }
