@@ -104,13 +104,28 @@ public sealed class RegisterStudentEndpoint(
 
             AddError(exception.Message);
             await Send.ErrorsAsync(StatusCodes.Status400BadRequest, ct);
+
             return;
         }
 
         User user = CreateUser(request, email, embeddings);
 
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync(ct);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(ct);
+
+        try
+        {
+            dbContext.Users.Add(user);
+            await dbContext.SaveChangesAsync(ct);
+
+            await authenticationSessionService.CreateSessionAsync(user, ct);
+
+            await transaction.CommitAsync(ct);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
 
         if (logger.IsEnabled(LogLevel.Information))
         {
@@ -121,7 +136,6 @@ public sealed class RegisterStudentEndpoint(
             );
         }
 
-        await authenticationSessionService.CreateSessionAsync(user, ct);
         await Send.CreatedAtAsync<RegisterStudentEndpoint>(cancellation: ct);
     }
 
@@ -223,7 +237,7 @@ public sealed class RegisterStudentEndpoint(
 
     private async Task SendPhotoValidationError(CancellationToken ct)
     {
-        AddError("Each face photo must be a valid image no larger than 10 MB.");
+        AddError("Each face photo must be a valid image no larger than 5 MB.");
 
         await Send.ErrorsAsync(StatusCodes.Status400BadRequest, ct);
     }
