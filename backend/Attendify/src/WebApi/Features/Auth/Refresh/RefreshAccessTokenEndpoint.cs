@@ -1,10 +1,8 @@
 using Attendify.Common.Authentication;
-using Attendify.Common.Domain.Users;
 
 namespace Attendify.Features.Auth.Refresh;
 
 public sealed class RefreshAccessTokenEndpoint(
-    IRefreshTokenService refreshTokenService,
     IAuthenticationSessionService authenticationSessionService
 ) : EndpointWithoutRequest
 {
