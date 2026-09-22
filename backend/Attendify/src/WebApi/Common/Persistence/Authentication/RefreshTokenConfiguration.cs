@@ -14,7 +14,7 @@ public sealed class RefreshTokenConfiguration : AuditableConfiguration<RefreshTo
             .UseIdentityByDefaultColumn();
 
         builder.Property(token => token.TokenHash)
-            .HasMaxLength(RefreshToken.TokenHashMaxLength)
+            .HasMaxLength(RefreshToken.TokenHashLength)
             .IsRequired();
 
         builder.Property(token => token.ExpiresAt).IsRequired();

@@ -9,6 +9,7 @@ export async function updateFacePhotos({
   leftPhoto,
   rightPhoto,
 }: UpdateFacePhotosOptions): Promise<void> {
+  // TODO: Rewrite this to use fetchApi and use json instead of form data
   const formData = new FormData()
 
   formData.append('straightPhoto', straightPhoto)

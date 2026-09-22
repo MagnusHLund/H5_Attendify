@@ -1,3 +1,5 @@
+import { fetchApi } from '../../../lib/api/client'
+
 interface RegisterStudentOptions {
   email: string
   password: string
@@ -27,7 +29,7 @@ export async function registerStudent({
     rightPhoto,
   }
 
-  const response = await fetch('/api/auth/register', {
+  const response = await fetchApi('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(payload),
     headers: {

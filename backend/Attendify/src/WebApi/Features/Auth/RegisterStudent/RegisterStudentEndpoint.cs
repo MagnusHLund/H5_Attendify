@@ -1,3 +1,4 @@
+using Attendify.Common.Authentication;
 using Attendify.Common.Domain.FacialRecognition;
 using Attendify.Common.Domain.Users;
 using Attendify.Common.Encoding;
@@ -13,6 +14,7 @@ public sealed class RegisterStudentEndpoint(
     IStudentIdProtector studentIdProtector,
     IFacialEmbeddingService facialEmbeddingService,
     IEmbeddingEncryptor embeddingEncryptor,
+    IAuthenticationSessionService authenticationSessionService,
     ILogger<RegisterStudentEndpoint> logger
 ) : Endpoint<RegisterStudentRequest>
 {
@@ -119,6 +121,7 @@ public sealed class RegisterStudentEndpoint(
             );
         }
 
+        await authenticationSessionService.CreateSessionAsync(user, ct);
         await Send.CreatedAtAsync<RegisterStudentEndpoint>(cancellation: ct);
     }
 
