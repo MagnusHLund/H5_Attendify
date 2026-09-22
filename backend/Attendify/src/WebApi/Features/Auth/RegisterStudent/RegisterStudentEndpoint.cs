@@ -18,7 +18,7 @@ public sealed class RegisterStudentEndpoint(
     ILogger<RegisterStudentEndpoint> logger
 ) : Endpoint<RegisterStudentRequest>
 {
-    private const long MaxPhotoSizeBytes = 10 * 1024 * 1024;
+    private const long MaxPhotoSizeBytes = 5 * 1024 * 1024;
 
     public override void Configure()
     {
