@@ -36,7 +36,7 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
             {
                 image = await Image.LoadAsync<Rgb24>(stream, cancellationToken);
             }
-            catch (UnknownImageFormatException)
+            catch (ImageFormatException)
             {
                 throw new FacePhotoValidationException("Each face photo must be a valid image.");
             }
