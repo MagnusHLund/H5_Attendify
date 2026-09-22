@@ -9,8 +9,15 @@ public sealed class StudentIdProtector(IDataProtectionProvider dataProtectionPro
 
     public string Protect(string studentId)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(studentId);
+        ThrowIfNullOrWhiteSpace(studentId);
 
         return dataProtectionProvider.CreateProtector(Purpose).Protect(studentId);
+    }
+
+    public string Unprotect(string protectedStudentId)
+    {
+        ThrowIfNullOrWhiteSpace(protectedStudentId);
+
+        return dataProtectionProvider.CreateProtector(Purpose).Unprotect(protectedStudentId);
     }
 }

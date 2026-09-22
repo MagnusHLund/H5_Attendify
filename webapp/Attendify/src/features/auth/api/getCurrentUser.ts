@@ -1,7 +1,8 @@
+import { fetchApi } from '../../../lib/api/client';
 import type { CurrentUser } from '../types/user'
 
 export async function getCurrentUser(): Promise<CurrentUser> {
-  const response = await fetch('/api/auth/me', {
+  const response = await fetchApi('/api/auth/me', {
     credentials: 'include',
   })
 

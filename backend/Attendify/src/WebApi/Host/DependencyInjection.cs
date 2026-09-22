@@ -6,6 +6,7 @@ using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -46,6 +47,11 @@ public static class DependencyInjection
             JwtOptions.SectionName
         );
 
+        services.AddScoped<IAuthenticationSessionService, AuthenticationSessionService>();
+        services.AddScoped<IAuthenticationCookieService, AuthenticationCookieService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+
         JwtOptions jwtOptions =
             jwtSection.Get<JwtOptions>()
             ?? throw new InvalidOperationException("JWT configuration is required.");
@@ -79,6 +85,16 @@ public static class DependencyInjection
                         Encoding.UTF8.GetBytes(jwtOptions.SigningKey)
                     ),
                     ClockSkew = TimeSpan.Zero,
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["AccessToken"];
+
+                        return Task.CompletedTask;
+                    },
                 };
             }
         );

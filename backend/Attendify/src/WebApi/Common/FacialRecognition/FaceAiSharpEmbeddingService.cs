@@ -15,7 +15,7 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
         FaceAiSharpBundleFactory.CreateFaceEmbeddingsGenerator();
 
     public async Task<IReadOnlyList<byte[]>> CreateEmbeddingsAsync(
-        IReadOnlyList<IFormFile> photos,
+        IReadOnlyList<byte[]> photos,
         CancellationToken cancellationToken
     )
     {
@@ -26,9 +26,9 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
 
         var embeddings = new List<byte[]>(RequiredPhotoCount);
 
-        foreach (IFormFile photo in photos)
+        foreach (byte[] photo in photos)
         {
-            await using Stream stream = photo.OpenReadStream();
+            await using Stream stream = new MemoryStream(photo);
 
             Image<Rgb24> image;
 
@@ -36,7 +36,7 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
             {
                 image = await Image.LoadAsync<Rgb24>(stream, cancellationToken);
             }
-            catch (UnknownImageFormatException)
+            catch (ImageFormatException)
             {
                 throw new FacePhotoValidationException("Each face photo must be a valid image.");
             }

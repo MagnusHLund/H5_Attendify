@@ -1,6 +1,8 @@
+import { fetchApi } from './api/client'
+
 export async function isAuthenticated(): Promise<boolean> {
   try {
-    const response = await fetch('/api/auth/me', {
+    const response = await fetchApi('/api/auth/me', {
       credentials: 'include',
     })
 
