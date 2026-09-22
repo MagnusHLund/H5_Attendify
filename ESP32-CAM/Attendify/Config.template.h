@@ -7,3 +7,6 @@
 
 // Environment
 #define CLASSROOM ""
+
+// API/HTTP
+#define API_BASE ""

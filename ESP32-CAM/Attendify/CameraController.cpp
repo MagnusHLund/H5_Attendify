@@ -3,8 +3,8 @@
 #include "img_converters.h"
 #include "fd_forward.h"
 
-CameraController::CameraController(Camera* camera)
-  : _camera(camera), _faceDetectorConfig(mtmn_init_config()) {}
+CameraController::CameraController(Camera* camera, HttpService* httpService)
+  : _camera(camera), _httpService(httpService), _faceDetectorConfig(mtmn_init_config()) {}
 
 void CameraController::main()
 {
@@ -20,7 +20,13 @@ void CameraController::main()
     {
         Serial.println("High resolution image captured");
 
-        // TODO: Send image via HTTP
+        HttpResponse response = _httpService->request(
+            "POST",
+            "/api/attendance",
+            picture->buf,
+            picture->len,
+            "image/jpeg"
+        );
 
         esp_camera_fb_return(picture);
 
