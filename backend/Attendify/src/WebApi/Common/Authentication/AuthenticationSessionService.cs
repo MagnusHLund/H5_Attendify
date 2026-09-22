@@ -55,7 +55,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         string accessToken = _jwtTokenService.GenerateToken(claims);
 
         _authenticationCookieService.SetAccessTokenCookie(accessToken);
-        _authenticationCookieService.SetRefreshTokenCookie(refreshToken);
+        _authenticationCookieService.SetRefreshTokenCookie(result.Token);
 
         return true;
     }
