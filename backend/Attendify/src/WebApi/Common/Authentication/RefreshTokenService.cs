@@ -17,21 +17,21 @@ public sealed class RefreshTokenService : IRefreshTokenService
 
     public async Task<string> GenerateRefreshToken(int userId, CancellationToken cancellationToken)
     {
-        byte[] tokenBytes = RandomNumberGenerator.GetBytes(TokenSizeBytes);
-
-        string token = Convert.ToBase64String(tokenBytes);
-        byte[] hashedToken = HashToken(tokenBytes);
+        byte[] tokenBytes = GenerateTokenBytes();
+        byte[] tokenHash = HashToken(tokenBytes);
 
         RefreshToken refreshToken = RefreshToken.Create(
             userId,
-            hashedToken,
-            DateTime.UtcNow.AddDays(LifetimeDays)
+            tokenHash,
+            DateTimeOffset.UtcNow.AddDays(LifetimeDays),
+            null
         );
 
         _dbContext.RefreshTokens.Add(refreshToken);
+
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return token;
+        return Convert.ToBase64String(tokenBytes);
     }
 
     public async Task<RotatedRefreshTokenResult?> RotateTokenAsync(
@@ -51,11 +51,32 @@ public sealed class RefreshTokenService : IRefreshTokenService
         }
 
         byte[] tokenHash = HashToken(tokenBytes);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(
+            cancellationToken
+        );
+
+        int revokedRows = await _dbContext
+            .RefreshTokens.Where(refreshToken =>
+                refreshToken.TokenHash == tokenHash
+                && refreshToken.RevokedAt == null
+                && refreshToken.ExpiresAt > now
+            )
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(refreshToken => refreshToken.RevokedAt, now),
+                cancellationToken
+            );
+
+        if (revokedRows != 1)
+        {
+            return null;
+        }
 
         RefreshToken? existingToken = await _dbContext
             .RefreshTokens.Include(refreshToken => refreshToken.User)
             .SingleOrDefaultAsync(
-                refreshToken => refreshToken.TokenHash.SequenceEqual(tokenHash),
+                refreshToken => refreshToken.TokenHash == tokenHash,
                 cancellationToken
             );
 
@@ -64,25 +85,19 @@ public sealed class RefreshTokenService : IRefreshTokenService
             return null;
         }
 
-        if (existingToken.RevokedAt.HasValue || existingToken.ExpiresAt <= DateTimeOffset.UtcNow)
-        {
-            return null;
-        }
-
-        existingToken.Revoke();
-
         byte[] newTokenBytes = GenerateTokenBytes();
 
         RefreshToken newRefreshToken = RefreshToken.Create(
             existingToken.UserId,
             HashToken(newTokenBytes),
-            DateTimeOffset.UtcNow.AddDays(LifetimeDays),
+            now.AddDays(LifetimeDays),
             null
         );
 
         _dbContext.RefreshTokens.Add(newRefreshToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return new RotatedRefreshTokenResult(
             Convert.ToBase64String(newTokenBytes),
