@@ -24,7 +24,10 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         _authenticationCookieService = authenticationCookieService;
     }
 
-    public async Task CreateSessionAsync(User user, CancellationToken cancellationToken)
+    public async Task<AuthenticationSession> CreateSessionAsync(
+        User user,
+        CancellationToken cancellationToken
+    )
     {
         var claims = CreateClaims(user);
         string accessToken = _jwtTokenService.GenerateToken(claims);
@@ -34,8 +37,26 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             cancellationToken
         );
 
-        _authenticationCookieService.SetAccessTokenCookie(accessToken);
-        _authenticationCookieService.SetRefreshTokenCookie(refreshToken);
+        return new AuthenticationSession(accessToken, refreshToken);
+    }
+
+    public void SetSessionCookies(AuthenticationSession session)
+    {
+        _authenticationCookieService.SetAccessTokenCookie(session.AccessToken);
+        _authenticationCookieService.SetRefreshTokenCookie(session.RefreshToken);
+    }
+
+    public Task<bool> IsPersistedAsync(
+        User user,
+        AuthenticationSession session,
+        CancellationToken cancellationToken
+    )
+    {
+        return _refreshTokenService.IsPersistedAsync(
+            user.Id,
+            session.RefreshToken,
+            cancellationToken
+        );
     }
 
     public async Task<bool> RefreshSessionAsync(

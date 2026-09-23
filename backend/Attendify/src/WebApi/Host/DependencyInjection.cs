@@ -47,18 +47,32 @@ public static class DependencyInjection
             JwtOptions.SectionName
         );
 
-        services.AddScoped<IAuthenticationSessionService, AuthenticationSessionService>();
-        services.AddScoped<IAuthenticationCookieService, AuthenticationCookieService>();
-        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        IConfigurationSection refreshTokenSection = builder.Configuration.GetRequiredSection(
+            RefreshTokenOptions.SectionName
+        );
 
         JwtOptions jwtOptions =
             jwtSection.Get<JwtOptions>()
             ?? throw new InvalidOperationException("JWT configuration is required.");
 
+        RefreshTokenOptions refreshTokenOptions =
+            refreshTokenSection.Get<RefreshTokenOptions>()
+            ?? throw new InvalidOperationException("Refresh token configuration is required.");
+
+        services.AddScoped<IAuthenticationSessionService, AuthenticationSessionService>();
+        services.AddScoped<IAuthenticationCookieService, AuthenticationCookieService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        
         services
             .AddOptions<JwtOptions>()
             .Bind(jwtSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services
+            .AddOptions<RefreshTokenOptions>()
+            .Bind(refreshTokenSection)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

@@ -47,7 +47,11 @@ public sealed class LoginWithPasswordEndpoint(
 
         _logger.Information("Login attempt succeeded");
 
-        await authenticationSessionService.CreateSessionAsync(user, ct);
+        AuthenticationSession session = await authenticationSessionService.CreateSessionAsync(
+            user,
+            ct
+        );
+        authenticationSessionService.SetSessionCookies(session);
 
         await Send.NoContentAsync(cancellation: ct);
     }
