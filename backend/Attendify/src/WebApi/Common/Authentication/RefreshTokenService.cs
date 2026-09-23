@@ -1,18 +1,24 @@
 using System.Security.Cryptography;
 using Attendify.Common.Domain.Authentication;
+using Microsoft.Extensions.Options;
 
 namespace Attendify.Common.Authentication;
 
 public sealed class RefreshTokenService : IRefreshTokenService
 {
     private const int TokenSizeBytes = 64;
-    private const int LifetimeDays = 30;
+
+    private readonly RefreshTokenOptions _refreshTokenOptions;
 
     private readonly ApplicationDbContext _dbContext;
 
-    public RefreshTokenService(ApplicationDbContext dbContext)
+    public RefreshTokenService(
+        ApplicationDbContext dbContext,
+        IOptions<RefreshTokenOptions> refreshTokenOptions
+    )
     {
         _dbContext = dbContext;
+        _refreshTokenOptions = refreshTokenOptions.Value;
     }
 
     public async Task<string> GenerateRefreshToken(int userId, CancellationToken cancellationToken)
@@ -20,12 +26,9 @@ public sealed class RefreshTokenService : IRefreshTokenService
         byte[] tokenBytes = GenerateTokenBytes();
         byte[] tokenHash = HashToken(tokenBytes);
 
-        RefreshToken refreshToken = RefreshToken.Create(
-            userId,
-            tokenHash,
-            DateTimeOffset.UtcNow.AddDays(LifetimeDays),
-            null
-        );
+        var expires = DateTimeOffset.UtcNow.AddMinutes(_refreshTokenOptions.LifetimeMinutes);
+
+        RefreshToken refreshToken = RefreshToken.Create(userId, tokenHash, expires, null);
 
         _dbContext.RefreshTokens.Add(refreshToken);
 
@@ -90,7 +93,7 @@ public sealed class RefreshTokenService : IRefreshTokenService
         RefreshToken newRefreshToken = RefreshToken.Create(
             existingToken.UserId,
             HashToken(newTokenBytes),
-            now.AddDays(LifetimeDays),
+            now.AddMinutes(_refreshTokenOptions.LifetimeMinutes),
             null
         );
 
