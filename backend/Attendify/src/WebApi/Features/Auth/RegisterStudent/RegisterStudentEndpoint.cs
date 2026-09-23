@@ -110,22 +110,29 @@ public sealed class RegisterStudentEndpoint(
 
         User user = CreateUser(request, email, embeddings);
 
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(ct);
+        var strategy = dbContext.Database.CreateExecutionStrategy();
 
-        try
+        await strategy.ExecuteAsync(async () =>
         {
-            dbContext.Users.Add(user);
-            await dbContext.SaveChangesAsync(ct);
+            await using var transaction =
+                await dbContext.Database.BeginTransactionAsync(ct);
 
-            await authenticationSessionService.CreateSessionAsync(user, ct);
+            try
+            {
+                dbContext.Users.Add(user);
 
-            await transaction.CommitAsync(ct);
-        }
-        catch
-        {
-            await transaction.RollbackAsync(ct);
-            throw;
-        }
+                await dbContext.SaveChangesAsync(ct);
+
+                await authenticationSessionService.CreateSessionAsync(user, ct);
+
+                await transaction.CommitAsync(ct);
+            }
+            catch
+            {
+                await transaction.RollbackAsync(ct);
+                throw;
+            }
+        });
 
         _logger.Information(
             "Student registration completed for user {UserId} at educational institute {EducationalInstituteId}",
