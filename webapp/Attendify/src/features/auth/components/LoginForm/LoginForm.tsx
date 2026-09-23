@@ -25,9 +25,7 @@ export function LoginForm() {
           to: '/overview',
         })
       } catch (error) {
-        setLoginError(
-          error instanceof Error ? error.message : t('error.loginFailed'),
-        )
+        setLoginError(t('error.loginFailed'))
       }
     },
   })
