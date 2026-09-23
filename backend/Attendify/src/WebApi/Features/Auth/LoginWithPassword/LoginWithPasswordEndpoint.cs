@@ -40,12 +40,12 @@ public sealed class LoginWithPasswordEndpoint(
 
         if (verificationResult == PasswordVerificationResult.Failed)
         {
-            _logger.Warning("Login attempt failed for email {Email}: incorrect password", email);
+            _logger.Warning("Login attempt failed: incorrect password");
             await SendLoginFailedError(email, ct);
             return;
         }
 
-        _logger.Information("Login attempt succeeded for email {Email}", email);
+        _logger.Information("Login attempt succeeded");
 
         await authenticationSessionService.CreateSessionAsync(user, ct);
 
@@ -56,7 +56,7 @@ public sealed class LoginWithPasswordEndpoint(
     {
         AddError("Invalid email or password.");
 
-        _logger.Warning("Login attempt failed for email {Email}: invalid email or password", email);
+        _logger.Warning("Login attempt failed: invalid email or password");
 
         await Send.ErrorsAsync(StatusCodes.Status400BadRequest, ct);
     }
