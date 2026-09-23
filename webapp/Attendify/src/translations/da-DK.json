@@ -129,7 +129,11 @@
     "registrationFailedTitle": "Registrering mislykkedes",
     "registrationFailed": "Der opstod en fejl under oprettelsen af din konto. Prøv venligst igen.",
     "loginFailedTitle": "Login mislykkedes",
-    "loginFailed": "Ugyldig email eller adgangskode"
+    "loginFailed": "Ugyldig email eller adgangskode",
+    "loginFailedAccessCode": "Ugyldig elevadgangskode",
+    "logoutFailedTitle": "Logout mislykkedes",
+    "logoutFailedMessage": "Der opstod en fejl under logout. Prøv venligst igen.",
+    "resetPasswordErrorTitle": "Fejl ved nulstilling af adgangskode"
   },
   "accessibility": {
     "copyValue": "Kopiér værdi"

@@ -1,15 +1,14 @@
 import { useForm } from '@tanstack/react-form'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { Button, ErrorModal, TextInput } from '../../../../components/ui'
+import { Button, TextInput, useErrorModal } from '../../../../components/ui'
 import './LoginForm.scss'
 import { validEmail, minPasswordLength } from '../../../../lib/validation'
 import { useTranslation } from '../../../../lib/i18n'
-import { useState } from 'react'
 import { loginWithPassword } from '../../api/loginWithPassword'
 
 export function LoginForm() {
   const navigate = useNavigate()
-  const [loginError, setLoginError] = useState<string | null>(null)
+  const { showError } = useErrorModal()
   const { t } = useTranslation()
 
   const form = useForm({
@@ -25,7 +24,7 @@ export function LoginForm() {
           to: '/overview',
         })
       } catch (error) {
-        setLoginError(t('error.loginFailed'))
+        showError(error, t('error.loginFailedTitle'), t('error.loginFailed'))
       }
     },
   })
@@ -34,17 +33,6 @@ export function LoginForm() {
     navigate({
       to: '/login-admin',
     })
-  }
-
-  if (loginError) {
-    return (
-      <ErrorModal
-        isOpen={true}
-        onClose={() => setLoginError(null)}
-        title={t('error.loginFailedTitle')}
-        message={loginError}
-      />
-    )
   }
 
   return (

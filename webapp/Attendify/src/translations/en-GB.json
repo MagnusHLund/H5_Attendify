@@ -129,7 +129,11 @@
     "registrationFailedTitle": "Registration failed",
     "registrationFailed": "Something went wrong while creating your account. Please try again.",
     "loginFailedTitle": "Login failed",
-    "loginFailed": "Invalid email or password"
+    "loginFailed": "Invalid email or password",
+    "loginFailedAccessCode": "Invalid student access code",
+    "logoutFailedTitle": "Logout failed",
+    "logoutFailedMessage": "An error occurred while logging out. Please try again.",
+    "resetPasswordErrorTitle": "Error resetting password"
   },
   "accessibility": {
     "copyValue": "Copy value"

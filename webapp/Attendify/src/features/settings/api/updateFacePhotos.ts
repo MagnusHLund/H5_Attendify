@@ -1,7 +1,9 @@
+import { fetchApi } from '../../../lib/api/client'
+
 interface UpdateFacePhotosOptions {
-  straightPhoto: File
-  leftPhoto: File
-  rightPhoto: File
+  straightPhoto: string
+  leftPhoto: string
+  rightPhoto: string
 }
 
 export async function updateFacePhotos({
@@ -9,17 +11,18 @@ export async function updateFacePhotos({
   leftPhoto,
   rightPhoto,
 }: UpdateFacePhotosOptions): Promise<void> {
-  // TODO: Rewrite this to use fetchApi and use json instead of form data
-  const formData = new FormData()
+  const payload = {
+    straightPhoto,
+    leftPhoto,
+    rightPhoto,
+  }
 
-  formData.append('straightPhoto', straightPhoto)
-  formData.append('leftPhoto', leftPhoto)
-  formData.append('rightPhoto', rightPhoto)
-
-  const response = await fetch('/api/settings/face-photos', {
-    method: 'PUT',
-    credentials: 'include',
-    body: formData,
+  const response = await fetchApi('/api/settings/face-photos', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
 
   if (!response.ok) {
