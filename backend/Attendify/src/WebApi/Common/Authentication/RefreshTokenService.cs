@@ -37,6 +37,34 @@ public sealed class RefreshTokenService : IRefreshTokenService
         return Convert.ToBase64String(tokenBytes);
     }
 
+    public async Task<bool> IsPersistedAsync(
+        int userId,
+        string token,
+        CancellationToken cancellationToken
+    )
+    {
+        byte[] tokenBytes;
+
+        try
+        {
+            tokenBytes = Convert.FromBase64String(token);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+
+        byte[] tokenHash = HashToken(tokenBytes);
+
+        return await _dbContext.RefreshTokens.AnyAsync(
+            refreshToken =>
+                refreshToken.UserId == userId
+                && refreshToken.TokenHash == tokenHash
+                && refreshToken.RevokedAt == null,
+            cancellationToken
+        );
+    }
+
     public async Task<RotatedRefreshTokenResult?> RotateTokenAsync(
         string token,
         CancellationToken cancellationToken

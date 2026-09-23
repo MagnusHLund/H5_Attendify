@@ -16,7 +16,8 @@ public sealed class RegisterStudentEndpoint(
     IStudentIdProtector studentIdProtector,
     IFacialEmbeddingService facialEmbeddingService,
     IEmbeddingEncryptor embeddingEncryptor,
-    IAuthenticationSessionService authenticationSessionService
+    IAuthenticationSessionService authenticationSessionService,
+    IServiceScopeFactory serviceScopeFactory
 ) : Endpoint<RegisterStudentRequest>
 {
     private const long MaxPhotoSizeBytes = 5 * 1024 * 1024;
@@ -108,22 +109,39 @@ public sealed class RegisterStudentEndpoint(
             return;
         }
 
-        User user = CreateUser(request, email, embeddings);
-
         var strategy = dbContext.Database.CreateExecutionStrategy();
+        AuthenticationSession? session = null;
+        int registeredUserId = 0;
 
         await strategy.ExecuteAsync(async () =>
         {
-            await using var transaction =
-                await dbContext.Database.BeginTransactionAsync(ct);
+            await using AsyncServiceScope scope = serviceScopeFactory.CreateAsyncScope();
+            ApplicationDbContext attemptDbContext =
+                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            IAuthenticationSessionService attemptSessionService =
+                scope.ServiceProvider.GetRequiredService<IAuthenticationSessionService>();
+            await using var transaction = await attemptDbContext.Database.BeginTransactionAsync(ct);
 
             try
             {
-                dbContext.Users.Add(user);
+                User? user = await attemptDbContext.Users.SingleOrDefaultAsync(
+                    candidate => candidate.Email == email,
+                    ct
+                );
 
-                await dbContext.SaveChangesAsync(ct);
+                if (user is null)
+                {
+                    user = CreateUser(request, email, embeddings);
+                    attemptDbContext.Users.Add(user);
+                    await attemptDbContext.SaveChangesAsync(ct);
+                }
 
-                await authenticationSessionService.CreateSessionAsync(user, ct);
+                if (session is null || !await attemptSessionService.IsPersistedAsync(user, session, ct))
+                {
+                    session = await attemptSessionService.CreateSessionAsync(user, ct);
+                }
+
+                registeredUserId = user.Id;
 
                 await transaction.CommitAsync(ct);
             }
@@ -134,9 +152,13 @@ public sealed class RegisterStudentEndpoint(
             }
         });
 
+        authenticationSessionService.SetSessionCookies(
+            session ?? throw new InvalidOperationException("Registration session was not created.")
+        );
+
         _logger.Information(
             "Student registration completed for user {UserId} at educational institute {EducationalInstituteId}",
-            user.Id,
+            registeredUserId,
             request.EducationalInstituteId
         );
 
