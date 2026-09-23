@@ -3,6 +3,7 @@ import { Header, Footer } from '../components/layout'
 import { logout } from '../features/auth/api/logout'
 import { useErrorModal } from '../components/ui'
 import { useTranslation } from '../lib/i18n'
+import { queryClient } from '../lib/queryClient'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -15,6 +16,7 @@ function RootComponent() {
   async function handleLogout() {
     try {
       await logout()
+      queryClient.removeQueries({ queryKey: ['student-access-code'] })
       Navigate({ to: '/login' })
     } catch (error) {
       showError(
