@@ -4,7 +4,9 @@ using Attendify.Common.Domain.Users;
 using Attendify.Common.Encoding;
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Services;
+using Attendify.Features.Auth.Shared;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 
 namespace Attendify.Features.Auth.RegisterStudent;
 
@@ -14,11 +16,12 @@ public sealed class RegisterStudentEndpoint(
     IStudentIdProtector studentIdProtector,
     IFacialEmbeddingService facialEmbeddingService,
     IEmbeddingEncryptor embeddingEncryptor,
-    IAuthenticationSessionService authenticationSessionService,
-    ILogger<RegisterStudentEndpoint> logger
+    IAuthenticationSessionService authenticationSessionService
 ) : Endpoint<RegisterStudentRequest>
 {
     private const long MaxPhotoSizeBytes = 5 * 1024 * 1024;
+
+    private readonly ILogger _logger = Log.ForContext<RegisterStudentEndpoint>();
 
     public override void Configure()
     {
@@ -30,7 +33,7 @@ public sealed class RegisterStudentEndpoint(
 
     public override async Task HandleAsync(RegisterStudentRequest request, CancellationToken ct)
     {
-        string email = NormalizeEmail(request.Email);
+        string email = EmailNormalizer.Normalize(request.Email);
 
         byte[][] photos;
 
@@ -44,20 +47,17 @@ public sealed class RegisterStudentEndpoint(
             return;
         }
 
-        if (logger.IsEnabled(LogLevel.Information))
-        {
-            logger.LogInformation(
-                "Registering student for educational institute {EducationalInstituteId} with photo sizes {StraightPhotoSize}, {LeftPhotoSize}, and {RightPhotoSize}",
-                request.EducationalInstituteId,
-                photos[0].Length,
-                photos[1].Length,
-                photos[2].Length
-            );
-        }
+        _logger.Information(
+            "Registering student for educational institute {EducationalInstituteId} with photo sizes {StraightPhotoSize}, {LeftPhotoSize}, and {RightPhotoSize}",
+            request.EducationalInstituteId,
+            photos[0].Length,
+            photos[1].Length,
+            photos[2].Length
+        );
 
         if (await EmailAlreadyExists(email, ct))
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because the email is already registered for educational institute {EducationalInstituteId}",
                 request.EducationalInstituteId
             );
@@ -68,7 +68,7 @@ public sealed class RegisterStudentEndpoint(
 
         if (!await EducationalInstituteExists(request.EducationalInstituteId, ct))
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because educational institute {EducationalInstituteId} does not exist",
                 request.EducationalInstituteId
             );
@@ -79,7 +79,7 @@ public sealed class RegisterStudentEndpoint(
 
         if (!ValidatePhotos(photos))
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because one or more face photos are invalid for educational institute {EducationalInstituteId}",
                 request.EducationalInstituteId
             );
@@ -96,7 +96,7 @@ public sealed class RegisterStudentEndpoint(
         }
         catch (FacePhotoValidationException exception)
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because face photos could not be processed for educational institute {EducationalInstituteId}: {Reason}",
                 request.EducationalInstituteId,
                 exception.Message
@@ -127,21 +127,13 @@ public sealed class RegisterStudentEndpoint(
             throw;
         }
 
-        if (logger.IsEnabled(LogLevel.Information))
-        {
-            logger.LogInformation(
-                "Student registration completed for user {UserId} at educational institute {EducationalInstituteId}",
-                user.Id,
-                request.EducationalInstituteId
-            );
-        }
+        _logger.Information(
+            "Student registration completed for user {UserId} at educational institute {EducationalInstituteId}",
+            user.Id,
+            request.EducationalInstituteId
+        );
 
         await Send.CreatedAtAsync<RegisterStudentEndpoint>(cancellation: ct);
-    }
-
-    private static string NormalizeEmail(string email)
-    {
-        return email.Trim().ToLowerInvariant();
     }
 
     private async Task<bool> EmailAlreadyExists(string email, CancellationToken ct)

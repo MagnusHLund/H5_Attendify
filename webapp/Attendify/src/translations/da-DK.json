@@ -127,7 +127,9 @@
     "educationalInstitutesNotFoundTitle": "Uddannelsesinstitutioner kunne ikke indlæses",
     "educationalInstitutesNotFound": "Ingen uddannelsesinstitutioner blev fundet",
     "registrationFailedTitle": "Registrering mislykkedes",
-    "registrationFailed": "Der opstod en fejl under oprettelsen af din konto. Prøv venligst igen."
+    "registrationFailed": "Der opstod en fejl under oprettelsen af din konto. Prøv venligst igen.",
+    "loginFailedTitle": "Login mislykkedes",
+    "loginFailed": "Ugyldig email eller adgangskode"
   },
   "accessibility": {
     "copyValue": "Kopiér værdi"
