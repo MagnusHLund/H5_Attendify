@@ -17,9 +17,8 @@ export async function updateFacePhotos({
     rightPhoto,
   }
 
-  const response = await fetchApi('/api/', {
-    // TODO: Finish writing the url pat for the endpoint
-    method: 'POST',
+  const response = await fetchApi('/api/settings/face-photos', {
+    method: 'PATCH',
     body: JSON.stringify(payload),
     headers: {
       'Content-Type': 'application/json',
