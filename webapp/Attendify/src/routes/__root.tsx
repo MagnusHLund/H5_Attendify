@@ -1,7 +1,7 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { Navigate, Outlet, createRootRoute } from '@tanstack/react-router'
 import { Header, Footer } from '../components/layout'
 import { logout } from '../features/auth/api/logout'
-import { ErrorModal, useErrorModal } from '../components/ui'
+import { useErrorModal } from '../components/ui'
 import { useTranslation } from '../lib/i18n'
 
 export const Route = createRootRoute({
@@ -15,6 +15,7 @@ function RootComponent() {
   async function handleLogout() {
     try {
       await logout()
+      Navigate({ to: '/login' })
     } catch (error) {
       showError(
         error,
