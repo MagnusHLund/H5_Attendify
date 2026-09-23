@@ -1,9 +1,9 @@
 import { fetchApi } from '../../../lib/api/client'
 
 interface UpdateFacePhotosOptions {
-  straightPhoto: File
-  leftPhoto: File
-  rightPhoto: File
+  straightPhoto: string
+  leftPhoto: string
+  rightPhoto: string
 }
 
 export async function updateFacePhotos({
