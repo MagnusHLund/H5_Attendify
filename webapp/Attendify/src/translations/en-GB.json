@@ -127,7 +127,9 @@
     "educationalInstitutesNotFoundTitle": "Educational institutes could not be loaded",
     "educationalInstitutesNotFound": "No educational institutes were found",
     "registrationFailedTitle": "Registration failed",
-    "registrationFailed": "Something went wrong while creating your account. Please try again."
+    "registrationFailed": "Something went wrong while creating your account. Please try again.",
+    "loginFailedTitle": "Login failed",
+    "loginFailed": "Invalid email or password"
   },
   "accessibility": {
     "copyValue": "Copy value"
