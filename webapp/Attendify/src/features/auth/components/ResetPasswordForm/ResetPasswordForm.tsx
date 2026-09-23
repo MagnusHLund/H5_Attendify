@@ -35,7 +35,7 @@ export function ResetPasswordForm() {
         await requestResetPassword(value.email)
         setStep('code')
       } catch (err) {
-        showError((err as Error).message, t('error.resetPasswordErrorTitle'))
+        showError(err, t('error.resetPasswordErrorTitle'))
       }
     },
   })
@@ -52,7 +52,7 @@ export function ResetPasswordForm() {
         await verifyResetPassword(value.code)
         setStep('password')
       } catch (err) {
-        showError((err as Error).message, t('error.resetPasswordErrorTitle'))
+        showError(err, t('error.resetPasswordErrorTitle'))
       }
     },
   })
@@ -76,7 +76,7 @@ export function ResetPasswordForm() {
           to: '/login',
         })
       } catch (err) {
-        showError((err as Error).message, t('error.resetPasswordErrorTitle'))
+        showError(err, t('error.resetPasswordErrorTitle'))
         return
       }
     },
