@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useErrorModal } from '../../../../components/ui'
 import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
 import {
   Button,
   Dropdown,
-  ErrorModal,
   FileInput,
   Spinner,
   TextInput,
@@ -24,6 +24,7 @@ type RegistrationStep = 'details' | 'photos'
 
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
+  const { showError } = useErrorModal()
   const [registrationError, setRegistrationError] = useState<string | null>(
     null,
   )
@@ -91,13 +92,10 @@ export function RegisterForm() {
   }
 
   if (registrationError) {
-    return (
-      <ErrorModal
-        title={t('error.registrationFailedTitle')}
-        message={registrationError}
-        isOpen={true}
-        onClose={() => setRegistrationError(null)}
-      />
+    showError(
+      new Error(registrationError),
+      t('error.registrationFailedTitle'),
+      t('error.registrationFailed'),
     )
   }
 
@@ -106,15 +104,10 @@ export function RegisterForm() {
   }
 
   if (isError || !educationalInstitutes || educationalInstitutes.length === 0) {
-    return (
-      <ErrorModal
-        title={t('error.educationalInstitutesNotFoundTitle')}
-        message={t('error.educationalInstitutesNotFound')}
-        isOpen={true}
-        onClose={() => {
-          navigate({ to: '/login' })
-        }}
-      />
+    showError(
+      new Error(t('error.educationalInstitutesNotFound')),
+      t('error.educationalInstitutesNotFoundTitle'),
+      t('error.educationalInstitutesNotFound'),
     )
   }
 
@@ -230,10 +223,12 @@ export function RegisterForm() {
                 label={t('auth.educationalInstitute')}
                 name={field.name}
                 value={field.state.value}
-                options={educationalInstitutes.map((institute) => ({
-                  value: institute.id,
-                  label: institute.name,
-                }))}
+                options={
+                  educationalInstitutes?.map((institute) => ({
+                    value: institute.id,
+                    label: institute.name,
+                  })) ?? []
+                }
                 placeholder={t('auth.selectEducationalInstitute')}
                 required
                 onBlur={field.handleBlur}

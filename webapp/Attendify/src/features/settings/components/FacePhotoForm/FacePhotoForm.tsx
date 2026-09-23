@@ -1,9 +1,5 @@
 import { useForm } from '@tanstack/react-form'
-import {
-  Button,
-  FileInput,
-  useErrorModal,
-} from '../../../../components/ui'
+import { Button, FileInput, useErrorModal } from '../../../../components/ui'
 import { useUpdateFacePhotos } from '../../hooks/useUpdateFacePhotos'
 import { useTranslation } from '../../../../lib/i18n'
 import './FacePhotoForm.scss'
@@ -28,7 +24,7 @@ export function FacePhotoForm() {
           rightPhoto: value.rightPhoto!,
         })
       } catch (error) {
-        showError(new Error(t('error.picturesMessage')), t('error.picturesTitle'))
+        showError(error, t('error.picturesTitle'), t('error.picturesMessage'))
       }
     },
   })

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { Button, TextInput } from '../../../../components/ui'
+import { Button, TextInput, useErrorModal } from '../../../../components/ui'
 import {
   required,
   validEmail,
@@ -9,12 +9,19 @@ import {
 } from '../../../../lib/validation'
 import { useTranslation } from '../../../../lib/i18n'
 import './ResetPasswordForm.scss'
+import {
+  requestResetPassword,
+  verifyResetPassword,
+  completeResetPassword,
+} from '../../api/resetPassword'
 
 type ResetPasswordStep = 'email' | 'code' | 'password'
 
 export function ResetPasswordForm() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { showError } = useErrorModal()
+  const [securityCode, setSecurityCode] = useState<string>('')
   const [step, setStep] = useState<ResetPasswordStep>('email')
 
   const emailForm = useForm({
@@ -23,10 +30,13 @@ export function ResetPasswordForm() {
     },
 
     // Send recovery code to the email address.
-    onSubmit: async () => {
-      // TODO: Call endpoint
-
-      setStep('code')
+    onSubmit: async ({ value }) => {
+      try {
+        await requestResetPassword(value.email)
+        setStep('code')
+      } catch (err) {
+        showError((err as Error).message, t('error.resetPasswordErrorTitle'))
+      }
     },
   })
 
@@ -36,10 +46,14 @@ export function ResetPasswordForm() {
     },
 
     // Verify the recovery code.
-    onSubmit: async () => {
-      // TODO: Call endpoint
-
-      setStep('password')
+    onSubmit: async ({ value }) => {
+      try {
+        setSecurityCode(value.code)
+        await verifyResetPassword(value.code)
+        setStep('password')
+      } catch (err) {
+        showError((err as Error).message, t('error.resetPasswordErrorTitle'))
+      }
     },
   })
 
@@ -50,13 +64,21 @@ export function ResetPasswordForm() {
     },
 
     // Save the new password.
-    onSubmit: async () => {
-      // TODO: Call endpoint
+    onSubmit: async ({ value }) => {
+      try {
+        if (value.password !== value.confirmPassword) {
+          throw new Error('Passwords do not match')
+        }
 
-      // TODO If successful then navigate to the login page. Otherwise modal with error message.
-      navigate({
-        to: '/login',
-      })
+        await completeResetPassword(securityCode, value.password)
+
+        navigate({
+          to: '/login',
+        })
+      } catch (err) {
+        showError((err as Error).message, t('error.resetPasswordErrorTitle'))
+        return
+      }
     },
   })
 
@@ -200,9 +222,7 @@ export function ResetPasswordForm() {
         passwordForm.handleSubmit()
       }}
     >
-      <h1 className="reset-password-form__title">
-        {t('reset.passwordTitle')}
-      </h1>
+      <h1 className="reset-password-form__title">{t('reset.passwordTitle')}</h1>
 
       <div className="reset-password-form__fields">
         <passwordForm.Field

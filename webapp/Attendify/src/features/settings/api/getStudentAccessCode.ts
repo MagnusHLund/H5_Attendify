@@ -2,7 +2,8 @@ import { fetchApi } from '../../../lib/api/client'
 import type { StudentAccessCode } from '../types/studentAccessCode'
 
 export async function getStudentAccessCode(): Promise<StudentAccessCode> {
-  const response = await fetchApi('/api/settings/student-access-code', {
+  const response = await fetchApi('/api/', {
+    // TODO: Modify url path to match endpoint
     credentials: 'include',
   })
 
