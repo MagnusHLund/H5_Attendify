@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+
 namespace Attendify.Common.Authentication;
 
 public class AuthenticationCookieService : IAuthenticationCookieService
@@ -5,11 +7,20 @@ public class AuthenticationCookieService : IAuthenticationCookieService
     public const string AccessTokenCookieName = "AccessToken";
     public const string RefreshTokenCookieName = "RefreshToken";
 
+    private readonly JwtOptions _jwtOptions;
+    private readonly RefreshTokenOptions _refreshTokenOptions;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthenticationCookieService(IHttpContextAccessor httpContextAccessor)
+    public AuthenticationCookieService(
+        IHttpContextAccessor httpContextAccessor,
+        IOptions<JwtOptions> jwtOptions,
+        IOptions<RefreshTokenOptions> refreshTokenOptions
+    )
     {
         _httpContextAccessor = httpContextAccessor;
+        _jwtOptions = jwtOptions.Value;
+        _refreshTokenOptions = refreshTokenOptions.Value;
     }
 
     public void SetAccessTokenCookie(string accessToken)
@@ -17,7 +28,7 @@ public class AuthenticationCookieService : IAuthenticationCookieService
         _httpContextAccessor?.HttpContext?.Response?.Cookies.Append(
             AccessTokenCookieName,
             accessToken,
-            CreateCookieOptions()
+            CreateCookieOptions(_jwtOptions.AccessTokenLifetimeMinutes)
         );
     }
 
@@ -26,7 +37,7 @@ public class AuthenticationCookieService : IAuthenticationCookieService
         _httpContextAccessor?.HttpContext?.Response?.Cookies.Append(
             RefreshTokenCookieName,
             refreshToken,
-            CreateCookieOptions()
+            CreateCookieOptions(_refreshTokenOptions.LifetimeMinutes)
         );
     }
 
@@ -36,14 +47,15 @@ public class AuthenticationCookieService : IAuthenticationCookieService
         _httpContextAccessor?.HttpContext?.Response?.Cookies.Delete(RefreshTokenCookieName);
     }
 
-    private CookieOptions CreateCookieOptions()
+    private CookieOptions CreateCookieOptions(int expiresInMinutes)
     {
         return new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.Strict,
             Path = "/",
+            Expires = DateTimeOffset.UtcNow.AddMinutes(expiresInMinutes),
         };
     }
 }

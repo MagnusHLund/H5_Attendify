@@ -3,7 +3,8 @@ using Attendify.Common.Authentication;
 namespace Attendify.Features.Auth.Refresh;
 
 public sealed class RefreshAccessTokenEndpoint(
-    IAuthenticationSessionService authenticationSessionService
+    IAuthenticationSessionService authenticationSessionService,
+    IAuthenticationCookieService authenticationCookieService
 ) : EndpointWithoutRequest
 {
     public override void Configure()
@@ -22,6 +23,7 @@ public sealed class RefreshAccessTokenEndpoint(
 
         if (string.IsNullOrWhiteSpace(refreshToken))
         {
+            authenticationCookieService.ClearAuthenticationCookies();
             await Send.UnauthorizedAsync(ct);
             return;
         }
