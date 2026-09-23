@@ -46,9 +46,10 @@ export function Header({ onLogout }: HeaderProps) {
     })
   }
 
-  const actionLabel = isSettingsPage
-    ? t('navigation.logout')
-    : t('navigation.settings')
+  const actionLabel =
+    userRole === 'school_administrator' || isSettingsPage
+      ? t('navigation.logout')
+      : t('navigation.settings')
 
   if (!isSettingsPage && !isOverviewPage) {
     return null
