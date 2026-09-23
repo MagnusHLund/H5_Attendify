@@ -55,12 +55,14 @@ public sealed class RefreshTokenService : IRefreshTokenService
         }
 
         byte[] tokenHash = HashToken(tokenBytes);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
 
         return await _dbContext.RefreshTokens.AnyAsync(
             refreshToken =>
                 refreshToken.UserId == userId
                 && refreshToken.TokenHash == tokenHash
-                && refreshToken.RevokedAt == null,
+            && refreshToken.RevokedAt == null
+                && refreshToken.ExpiresAt > now,
             cancellationToken
         );
     }
