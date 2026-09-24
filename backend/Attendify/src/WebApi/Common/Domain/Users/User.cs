@@ -1,7 +1,6 @@
 using Attendify.Common.Domain.Attendance;
 using Attendify.Common.Domain.Authentication;
 using Attendify.Common.Domain.Base;
-using Attendify.Common.Domain.EducationalInstitute;
 using Attendify.Common.Domain.FacialRecognition;
 using EducationalInstituteEntity = Attendify.Common.Domain.EducationalInstitute.EducationalInstitute;
 
@@ -84,4 +83,15 @@ public sealed class User : AggregateRoot<int>
             EncryptedStudentId = encryptedStudentId,
             AttendanceEnabled = true,
         };
+
+    public void UpdatePassword(string newHashedPassword)
+    {
+        ThrowIfNullOrWhiteSpace(newHashedPassword, nameof(newHashedPassword));
+        ThrowIfGreaterThan(
+            newHashedPassword.Length,
+            PasswordHashMaxLength,
+            nameof(newHashedPassword)
+        );
+        PasswordHash = newHashedPassword;
+    }
 }

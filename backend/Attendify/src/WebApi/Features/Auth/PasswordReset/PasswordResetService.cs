@@ -2,9 +2,10 @@ using System.Security.Cryptography;
 using System.Text;
 using Attendify.Common.Authentication;
 using Attendify.Common.Domain.Authentication;
+using Attendify.Common.Domain.Users;
 using Attendify.Common.Email;
 using Attendify.Features.Auth.Shared;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
 namespace Attendify.Features.Auth.PasswordReset;
@@ -18,14 +19,15 @@ public sealed class PasswordResetService : IPasswordResetService
     private readonly ResetPasswordTokenOptions _options;
     private readonly byte[] _securityCodeHashKey;
     private readonly TimeProvider _timeProvider;
-    private readonly ILogger<PasswordResetService> _logger;
+    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly ILogger _logger = Log.ForContext<PasswordResetService>();
 
     public PasswordResetService(
         ApplicationDbContext dbContext,
         IEmailSender emailSender,
         IOptions<ResetPasswordTokenOptions> options,
         TimeProvider timeProvider,
-        ILogger<PasswordResetService> logger
+        IPasswordHasher<User> passwordHasher
     )
     {
         _dbContext = dbContext;
@@ -33,7 +35,7 @@ public sealed class PasswordResetService : IPasswordResetService
         _options = options.Value;
         _securityCodeHashKey = Convert.FromBase64String(_options.SecurityCodeHashKey);
         _timeProvider = timeProvider;
-        _logger = logger;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task RequestPasswordResetAsync(string email, CancellationToken cancellationToken)
@@ -88,12 +90,85 @@ public sealed class PasswordResetService : IPasswordResetService
         {
             // Keep the public response identical for existing and unknown accounts.
             // The user can request another code if delivery fails.
-            _logger.LogError(
+            _logger.Error(
                 exception,
                 "Failed to send a password reset email for user {UserId}.",
                 user.Id
             );
         }
+    }
+
+    public async Task<bool> VerifyPasswordResetAsync(
+        string email,
+        string securityCode,
+        CancellationToken cancellationToken
+    )
+    {
+        string normalizedEmail = EmailNormalizer.Normalize(email);
+
+        var user = await _dbContext.Users.SingleOrDefaultAsync(
+            candidate => candidate.Email == normalizedEmail,
+            cancellationToken
+        );
+
+        if (user is null)
+        {
+            return false;
+        }
+
+        PasswordResetToken? resetToken = await _dbContext.PasswordResetTokens.SingleOrDefaultAsync(
+            token => token.UserId == user.Id,
+            cancellationToken
+        );
+
+        if (resetToken is null || resetToken.ExpiresAt < _timeProvider.GetUtcNow())
+            return false;
+
+        byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
+        return resetToken.SecurityCodeHash.SequenceEqual(securityCodeHash);
+    }
+
+    public async Task<bool> CompleteResetPasswordAsync(
+        string email,
+        string securityCode,
+        string newPassword,
+        CancellationToken cancellationToken
+    )
+    {
+        string normalizedEmail = EmailNormalizer.Normalize(email);
+
+        var user = await _dbContext.Users.SingleOrDefaultAsync(
+            candidate => candidate.Email == normalizedEmail,
+            cancellationToken
+        );
+
+        if (user is null)
+        {
+            return false;
+        }
+
+        PasswordResetToken? resetToken = await _dbContext.PasswordResetTokens.SingleOrDefaultAsync(
+            token => token.UserId == user.Id,
+            cancellationToken
+        );
+
+        if (resetToken is null || resetToken.ExpiresAt < _timeProvider.GetUtcNow())
+            return false;
+
+        byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
+        if (!resetToken.SecurityCodeHash.SequenceEqual(securityCodeHash))
+        {
+            return false;
+        }
+
+        var hashedPassword = _passwordHasher.HashPassword(user, newPassword);
+        user.UpdatePassword(hashedPassword);
+
+        _dbContext.Update(user);
+        _dbContext.PasswordResetTokens.Remove(resetToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 
     private byte[] HashSecurityCode(int userId, string securityCode)
