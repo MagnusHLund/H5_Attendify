@@ -41,11 +41,7 @@ public sealed class PasswordResetService : IPasswordResetService
     public async Task RequestPasswordResetAsync(string email, CancellationToken cancellationToken)
     {
         string normalizedEmail = EmailNormalizer.Normalize(email);
-
-        var user = await _dbContext.Users.SingleOrDefaultAsync(
-            candidate => candidate.Email == normalizedEmail,
-            cancellationToken
-        );
+        User? user = await FindUserByEmailAsync(normalizedEmail, cancellationToken);
 
         if (user is null)
         {
@@ -103,31 +99,13 @@ public sealed class PasswordResetService : IPasswordResetService
         CancellationToken cancellationToken
     )
     {
-        string normalizedEmail = EmailNormalizer.Normalize(email);
-
-        var user = await _dbContext.Users.SingleOrDefaultAsync(
-            candidate => candidate.Email == normalizedEmail,
-            cancellationToken
-        );
-
-        if (user is null)
-        {
-            return false;
-        }
-
-        PasswordResetToken? resetToken = await _dbContext.PasswordResetTokens.SingleOrDefaultAsync(
-            token => token.UserId == user.Id,
-            cancellationToken
-        );
-
-        if (resetToken is null || !resetToken.IsUsableAt(_timeProvider.GetUtcNow()))
+        PasswordResetContext? context = await FindPasswordResetContextAsync(email, cancellationToken);
+        if (context?.Token is not { } resetToken || !IsUsable(resetToken))
             return false;
 
-        byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
-        if (!CryptographicOperations.FixedTimeEquals(resetToken.SecurityCodeHash, securityCodeHash))
+        if (!IsSecurityCodeMatch(context.UserId, resetToken, securityCode))
         {
-            resetToken.RecordFailedAttempt();
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await RecordFailedAttemptAsync(resetToken, cancellationToken);
             return false;
         }
 
@@ -141,47 +119,150 @@ public sealed class PasswordResetService : IPasswordResetService
         CancellationToken cancellationToken
     )
     {
-        string normalizedEmail = EmailNormalizer.Normalize(email);
+        PasswordResetContext? context = await FindPasswordResetContextAsync(email, cancellationToken);
+        if (context?.Token is not { } resetToken || !IsUsable(resetToken))
+            return false;
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(
-            candidate => candidate.Email == normalizedEmail,
+        if (!IsSecurityCodeMatch(context.UserId, resetToken, securityCode))
+        {
+            await RecordFailedAttemptAsync(resetToken, cancellationToken);
+            return false;
+        }
+
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
+
+        return await strategy.ExecuteAsync(() => CompletePasswordResetAttemptAsync(
+            context.UserId,
+            resetToken,
+            newPassword,
+            _timeProvider.GetUtcNow(),
+            cancellationToken
+        ));
+    }
+
+    private async Task<User?> FindUserByEmailAsync(string email, CancellationToken cancellationToken) =>
+        await _dbContext.Users.AsNoTracking().SingleOrDefaultAsync(
+            candidate => candidate.Email == email,
+            cancellationToken
+        );
+
+    private async Task<PasswordResetContext?> FindPasswordResetContextAsync(
+        string email,
+        CancellationToken cancellationToken
+    )
+    {
+        string normalizedEmail = EmailNormalizer.Normalize(email);
+        User? user = await FindUserByEmailAsync(normalizedEmail, cancellationToken);
+
+        if (user is null)
+            return null;
+
+        PasswordResetToken? token = await _dbContext.PasswordResetTokens
+            .AsNoTracking()
+            .SingleOrDefaultAsync(candidate => candidate.UserId == user.Id, cancellationToken);
+
+        return new PasswordResetContext(user.Id, token);
+    }
+
+    private bool IsUsable(PasswordResetToken token) => token.IsUsableAt(_timeProvider.GetUtcNow());
+
+    private bool IsSecurityCodeMatch(
+        int userId,
+        PasswordResetToken resetToken,
+        string securityCode
+    ) => CryptographicOperations.FixedTimeEquals(
+        resetToken.SecurityCodeHash,
+        HashSecurityCode(userId, securityCode)
+    );
+
+    private async Task<bool> CompletePasswordResetAttemptAsync(
+        int userId,
+        PasswordResetToken resetToken,
+        string newPassword,
+        DateTimeOffset now,
+        CancellationToken cancellationToken
+    )
+    {
+        // The execution strategy can retry the entire unit. Start each attempt
+        // with fresh tracked state, and consume the code conditionally in SQL.
+        _dbContext.ChangeTracker.Clear();
+
+        User? user = await _dbContext.Users.SingleOrDefaultAsync(
+            candidate => candidate.Id == userId,
             cancellationToken
         );
 
         if (user is null)
-        {
             return false;
-        }
 
-        PasswordResetToken? resetToken = await _dbContext.PasswordResetTokens.SingleOrDefaultAsync(
-            token => token.UserId == user.Id,
+        string hashedPassword = _passwordHasher.HashPassword(user, newPassword);
+
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(
             cancellationToken
         );
 
-        if (resetToken is null || !resetToken.IsUsableAt(_timeProvider.GetUtcNow()))
+        if (!await TryConsumeResetTokenAsync(userId, resetToken, now, cancellationToken))
             return false;
 
-        byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
-        if (!CryptographicOperations.FixedTimeEquals(resetToken.SecurityCodeHash, securityCodeHash))
-        {
-            resetToken.RecordFailedAttempt();
-            await _dbContext.SaveChangesAsync(cancellationToken);
-            return false;
-        }
-
-        var hashedPassword = _passwordHasher.HashPassword(user, newPassword);
         user.UpdatePassword(hashedPassword);
-
-        List<RefreshToken> refreshTokens = await _dbContext
-            .RefreshTokens.Where(token => token.UserId == user.Id)
-            .ToListAsync(cancellationToken);
-
-        _dbContext.RefreshTokens.RemoveRange(refreshTokens);
-        _dbContext.PasswordResetTokens.Remove(resetToken);
+        await RevokeRefreshTokensAsync(userId, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
 
         return true;
     }
+
+    private async Task<bool> TryConsumeResetTokenAsync(
+        int userId,
+        PasswordResetToken resetToken,
+        DateTimeOffset now,
+        CancellationToken cancellationToken
+    )
+    {
+        int deletedRows = await _dbContext.PasswordResetTokens
+            .Where(token =>
+                token.Id == resetToken.Id
+                && token.UserId == userId
+                && token.SecurityCodeHash == resetToken.SecurityCodeHash
+                && token.ConsumedAt == null
+                && token.FailedAttempts < PasswordResetToken.MaxFailedAttempts
+                && token.ExpiresAt > now
+            )
+            .ExecuteDeleteAsync(cancellationToken);
+
+        return deletedRows == 1;
+    }
+
+    private async Task RevokeRefreshTokensAsync(int userId, CancellationToken cancellationToken) =>
+        await _dbContext.RefreshTokens
+            .Where(token => token.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+    private async Task RecordFailedAttemptAsync(
+        PasswordResetToken resetToken,
+        CancellationToken cancellationToken
+    )
+    {
+        DateTimeOffset now = _timeProvider.GetUtcNow();
+
+        await _dbContext.PasswordResetTokens
+            .Where(token =>
+                token.Id == resetToken.Id
+                && token.SecurityCodeHash == resetToken.SecurityCodeHash
+                && token.ConsumedAt == null
+                && token.FailedAttempts < PasswordResetToken.MaxFailedAttempts
+                && token.ExpiresAt > now
+            )
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(
+                    token => token.FailedAttempts,
+                    token => token.FailedAttempts + 1
+                ),
+                cancellationToken
+            );
+    }
+
+    private sealed record PasswordResetContext(int UserId, PasswordResetToken? Token);
 
     private byte[] HashSecurityCode(int userId, string securityCode)
     {
