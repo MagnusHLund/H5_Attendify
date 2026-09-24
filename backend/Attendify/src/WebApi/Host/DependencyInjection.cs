@@ -199,7 +199,10 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(applicationAssembly, includeInternalTypes: true);
         services.AddScoped<IPasswordResetService, PasswordResetService>();
-        services.AddSingleton<IPasswordResetRequestQueue, PasswordResetRequestQueue>();
+        services.AddSingleton<PasswordResetRequestQueue>();
+        services.AddSingleton<IPasswordResetRequestQueue>(serviceProvider =>
+            serviceProvider.GetRequiredService<PasswordResetRequestQueue>()
+        );
         services.AddHostedService<PasswordResetRequestBackgroundService>();
     }
 }

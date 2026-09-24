@@ -32,6 +32,7 @@ export function ResetPasswordForm() {
   const [securityCode, setSecurityCode] = useState<string>('')
   const [step, setStep] = useState<ResetPasswordStep>('email')
   const [resendCooldown, setResendCooldown] = useState(0)
+  const [isRequestingReset, setIsRequestingReset] = useState(false)
   const [isResending, setIsResending] = useState(false)
 
   useEffect(() => {
@@ -51,6 +52,8 @@ export function ResetPasswordForm() {
 
     // Send recovery code to the email address.
     onSubmit: async ({ value }) => {
+      setIsRequestingReset(true)
+
       try {
         setEmail(value.email)
         await runWithLoading(() => requestResetPassword(value.email))
@@ -58,6 +61,8 @@ export function ResetPasswordForm() {
         setStep('code')
       } catch (err) {
         showError(err, t('error.resetPasswordErrorTitle'))
+      } finally {
+        setIsRequestingReset(false)
       }
     },
   })
@@ -172,7 +177,7 @@ export function ResetPasswordForm() {
         <Button
           type="submit"
           className="reset-password-form__submit"
-          disabled={emailForm.state.isSubmitting}
+          disabled={isRequestingReset}
         >
           {t('reset.sendCode')}
         </Button>
