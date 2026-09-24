@@ -7,7 +7,7 @@ public sealed class ResetPasswordTokenOptions
     public const string SectionName = "ResetPasswordToken";
 
     [Range(5, 60)]
-    public int ExpiresInMinutes { get; set; } = 15;
+    public int LifetimeMinutes { get; set; } = 15;
 
     [Required]
     public string SecurityCodeHashKey { get; set; } = string.Empty;
