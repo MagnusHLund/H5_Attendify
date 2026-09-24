@@ -54,7 +54,7 @@ public sealed class PasswordResetService : IPasswordResetService
 
         string securityCode = GenerateSecurityCode();
         DateTimeOffset now = _timeProvider.GetUtcNow();
-        DateTimeOffset expiresAt = now.AddMinutes(_options.ExpiresInMinutes);
+        DateTimeOffset expiresAt = now.AddMinutes(_options.LifetimeMinutes);
         byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
 
         PasswordResetToken? resetToken = await _dbContext.PasswordResetTokens.SingleOrDefaultAsync(
@@ -80,7 +80,7 @@ public sealed class PasswordResetService : IPasswordResetService
             OutboundEmail outboundEmail = PasswordResetEmailTemplate.Create(
                 normalizedEmail,
                 securityCode,
-                _options.ExpiresInMinutes
+                _options.LifetimeMinutes
             );
 
             await _emailSender.SendAsync(outboundEmail, cancellationToken);
