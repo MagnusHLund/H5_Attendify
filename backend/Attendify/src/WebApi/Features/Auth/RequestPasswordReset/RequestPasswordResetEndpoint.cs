@@ -10,7 +10,6 @@ public sealed class RequestPasswordResetEndpoint(IPasswordResetRequestQueue requ
         Post("/password-reset/request");
         Group<AuthenticationGroup>();
         AllowAnonymous();
-        Options(options => options.RequireRateLimiting(PasswordResetRequestRateLimit.PolicyName));
         Description(x => x.WithName("RequestPasswordReset"));
     }
 
