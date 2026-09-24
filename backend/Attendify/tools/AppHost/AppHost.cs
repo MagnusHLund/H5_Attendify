@@ -2,6 +2,11 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var resendApiKey = builder.AddParameter("ResendApiKey", secret: true);
+var emailFromAddress = builder.AddParameter("EmailFromAddress");
+var emailFromName = builder.AddParameter("EmailFromName");
+var passwordResetCodeHashKey = builder.AddParameter("PasswordResetCodeHashKey", secret: true);
+
 var controllerName = builder.AddParameter("PrivacyPolicyControllerName");
 var controllerAddress = builder.AddParameter("PrivacyPolicyControllerAddress");
 var controllerEmail = builder.AddParameter("PrivacyPolicyControllerEmail");
@@ -41,6 +46,10 @@ var api = builder
     .AddProject<WebApi>("api")
     .WithExternalHttpEndpoints()
     .WithReference(db)
+    .WithEnvironment("Resend__ApiKey", resendApiKey)
+    .WithEnvironment("Email__FromAddress", emailFromAddress)
+    .WithEnvironment("Email__FromName", emailFromName)
+    .WithEnvironment("ResetPasswordToken__SecurityCodeHashKey", passwordResetCodeHashKey)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
     .WaitForCompletion(migrationService);

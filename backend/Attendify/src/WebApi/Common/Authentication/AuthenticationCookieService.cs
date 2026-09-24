@@ -28,7 +28,7 @@ public class AuthenticationCookieService : IAuthenticationCookieService
         _httpContextAccessor?.HttpContext?.Response?.Cookies.Append(
             AccessTokenCookieName,
             accessToken,
-            CreateCookieOptions(_jwtOptions.AccessTokenLifetimeMinutes)
+            CreateCookieOptions(_jwtOptions.LifetimeMinutes)
         );
     }
 
