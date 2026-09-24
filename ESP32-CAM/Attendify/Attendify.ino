@@ -3,6 +3,7 @@
 #include "HttpService.h"
 #include "WiFiManager.h"
 #include "CameraController.h"
+#include <WiFiClientSecure.h>
 
 WiFiManager* _wifiManager;
 HttpService httpService(API_BASE);

@@ -10,3 +10,4 @@
 
 // API/HTTP
 #define API_BASE ""
+static const char API_ROOT_CA[]

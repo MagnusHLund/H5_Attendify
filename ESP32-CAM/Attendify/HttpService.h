@@ -18,9 +18,16 @@ class HttpService
     HttpResponse request(
         const char* method,
         const char* endpoint,
-        uint8_t* body = nullptr,
-        size_t bodyLength = 0,
-        const char* contentType = nullptr
+        uint8_t* body,
+        size_t bodyLength,
+        const char* contentType
+    );
+
+    HttpResponse request(
+        const char* method,
+        const char* endpoint,
+        const String& body,
+        const char* contentType
     );
 
   private:
