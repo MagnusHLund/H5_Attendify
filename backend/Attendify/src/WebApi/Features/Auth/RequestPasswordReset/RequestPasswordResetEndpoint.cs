@@ -2,7 +2,7 @@ using Attendify.Features.Auth.PasswordReset;
 
 namespace Attendify.Features.Auth.RequestPasswordReset;
 
-public sealed class RequestPasswordResetEndpoint(IPasswordResetService passwordResetService)
+public sealed class RequestPasswordResetEndpoint(IPasswordResetRequestQueue requestQueue)
     : Endpoint<RequestPasswordResetRequest>
 {
     public override void Configure()
@@ -10,12 +10,13 @@ public sealed class RequestPasswordResetEndpoint(IPasswordResetService passwordR
         Post("/password-reset/request");
         Group<AuthenticationGroup>();
         AllowAnonymous();
+        Options(options => options.RequireRateLimiting(PasswordResetRequestRateLimit.PolicyName));
         Description(x => x.WithName("RequestPasswordReset"));
     }
 
     public override async Task HandleAsync(RequestPasswordResetRequest req, CancellationToken ct)
     {
-        await passwordResetService.RequestPasswordResetAsync(req.Email, ct);
+        await requestQueue.EnqueueAsync(req.Email, ct);
         await Send.NoContentAsync(ct);
     }
 }
