@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
 import { Button, TextInput, useErrorModal } from '../../../../components/ui'
@@ -16,13 +16,27 @@ import {
 } from '../../api/resetPassword'
 
 type ResetPasswordStep = 'email' | 'code' | 'password'
+const RESEND_COOLDOWN_SECONDS = 30
 
 export function ResetPasswordForm() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { showError } = useErrorModal()
+  const [email, setEmail] = useState<string>('')
   const [securityCode, setSecurityCode] = useState<string>('')
   const [step, setStep] = useState<ResetPasswordStep>('email')
+  const [resendCooldown, setResendCooldown] = useState(0)
+  const [isResending, setIsResending] = useState(false)
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return
+
+    const timeoutId = window.setTimeout(() => {
+      setResendCooldown((remaining) => Math.max(remaining - 1, 0))
+    }, 1000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [resendCooldown])
 
   const emailForm = useForm({
     defaultValues: {
@@ -32,7 +46,9 @@ export function ResetPasswordForm() {
     // Send recovery code to the email address.
     onSubmit: async ({ value }) => {
       try {
+        setEmail(value.email)
         await requestResetPassword(value.email)
+        setResendCooldown(RESEND_COOLDOWN_SECONDS)
         setStep('code')
       } catch (err) {
         showError(err, t('error.resetPasswordErrorTitle'))
@@ -49,7 +65,7 @@ export function ResetPasswordForm() {
     onSubmit: async ({ value }) => {
       try {
         setSecurityCode(value.code)
-        await verifyResetPassword(value.code)
+        await verifyResetPassword(email, value.code)
         setStep('password')
       } catch (err) {
         showError(err, t('error.resetPasswordErrorTitle'))
@@ -70,7 +86,7 @@ export function ResetPasswordForm() {
           throw new Error('Passwords do not match')
         }
 
-        await completeResetPassword(securityCode, value.password)
+        await completeResetPassword(email, securityCode, value.password)
 
         navigate({
           to: '/login',
@@ -88,8 +104,19 @@ export function ResetPasswordForm() {
     })
   }
 
-  function handleResendCode() {
-    // TODO: Resend recovery code to `email`.
+  async function handleResendCode() {
+    if (isResending || resendCooldown > 0) return
+
+    setIsResending(true)
+
+    try {
+      await requestResetPassword(email)
+      setResendCooldown(RESEND_COOLDOWN_SECONDS)
+    } catch (err) {
+      showError(err, t('error.resetPasswordErrorTitle'))
+    } finally {
+      setIsResending(false)
+    }
   }
 
   if (step === 'email') {
@@ -199,8 +226,16 @@ export function ResetPasswordForm() {
         </Button>
 
         <div className="reset-password-form__resend">
-          <button type="button" onClick={handleResendCode}>
-            {t('reset.resendCode')}
+          <button
+            type="button"
+            onClick={() => void handleResendCode()}
+            disabled={resendCooldown > 0 || isResending}
+          >
+            {isResending
+              ? t('reset.resendingCode')
+              : resendCooldown > 0
+                ? t('reset.resendCodeCooldown', { seconds: resendCooldown })
+                : t('reset.resendCode')}
           </button>
         </div>
 

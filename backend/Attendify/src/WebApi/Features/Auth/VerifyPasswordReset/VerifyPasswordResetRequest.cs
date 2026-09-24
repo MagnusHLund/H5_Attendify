@@ -1,3 +1,3 @@
 namespace Attendify.Features.Auth.VerifyPasswordReset;
 
-public sealed record VerifyPasswordResetRequest(string SecurityCode);
+public sealed record VerifyPasswordResetRequest(string Email, string SecurityCode);

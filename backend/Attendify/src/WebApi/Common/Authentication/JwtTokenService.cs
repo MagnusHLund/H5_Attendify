@@ -17,7 +17,7 @@ public sealed class JwtTokenService : IJwtTokenService
     public string GenerateToken(IReadOnlyList<Claim> claims)
     {
         DateTime issuedAt = DateTime.UtcNow;
-        DateTime expiresAt = issuedAt.AddMinutes(_jwtOptions.AccessTokenLifetimeMinutes);
+        DateTime expiresAt = issuedAt.AddMinutes(_jwtOptions.LifetimeMinutes);
 
         byte[] secret = System.Text.Encoding.UTF8.GetBytes(_jwtOptions.SigningKey);
         SymmetricSecurityKey key = new SymmetricSecurityKey(secret);

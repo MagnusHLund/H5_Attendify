@@ -15,6 +15,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"></PackageReference>
     <PackageReference Include="ErrorOr"></PackageReference>
+    <PackageReference Include="Resend" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Vogen"></PackageReference>
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore"></PackageReference>
@@ -28,6 +29,12 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Attendify.ArchitectureTests"></InternalsVisibleTo>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Features\Auth\PasswordReset\Templates\PasswordResetCode.html"
+                      LogicalName="Attendify.Features.Auth.PasswordReset.Templates.PasswordResetCode.html" />
+    <EmbeddedResource Include="..\..\..\..\webapp\Attendify\public\internal\logos\Attendify-large.png"
+                      LogicalName="Attendify.Features.Auth.PasswordReset.Templates.Attendify-large.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj"></ProjectReference>

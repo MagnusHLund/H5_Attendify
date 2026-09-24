@@ -1,16 +1,19 @@
 ﻿using System.Text;
 using Attendify.Common.Authentication;
 using Attendify.Common.Domain.Users;
+using Attendify.Common.Email;
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
 using Attendify.Features.Attendance.CreateAttendance;
+using Attendify.Features.Auth.PasswordReset;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Resend;
 
 namespace Attendify.Host;
 
@@ -21,6 +24,24 @@ public static class DependencyInjection
         var services = builder.Services;
 
         services.AddHttpContextAccessor();
+
+        string resendApiKey =
+            builder.Configuration.GetRequiredSection("Resend")["ApiKey"]
+            ?? throw new InvalidOperationException("Resend:ApiKey is required.");
+
+        services.AddResend(options => options.ApiToken = resendApiKey);
+
+        IConfigurationSection emailSection = builder.Configuration.GetRequiredSection(
+            EmailOptions.SectionName
+        );
+
+        services
+            .AddOptions<EmailOptions>()
+            .Bind(emailSection)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddScoped<IEmailSender, ResendEmailSender>();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddDataProtection();
@@ -54,6 +75,10 @@ public static class DependencyInjection
             RefreshTokenOptions.SectionName
         );
 
+        IConfigurationSection resetPasswordTokenSection = builder.Configuration.GetRequiredSection(
+            ResetPasswordTokenOptions.SectionName
+        );
+
         JwtOptions jwtOptions =
             jwtSection.Get<JwtOptions>()
             ?? throw new InvalidOperationException("JWT configuration is required.");
@@ -66,7 +91,17 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationCookieService, AuthenticationCookieService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
-        
+
+        services
+            .AddOptions<ResetPasswordTokenOptions>()
+            .Bind(resetPasswordTokenSection)
+            .ValidateDataAnnotations()
+            .Validate(
+                options => options.HasValidSecurityCodeHashKey(),
+                "ResetPasswordToken:SecurityCodeHashKey must be Base64 for exactly 32 bytes."
+            )
+            .ValidateOnStart();
+
         services
             .AddOptions<JwtOptions>()
             .Bind(jwtSection)
@@ -144,5 +179,6 @@ public static class DependencyInjection
         var services = builder.Services;
 
         services.AddValidatorsFromAssembly(applicationAssembly, includeInternalTypes: true);
+        services.AddScoped<IPasswordResetService, PasswordResetService>();
     }
 }
