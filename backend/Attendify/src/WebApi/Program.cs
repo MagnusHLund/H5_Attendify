@@ -1,8 +1,7 @@
 using System.Reflection;
-using FastEndpoints.Swagger;
-using Attendify.Host.Extensions;
 using Attendify.Host;
-using Serilog;
+using Attendify.Host.Extensions;
+using FastEndpoints.Swagger;
 
 var appAssembly = Assembly.GetExecutingAssembly();
 var builder = WebApplication.CreateBuilder(args);
@@ -41,7 +40,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
