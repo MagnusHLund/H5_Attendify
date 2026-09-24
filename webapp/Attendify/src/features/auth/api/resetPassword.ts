@@ -14,8 +14,11 @@ export async function requestResetPassword(email: string): Promise<void> {
   }
 }
 
-export async function verifyResetPassword(securityCode: string): Promise<void> {
-  const payload = { securityCode }
+export async function verifyResetPassword(
+  email: string,
+  securityCode: string,
+): Promise<void> {
+  const payload = { email, securityCode }
 
   const response = await fetch('/api/auth/password-reset/verify', {
     method: 'POST',
@@ -31,10 +34,11 @@ export async function verifyResetPassword(securityCode: string): Promise<void> {
 }
 
 export async function completeResetPassword(
+  email: string,
   securityCode: string,
   newPassword: string,
 ): Promise<void> {
-  const payload = { securityCode, newPassword }
+  const payload = { email, securityCode, newPassword }
 
   const response = await fetch('/api/auth/password-reset/complete', {
     method: 'POST',

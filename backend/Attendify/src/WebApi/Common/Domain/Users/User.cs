@@ -1,8 +1,8 @@
-using Attendify.Common.Domain.Base;
 using Attendify.Common.Domain.Attendance;
 using Attendify.Common.Domain.Authentication;
-using Attendify.Common.Domain.FacialRecognition;
+using Attendify.Common.Domain.Base;
 using Attendify.Common.Domain.EducationalInstitute;
+using Attendify.Common.Domain.FacialRecognition;
 using EducationalInstituteEntity = Attendify.Common.Domain.EducationalInstitute.EducationalInstitute;
 
 namespace Attendify.Common.Domain.Users;
@@ -43,7 +43,11 @@ public sealed class User : AggregateRoot<int>
         set
         {
             ThrowIfNullOrWhiteSpace(value, nameof(EncryptedStudentId));
-            ThrowIfGreaterThan(value.Length, EncryptedStudentIdMaxLength, nameof(EncryptedStudentId));
+            ThrowIfGreaterThan(
+                value.Length,
+                EncryptedStudentIdMaxLength,
+                nameof(EncryptedStudentId)
+            );
             field = value;
         }
     } = null!;
@@ -61,6 +65,8 @@ public sealed class User : AggregateRoot<int>
     public ICollection<AdminAccessCode> AdminAccessCodes { get; } = [];
 
     public ICollection<RefreshToken> RefreshTokens { get; } = [];
+
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; } = [];
 
     private User() { }
 
