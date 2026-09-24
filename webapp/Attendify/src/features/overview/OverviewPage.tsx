@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Spinner, useErrorModal } from '../../components/ui'
+import { useErrorModal } from '../../components/ui'
 import { AttendanceTable } from './components/AttendanceTable/AttendanceTable'
 import type { AttendanceRecord } from './types/AttendanceRecord'
 import { OverviewFilters } from './components/OverviewFilters/OverviewFilters'
@@ -29,7 +29,7 @@ export function OverviewPage() {
   const {
     data: attendanceData,
     error: attendanceError,
-    isLoading: isAttendanceLoading,
+    isFetching: isAttendanceFetching,
   } = useAttendance({
     studentId,
     pageIndex,
@@ -71,33 +71,26 @@ export function OverviewPage() {
 
   return (
     <div className="overview-page">
-      {(isUserLoading || isAttendanceLoading) && (
-        <div className="overview-page__loading">
-          <Spinner size="large" label={t('overview.loading')} />
-        </div>
-      )}
-
       {isAdministrator && studentId && (
         <p className="overview-page__student">
           {t('overview.student', { studentId })}
         </p>
       )}
 
-      {!isUserLoading && !isAttendanceLoading && (
-        <>
-          <OverviewFilters
-            pageSize={pageSize}
-            onPageSizeChange={handlePageSizeChange}
-          />
+      <>
+        <OverviewFilters
+          pageSize={pageSize}
+          onPageSizeChange={handlePageSizeChange}
+        />
 
-          <AttendanceTable
-            data={attendanceRecords}
-            pageIndex={pageIndex}
-            pageSize={pageSize}
-            onPageChange={setPageIndex}
-          />
-        </>
-      )}
+        <AttendanceTable
+          data={attendanceRecords}
+          isLoading={isUserLoading || isAttendanceFetching}
+          pageIndex={pageIndex}
+          pageSize={pageSize}
+          onPageChange={setPageIndex}
+        />
+      </>
     </div>
   )
 }
