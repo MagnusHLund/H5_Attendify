@@ -1,5 +1,10 @@
 import { useForm } from '@tanstack/react-form'
-import { Button, FileInput, useErrorModal } from '../../../../components/ui'
+import {
+  Button,
+  FileInput,
+  useErrorModal,
+  useLoadingOverlay,
+} from '../../../../components/ui'
 import { useUpdateFacePhotos } from '../../hooks/useUpdateFacePhotos'
 import { useTranslation } from '../../../../lib/i18n'
 import './FacePhotoForm.scss'
@@ -8,6 +13,7 @@ import { fileToBase64 } from '../../../../lib/encoding/base64'
 export function FacePhotoForm() {
   const updateFacePhotos = useUpdateFacePhotos()
   const { showError } = useErrorModal()
+  const { runWithLoading } = useLoadingOverlay()
   const { t } = useTranslation()
 
   const form = useForm({
@@ -19,10 +25,14 @@ export function FacePhotoForm() {
 
     onSubmit: async ({ value }) => {
       try {
-        await updateFacePhotos.mutateAsync({
-          straightPhoto: await fileToBase64(value.straightPhoto!),
-          leftPhoto: await fileToBase64(value.leftPhoto!),
-          rightPhoto: await fileToBase64(value.rightPhoto!),
+        await runWithLoading(async () => {
+          const photos = {
+            straightPhoto: await fileToBase64(value.straightPhoto!),
+            leftPhoto: await fileToBase64(value.leftPhoto!),
+            rightPhoto: await fileToBase64(value.rightPhoto!),
+          }
+
+          await updateFacePhotos.mutateAsync(photos)
         })
       } catch (error) {
         showError(error, t('error.picturesTitle'), t('error.picturesMessage'))
@@ -117,7 +127,7 @@ export function FacePhotoForm() {
       <Button
         type="submit"
         className="face-photo-form__submit"
-        loading={form.state.isSubmitting}
+        disabled={form.state.isSubmitting}
       >
         {t('settings.savePictures')}
       </Button>

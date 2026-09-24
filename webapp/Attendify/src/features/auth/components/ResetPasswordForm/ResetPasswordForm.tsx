@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { Button, TextInput, useErrorModal } from '../../../../components/ui'
+import {
+  Button,
+  TextInput,
+  useErrorModal,
+  useLoadingOverlay,
+} from '../../../../components/ui'
 import {
   required,
   validEmail,
@@ -22,6 +27,7 @@ export function ResetPasswordForm() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { showError } = useErrorModal()
+  const { runWithLoading } = useLoadingOverlay()
   const [email, setEmail] = useState<string>('')
   const [securityCode, setSecurityCode] = useState<string>('')
   const [step, setStep] = useState<ResetPasswordStep>('email')
@@ -47,7 +53,7 @@ export function ResetPasswordForm() {
     onSubmit: async ({ value }) => {
       try {
         setEmail(value.email)
-        await requestResetPassword(value.email)
+        await runWithLoading(() => requestResetPassword(value.email))
         setResendCooldown(RESEND_COOLDOWN_SECONDS)
         setStep('code')
       } catch (err) {
@@ -65,7 +71,7 @@ export function ResetPasswordForm() {
     onSubmit: async ({ value }) => {
       try {
         setSecurityCode(value.code)
-        await verifyResetPassword(email, value.code)
+        await runWithLoading(() => verifyResetPassword(email, value.code))
         setStep('password')
       } catch (err) {
         showError(err, t('error.resetPasswordErrorTitle'))
@@ -86,7 +92,9 @@ export function ResetPasswordForm() {
           throw new Error('Passwords do not match')
         }
 
-        await completeResetPassword(email, securityCode, value.password)
+        await runWithLoading(() =>
+          completeResetPassword(email, securityCode, value.password),
+        )
 
         navigate({
           to: '/login',
@@ -110,7 +118,7 @@ export function ResetPasswordForm() {
     setIsResending(true)
 
     try {
-      await requestResetPassword(email)
+      await runWithLoading(() => requestResetPassword(email))
       setResendCooldown(RESEND_COOLDOWN_SECONDS)
     } catch (err) {
       showError(err, t('error.resetPasswordErrorTitle'))
@@ -164,7 +172,7 @@ export function ResetPasswordForm() {
         <Button
           type="submit"
           className="reset-password-form__submit"
-          loading={emailForm.state.isSubmitting}
+          disabled={emailForm.state.isSubmitting}
         >
           {t('reset.sendCode')}
         </Button>
@@ -220,7 +228,7 @@ export function ResetPasswordForm() {
         <Button
           type="submit"
           className="reset-password-form__submit"
-          loading={codeForm.state.isSubmitting}
+          disabled={codeForm.state.isSubmitting}
         >
           {t('reset.submit')}
         </Button>
@@ -321,7 +329,7 @@ export function ResetPasswordForm() {
       <Button
         type="submit"
         className="reset-password-form__submit"
-        loading={passwordForm.state.isSubmitting}
+        disabled={passwordForm.state.isSubmitting}
       >
         {t('reset.savePassword')}
       </Button>

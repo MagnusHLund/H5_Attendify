@@ -6,6 +6,10 @@ export {
   ErrorModalProvider,
   useErrorModal,
 } from './ErrorModal/ErrorModalProvider'
+export {
+  LoadingOverlayProvider,
+  useLoadingOverlay,
+} from './LoadingOverlay/LoadingOverlayProvider'
 export { FileInput } from './FileInput/FileInput'
 export { Image } from './Image/Image'
 export { LanguageSwitcher } from './LanguageSwitcher/LanguageSwitcher'

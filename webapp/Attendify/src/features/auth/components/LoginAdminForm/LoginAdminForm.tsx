@@ -1,7 +1,12 @@
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
 
-import { Button, TextInput, useErrorModal } from '../../../../components/ui'
+import {
+  Button,
+  TextInput,
+  useErrorModal,
+  useLoadingOverlay,
+} from '../../../../components/ui'
 import { loginWithStudentAccessCode } from '../../api/loginWithStudentAccessCode'
 import { required } from '../../../../lib/validation'
 import { useTranslation } from '../../../../lib/i18n'
@@ -10,6 +15,7 @@ import './LoginAdminForm.scss'
 export function LoginAdminForm() {
   const navigate = useNavigate()
   const { showError } = useErrorModal()
+  const { runWithLoading } = useLoadingOverlay()
   const { t } = useTranslation()
 
   const form = useForm({
@@ -19,7 +25,9 @@ export function LoginAdminForm() {
 
     onSubmit: async ({ value }) => {
       try {
-        await loginWithStudentAccessCode(value.accessCode)
+        await runWithLoading(() =>
+          loginWithStudentAccessCode(value.accessCode),
+        )
         navigate({
           to: '/overview',
         })
@@ -82,7 +90,7 @@ export function LoginAdminForm() {
       <Button
         type="submit"
         className="login-admin-form__submit"
-        loading={form.state.isSubmitting}
+        disabled={form.state.isSubmitting}
       >
         {t('auth.login')}
       </Button>

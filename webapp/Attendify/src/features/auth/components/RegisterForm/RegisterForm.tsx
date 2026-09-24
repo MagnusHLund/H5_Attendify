@@ -8,6 +8,7 @@ import {
   Spinner,
   TextInput,
   useErrorModal,
+  useLoadingOverlay,
 } from '../../../../components/ui'
 import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
 import { fileToBase64 } from '../../../../lib/encoding/base64'
@@ -25,6 +26,7 @@ type RegistrationStep = 'details' | 'photos'
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
   const { showError } = useErrorModal()
+  const { runWithLoading } = useLoadingOverlay()
   const navigate = useNavigate()
   const {
     data: educationalInstitutes,
@@ -83,15 +85,19 @@ export function RegisterForm() {
       }
 
       try {
-        await registerStudent({
-          email: detailsForm.state.values.email,
-          password: detailsForm.state.values.password,
-          educationalInstituteId:
-            detailsForm.state.values.educationalInstituteId,
-          studentId: detailsForm.state.values.studentId,
-          straightPhoto: await fileToBase64(value.straightPhoto),
-          leftPhoto: await fileToBase64(value.leftPhoto),
-          rightPhoto: await fileToBase64(value.rightPhoto),
+        await runWithLoading(async () => {
+          const registration = {
+            email: detailsForm.state.values.email,
+            password: detailsForm.state.values.password,
+            educationalInstituteId:
+              detailsForm.state.values.educationalInstituteId,
+            studentId: detailsForm.state.values.studentId,
+            straightPhoto: await fileToBase64(value.straightPhoto),
+            leftPhoto: await fileToBase64(value.leftPhoto),
+            rightPhoto: await fileToBase64(value.rightPhoto),
+          }
+
+          await registerStudent(registration)
         })
 
         await navigate({ to: '/overview' })
@@ -276,9 +282,9 @@ export function RegisterForm() {
         </div>
 
         <Button
-          type="submit"
-          className="register-form__submit"
-          loading={detailsForm.state.isSubmitting}
+        type="submit"
+        className="register-form__submit"
+        disabled={detailsForm.state.isSubmitting}
         >
           {t('common.next')}
         </Button>
@@ -369,7 +375,7 @@ export function RegisterForm() {
       <Button
         type="submit"
         className="register-form__submit"
-        loading={photosForm.state.isSubmitting}
+        disabled={photosForm.state.isSubmitting}
       >
         {t('auth.completeRegistration')}
       </Button>
