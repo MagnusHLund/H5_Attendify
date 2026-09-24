@@ -120,11 +120,18 @@ public sealed class PasswordResetService : IPasswordResetService
             cancellationToken
         );
 
-        if (resetToken is null || resetToken.ExpiresAt < _timeProvider.GetUtcNow())
+        if (resetToken is null || !resetToken.IsUsableAt(_timeProvider.GetUtcNow()))
             return false;
 
         byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
-        return resetToken.SecurityCodeHash.SequenceEqual(securityCodeHash);
+        if (!CryptographicOperations.FixedTimeEquals(resetToken.SecurityCodeHash, securityCodeHash))
+        {
+            resetToken.RecordFailedAttempt();
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return false;
+        }
+
+        return true;
     }
 
     public async Task<bool> CompleteResetPasswordAsync(
@@ -151,19 +158,25 @@ public sealed class PasswordResetService : IPasswordResetService
             cancellationToken
         );
 
-        if (resetToken is null || resetToken.ExpiresAt < _timeProvider.GetUtcNow())
+        if (resetToken is null || !resetToken.IsUsableAt(_timeProvider.GetUtcNow()))
             return false;
 
         byte[] securityCodeHash = HashSecurityCode(user.Id, securityCode);
-        if (!resetToken.SecurityCodeHash.SequenceEqual(securityCodeHash))
+        if (!CryptographicOperations.FixedTimeEquals(resetToken.SecurityCodeHash, securityCodeHash))
         {
+            resetToken.RecordFailedAttempt();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return false;
         }
 
         var hashedPassword = _passwordHasher.HashPassword(user, newPassword);
         user.UpdatePassword(hashedPassword);
 
-        _dbContext.Update(user);
+        List<RefreshToken> refreshTokens = await _dbContext
+            .RefreshTokens.Where(token => token.UserId == user.Id)
+            .ToListAsync(cancellationToken);
+
+        _dbContext.RefreshTokens.RemoveRange(refreshTokens);
         _dbContext.PasswordResetTokens.Remove(resetToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
