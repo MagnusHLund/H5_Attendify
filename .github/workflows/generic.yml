@@ -10,6 +10,8 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  Parameters__CloudflareTunnelName: AttendifyCiCd
+  Parameters__Hostname: attendify.online
 
 jobs:
   test:
@@ -63,7 +65,7 @@ jobs:
   deploy:
     needs: push
     if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: production
     container:
       image: ghcr.io/magnushlund/cicd:latest

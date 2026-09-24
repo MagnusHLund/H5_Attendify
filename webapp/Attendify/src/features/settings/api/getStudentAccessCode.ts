@@ -1,7 +1,8 @@
+import { fetchApi } from '../../../lib/api/client'
 import type { StudentAccessCode } from '../types/studentAccessCode'
 
 export async function getStudentAccessCode(): Promise<StudentAccessCode> {
-  const response = await fetch('/api/settings/student-access-code', {
+  const response = await fetchApi('/api/settings/student-access-code', {
     credentials: 'include',
   })
 

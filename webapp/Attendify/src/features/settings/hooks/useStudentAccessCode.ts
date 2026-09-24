@@ -5,5 +5,6 @@ export function useStudentAccessCode() {
   return useQuery({
     queryKey: ['student-access-code'],
     queryFn: getStudentAccessCode,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 }

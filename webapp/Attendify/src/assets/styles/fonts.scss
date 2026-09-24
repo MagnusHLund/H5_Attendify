@@ -1,11 +1,8 @@
 // Plus Jakarta Sans
-
-$font-directory: '../fonts';
-
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-ExtraLight.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-ExtraLight.woff2')
+    format('woff2');
   font-weight: 200;
   font-style: normal;
   font-display: swap;
@@ -13,8 +10,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-ExtraLightItalic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-ExtraLightItalic.woff2')
+    format('woff2');
   font-weight: 200;
   font-style: italic;
   font-display: swap;
@@ -22,8 +19,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-Light.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-Light.woff2')
+    format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -31,8 +28,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-LightItalic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-LightItalic.woff2')
+    format('woff2');
   font-weight: 300;
   font-style: italic;
   font-display: swap;
@@ -40,8 +37,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-Regular.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-Regular.woff2')
+    format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -49,8 +46,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-Italic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-Italic.woff2')
+    format('woff2');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -58,8 +55,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-Medium.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-Medium.woff2')
+    format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -67,8 +64,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-MediumItalic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-MediumItalic.woff2')
+    format('woff2');
   font-weight: 500;
   font-style: italic;
   font-display: swap;
@@ -76,8 +73,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-SemiBold.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-SemiBold.woff2')
+    format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -85,8 +82,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-SemiBoldItalic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-SemiBoldItalic.woff2')
+    format('woff2');
   font-weight: 600;
   font-style: italic;
   font-display: swap;
@@ -94,8 +91,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-Bold.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-Bold.woff2')
+    format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -103,8 +100,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-BoldItalic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-BoldItalic.woff2')
+    format('woff2');
   font-weight: 700;
   font-style: italic;
   font-display: swap;
@@ -112,8 +109,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-ExtraBold.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-ExtraBold.woff2')
+    format('woff2');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -121,8 +118,8 @@ $font-directory: '../fonts';
 
 @font-face {
   font-family: 'Plus Jakarta Sans';
-  src: url('#{$font-directory}/PlusJakartaSans/PlusJakartaSans-ExtraBoldItalic.ttf')
-    format('truetype');
+  src: url('/src/assets/fonts/PlusJakartaSans/PlusJakartaSans-ExtraBoldItalic.woff2')
+    format('woff2');
   font-weight: 800;
   font-style: italic;
   font-display: swap;

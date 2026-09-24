@@ -1,8 +1,13 @@
-export async function isAuthenticated(): Promise<boolean> {
-  // TODO: We need an endpoint to verify authentication status
-  const response = await fetch('/api/auth/me', {
-    credentials: 'include',
-  })
+import { fetchApi } from './api/client'
 
-  return response.ok
+export async function isAuthenticated(): Promise<boolean> {
+  try {
+    const response = await fetchApi('/api/auth/me', {
+      credentials: 'include',
+    })
+
+    return response.ok
+  } catch {
+    return false
+  }
 }

@@ -9,7 +9,7 @@ interface SidebarProps {
   menuButtonRef: RefObject<HTMLButtonElement | null>
   onClose: () => void
   onLogout: () => void
-  userRole: 'student' | 'administrator'
+  userRole: 'student' | 'school_administrator'
 }
 
 export function Sidebar({
@@ -128,7 +128,7 @@ export function Sidebar({
             </Link>
           )}
 
-          {userRole === 'administrator' && <LanguageSwitcher />}
+          {userRole === 'school_administrator' && <LanguageSwitcher />}
 
           <button
             className="sidebar__action sidebar__action--logout"

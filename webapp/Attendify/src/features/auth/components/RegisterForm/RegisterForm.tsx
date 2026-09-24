@@ -1,33 +1,59 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   Button,
   Dropdown,
   FileInput,
+  Spinner,
   TextInput,
+  useErrorModal,
 } from '../../../../components/ui'
+import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
+import { fileToBase64 } from '../../../../lib/encoding/base64'
 import {
   minPasswordLength,
   required,
   validEmail,
 } from '../../../../lib/validation'
 import { useTranslation } from '../../../../lib/i18n'
+import { registerStudent } from '../../api/registerStudent'
 import './RegisterForm.scss'
 
 type RegistrationStep = 'details' | 'photos'
 
-interface EducationalInstitute {
-  id: string
-  name: string
-}
-
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
+  const { showError } = useErrorModal()
+  const navigate = useNavigate()
+  const {
+    data: educationalInstitutes,
+    isPending,
+    isError,
+  } = useEducationalInstitutes()
   const { t } = useTranslation()
 
-  // This will eventually come from the API.
-  const educationalInstitutes: EducationalInstitute[] = []
+  const institutesErrorShown = useRef(false)
+
+  const institutesUnavailable =
+    !isPending &&
+    (isError || !educationalInstitutes || educationalInstitutes.length === 0)
+
+  useEffect(() => {
+    if (!institutesUnavailable) {
+      institutesErrorShown.current = false
+      return
+    }
+
+    if (institutesErrorShown.current) return
+
+    institutesErrorShown.current = true
+    showError(
+      new Error(t('error.educationalInstitutesNotFound')),
+      t('error.educationalInstitutesNotFoundTitle'),
+      t('error.educationalInstitutesNotFound'),
+    )
+  }, [institutesUnavailable, showError, t])
 
   const detailsForm = useForm({
     defaultValues: {
@@ -38,13 +64,9 @@ export function RegisterForm() {
       studentId: '',
     },
 
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       // The details are valid, so move to the photo step.
       setStep('photos')
-
-      // The values remain available in detailsForm while this component
-      // is mounted and can be used when the registration is completed.
-      console.log(value)
     },
   })
 
@@ -56,16 +78,46 @@ export function RegisterForm() {
     },
 
     onSubmit: async ({ value }) => {
-      // Registration logic will go here.
-      console.log({
-        ...detailsForm.state.values,
-        ...value,
-      })
+      if (!value.straightPhoto || !value.leftPhoto || !value.rightPhoto) {
+        return
+      }
+
+      try {
+        await registerStudent({
+          email: detailsForm.state.values.email,
+          password: detailsForm.state.values.password,
+          educationalInstituteId:
+            detailsForm.state.values.educationalInstituteId,
+          studentId: detailsForm.state.values.studentId,
+          straightPhoto: await fileToBase64(value.straightPhoto),
+          leftPhoto: await fileToBase64(value.leftPhoto),
+          rightPhoto: await fileToBase64(value.rightPhoto),
+        })
+
+        await navigate({ to: '/overview' })
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : t('error.registrationFailed')
+
+        showError(
+          new Error(message),
+          t('error.registrationFailedTitle'),
+          t('error.registrationFailed'),
+        )
+      }
     },
   })
 
   function handleBack() {
     setStep('details')
+  }
+
+  if (isPending) {
+    return <Spinner className="register-form__spinner" />
+  }
+
+  if (institutesUnavailable) {
+    return null
   }
 
   if (step === 'details') {

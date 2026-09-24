@@ -15,7 +15,7 @@ interface ErrorDetails {
 }
 
 interface ErrorModalContextValue {
-  showError: (error: unknown, title?: string) => void
+  showError: (error: unknown, title?: string, messageOverride?: string) => void
 }
 
 const ErrorModalContext = createContext<ErrorModalContextValue | null>(null)
@@ -28,12 +28,18 @@ export function ErrorModalProvider({ children }: ErrorModalProviderProps) {
   const { t } = useTranslation()
   const [errorDetails, setErrorDetails] = useState<ErrorDetails | null>(null)
 
-  const showError = useCallback((error: unknown, title?: string) => {
-    const message =
-      error instanceof Error ? error.message : t('error.unexpected')
+  const showError = useCallback(
+    (error: unknown, title?: string, messageOverride?: string) => {
+      const message =
+        messageOverride ??
+        (error instanceof Error ? error.message : t('error.unexpected'))
 
-    setErrorDetails({ message, title })
-  }, [t])
+      setErrorDetails({ message, title })
+
+      console.error(error)
+    },
+    [t],
+  )
 
   const contextValue = useMemo(() => ({ showError }), [showError])
 

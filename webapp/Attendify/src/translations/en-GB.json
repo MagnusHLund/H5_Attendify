@@ -46,8 +46,8 @@
     "alreadyUser": "Already got a user? Login",
     "completeRegistration": "Complete registration",
     "photoStraight": "Take a photo of your face from a straight angle",
-    "photoLeft": "Take a photo of your face from a slight left angle",
-    "photoRight": "Take a photo of your face from a slight right angle"
+    "photoLeft": "Take a photo of your face looking slightly towards the left",
+    "photoRight": "Take a photo of your face looking slightly towards the right"
   },
   "reset": {
     "forgotTitle": "Forgot password",
@@ -124,7 +124,17 @@
     "picturesTitle": "Pictures could not be saved",
     "picturesMessage": "Failed to update face pictures",
     "accessCodeTitle": "Access code could not be loaded",
-    "accessCodeMessage": "Failed to fetch student access code"
+    "accessCodeMessage": "Failed to fetch student access code",
+    "educationalInstitutesNotFoundTitle": "Educational institutes could not be loaded",
+    "educationalInstitutesNotFound": "No educational institutes were found",
+    "registrationFailedTitle": "Registration failed",
+    "registrationFailed": "Something went wrong while creating your account. Please try again.",
+    "loginFailedTitle": "Login failed",
+    "loginFailed": "Invalid email or password",
+    "loginFailedAccessCode": "Invalid student access code",
+    "logoutFailedTitle": "Logout failed",
+    "logoutFailedMessage": "An error occurred while logging out. Please try again.",
+    "resetPasswordErrorTitle": "Error resetting password"
   },
   "accessibility": {
     "copyValue": "Copy value"

@@ -23,7 +23,7 @@ export function OverviewPage() {
   const handledUserErrorRef = useRef<Error | null>(null)
   const handledAttendanceErrorRef = useRef<Error | null>(null)
 
-  const isAdministrator = user?.role === 'administrator'
+  const isAdministrator = user?.role === 'school_administrator'
   const studentId = user?.studentId
 
   const {

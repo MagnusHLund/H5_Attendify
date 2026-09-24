@@ -1,12 +1,15 @@
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
-import { Button, TextInput } from '../../../../components/ui'
+
+import { Button, TextInput, useErrorModal } from '../../../../components/ui'
+import { loginWithStudentAccessCode } from '../../api/loginWithStudentAccessCode'
 import { required } from '../../../../lib/validation'
 import { useTranslation } from '../../../../lib/i18n'
 import './LoginAdminForm.scss'
 
 export function LoginAdminForm() {
   const navigate = useNavigate()
+  const { showError } = useErrorModal()
   const { t } = useTranslation()
 
   const form = useForm({
@@ -15,8 +18,18 @@ export function LoginAdminForm() {
     },
 
     onSubmit: async ({ value }) => {
-      // Administrator login logic will go here.
-      console.log(value)
+      try {
+        await loginWithStudentAccessCode(value.accessCode)
+        navigate({
+          to: '/overview',
+        })
+      } catch (error) {
+        showError(
+          error,
+          t('error.loginFailedTitle'),
+          t('error.loginFailedAccessCode'),
+        )
+      }
     },
   })
 

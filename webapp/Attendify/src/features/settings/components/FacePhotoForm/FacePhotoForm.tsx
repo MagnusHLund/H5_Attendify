@@ -1,12 +1,9 @@
 import { useForm } from '@tanstack/react-form'
-import {
-  Button,
-  FileInput,
-  useErrorModal,
-} from '../../../../components/ui'
+import { Button, FileInput, useErrorModal } from '../../../../components/ui'
 import { useUpdateFacePhotos } from '../../hooks/useUpdateFacePhotos'
 import { useTranslation } from '../../../../lib/i18n'
 import './FacePhotoForm.scss'
+import { fileToBase64 } from '../../../../lib/encoding/base64'
 
 export function FacePhotoForm() {
   const updateFacePhotos = useUpdateFacePhotos()
@@ -23,12 +20,12 @@ export function FacePhotoForm() {
     onSubmit: async ({ value }) => {
       try {
         await updateFacePhotos.mutateAsync({
-          straightPhoto: value.straightPhoto!,
-          leftPhoto: value.leftPhoto!,
-          rightPhoto: value.rightPhoto!,
+          straightPhoto: await fileToBase64(value.straightPhoto!),
+          leftPhoto: await fileToBase64(value.leftPhoto!),
+          rightPhoto: await fileToBase64(value.rightPhoto!),
         })
       } catch (error) {
-        showError(new Error(t('error.picturesMessage')), t('error.picturesTitle'))
+        showError(error, t('error.picturesTitle'), t('error.picturesMessage'))
       }
     },
   })

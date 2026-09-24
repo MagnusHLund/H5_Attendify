@@ -46,8 +46,8 @@
     "alreadyUser": "Har du allerede en bruger? Log ind",
     "completeRegistration": "Færdiggør oprettelse",
     "photoStraight": "Tag et billede af dit ansigt lige forfra",
-    "photoLeft": "Tag et billede af dit ansigt let drejet mod venstre",
-    "photoRight": "Tag et billede af dit ansigt let drejet mod højre"
+    "photoLeft": "Tag et billede af dit ansigt, der kigger let mod venstre",
+    "photoRight": "Tag et billede af dit ansigt, der kigger let mod højre"
   },
   "reset": {
     "forgotTitle": "Glemt adgangskode",
@@ -124,7 +124,17 @@
     "picturesTitle": "Billederne kunne ikke gemmes",
     "picturesMessage": "Ansigtsbillederne kunne ikke opdateres",
     "accessCodeTitle": "Adgangskoden kunne ikke indlæses",
-    "accessCodeMessage": "Elevadgangskoden kunne ikke hentes"
+    "accessCodeMessage": "Elevadgangskoden kunne ikke hentes",
+    "educationalInstitutesNotFoundTitle": "Uddannelsesinstitutioner kunne ikke indlæses",
+    "educationalInstitutesNotFound": "Ingen uddannelsesinstitutioner blev fundet",
+    "registrationFailedTitle": "Registrering mislykkedes",
+    "registrationFailed": "Der opstod en fejl under oprettelsen af din konto. Prøv venligst igen.",
+    "loginFailedTitle": "Login mislykkedes",
+    "loginFailed": "Ugyldig email eller adgangskode",
+    "loginFailedAccessCode": "Ugyldig elevadgangskode",
+    "logoutFailedTitle": "Logout mislykkedes",
+    "logoutFailedMessage": "Der opstod en fejl under logout. Prøv venligst igen.",
+    "resetPasswordErrorTitle": "Fejl ved nulstilling af adgangskode"
   },
   "accessibility": {
     "copyValue": "Kopiér værdi"
