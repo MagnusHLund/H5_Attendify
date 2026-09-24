@@ -2,6 +2,13 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var controllerName = builder.AddParameter("PrivacyPolicyControllerName");
+var controllerAddress = builder.AddParameter("PrivacyPolicyControllerAddress");
+var controllerEmail = builder.AddParameter("PrivacyPolicyControllerEmail");
+var dpoContact = builder.AddParameter("PrivacyPolicyDpoContact");
+var authorityName = builder.AddParameter("PrivacyPolicyAuthorityName");
+var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
+
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
     throw new InvalidOperationException("CloudflareTunnelName is required.");
@@ -40,6 +47,12 @@ var api = builder
 
 var webapp = builder
     .AddViteApp("webapp", "../../../../webapp/Attendify")
+    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_NAME", controllerName)
+    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_ADDRESS", controllerAddress)
+    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_EMAIL", controllerEmail)
+    .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
+    .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
+    .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();
