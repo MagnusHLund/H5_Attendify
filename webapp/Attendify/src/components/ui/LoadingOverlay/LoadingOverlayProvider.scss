@@ -1,3 +1,7 @@
+.loading-overlay-content {
+  display: contents;
+}
+
 .loading-overlay {
   position: fixed;
   z-index: 900;
@@ -8,4 +12,11 @@
 
   background-color: rgba($color-background, 0.76);
   cursor: wait;
+}
+
+.loading-overlay__status {
+  display: grid;
+  place-items: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
 }
