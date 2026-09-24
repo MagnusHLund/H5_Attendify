@@ -7,13 +7,16 @@ using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
 using Attendify.Features.Attendance.CreateAttendance;
 using Attendify.Features.Auth.PasswordReset;
+using Attendify.Features.Auth.RequestPasswordReset;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Resend;
+using System.Threading.RateLimiting;
 
 namespace Attendify.Host;
 
@@ -42,6 +45,25 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddScoped<IEmailSender, ResendEmailSender>();
+
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy(
+                PasswordResetRequestRateLimit.PolicyName,
+                context =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        factory: _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = PasswordResetRequestRateLimit.PermitLimit,
+                            Window = PasswordResetRequestRateLimit.Window,
+                            QueueLimit = 0,
+                            AutoReplenishment = true,
+                        }
+                    )
+            );
+        });
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddDataProtection();
@@ -180,5 +202,7 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(applicationAssembly, includeInternalTypes: true);
         services.AddScoped<IPasswordResetService, PasswordResetService>();
+        services.AddSingleton<IPasswordResetRequestQueue, PasswordResetRequestQueue>();
+        services.AddHostedService<PasswordResetRequestBackgroundService>();
     }
 }

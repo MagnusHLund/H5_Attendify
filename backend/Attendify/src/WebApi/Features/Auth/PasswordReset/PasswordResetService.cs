@@ -49,7 +49,6 @@ public sealed class PasswordResetService : IPasswordResetService
 
         if (user is null)
         {
-            await Task.Delay(600, cancellationToken);
             return;
         }
 
