@@ -1,5 +1,19 @@
 import { useTranslation } from '../../lib/i18n'
+import type { PrivacyPolicyConfiguration } from './components/types/privacyPolicyConfiguration'
 import './PrivacyPolicyPage.scss'
+
+const privacyPolicyConfig: PrivacyPolicyConfiguration = {
+  ControllerName:
+    import.meta.env.VITE_PRIVACY_POLICY_CONTROLLER_NAME?.trim() ?? '',
+  ControllerAddress:
+    import.meta.env.VITE_PRIVACY_POLICY_CONTROLLER_ADDRESS?.trim() ?? '',
+  ControllerEmail:
+    import.meta.env.VITE_PRIVACY_POLICY_CONTROLLER_EMAIL?.trim() ?? '',
+  DpoContact: import.meta.env.VITE_PRIVACY_POLICY_DPO_CONTACT?.trim() || null,
+  AuthorityName:
+    import.meta.env.VITE_PRIVACY_POLICY_AUTHORITY_NAME?.trim() ?? '',
+  AuthorityUrl: import.meta.env.VITE_PRIVACY_POLICY_AUTHORITY_URL?.trim() ?? '',
+}
 
 export function PrivacyPolicyPage() {
   const { t } = useTranslation()
@@ -17,9 +31,39 @@ export function PrivacyPolicyPage() {
           <p>{t('privacy.introduction.text')}</p>
         </section>
 
-        <section>
+        <section className="privacy-policy__controller">
           <h2>{t('privacy.controller.title')}</h2>
-          <p>{t('privacy.controller.text')}</p>
+          <p className="privacy-policy__controller-intro">
+            {t('privacy.controller.intro')}
+          </p>
+
+          <dl className="privacy-policy__controller-details">
+            <div className="privacy-policy__controller-detail">
+              <dt>{t('privacy.controller.name')}</dt>
+              <dd>{privacyPolicyConfig.ControllerName}</dd>
+            </div>
+
+            <div className="privacy-policy__controller-detail">
+              <dt>{t('privacy.controller.address')}</dt>
+              <dd>{privacyPolicyConfig.ControllerAddress}</dd>
+            </div>
+
+            <div className="privacy-policy__controller-detail">
+              <dt>{t('privacy.controller.email')}</dt>
+              <dd>
+                <a href={`mailto:${privacyPolicyConfig.ControllerEmail}`}>
+                  {privacyPolicyConfig.ControllerEmail}
+                </a>
+              </dd>
+            </div>
+
+            {privacyPolicyConfig.DpoContact && (
+              <div className="privacy-policy__controller-detail">
+                <dt>{t('privacy.controller.dpo')}</dt>
+                <dd>{privacyPolicyConfig.DpoContact}</dd>
+              </div>
+            )}
+          </dl>
         </section>
 
         <section>
@@ -90,6 +134,18 @@ export function PrivacyPolicyPage() {
         <section>
           <h2>{t('privacy.requests.title')}</h2>
           <p>{t('privacy.requests.text')}</p>
+        </section>
+
+        <section>
+          <h2>{t('privacy.complaints.title')}</h2>
+          <p>{t('privacy.complaints.intro')}</p>
+
+          {privacyPolicyConfig.AuthorityName &&
+            privacyPolicyConfig.AuthorityUrl && (
+              <a href={privacyPolicyConfig.AuthorityUrl}>
+                {privacyPolicyConfig.AuthorityName}
+              </a>
+            )}
         </section>
 
         <section>
