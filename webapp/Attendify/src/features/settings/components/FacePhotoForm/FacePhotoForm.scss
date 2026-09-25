@@ -62,6 +62,13 @@
   align-self: flex-start;
 }
 
+.face-photo-form__success {
+  margin: 0;
+  color: $color-secondary;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 @media (max-width: 800px) {
   .face-photo-form {
     padding: 1.5rem;
