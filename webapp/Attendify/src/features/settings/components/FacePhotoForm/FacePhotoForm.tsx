@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import {
   Button,
@@ -11,6 +12,8 @@ import './FacePhotoForm.scss'
 import { fileToBase64 } from '../../../../lib/encoding/base64'
 
 export function FacePhotoForm() {
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [fileInputVersion, setFileInputVersion] = useState(0)
   const updateFacePhotos = useUpdateFacePhotos()
   const { showError } = useErrorModal()
   const { runWithLoading } = useLoadingOverlay()
@@ -24,6 +27,8 @@ export function FacePhotoForm() {
     },
 
     onSubmit: async ({ value }) => {
+      setShowSuccess(false)
+
       try {
         await runWithLoading(async () => {
           const photos = {
@@ -34,6 +39,9 @@ export function FacePhotoForm() {
 
           await updateFacePhotos.mutateAsync(photos)
         })
+        form.reset()
+        setFileInputVersion((version) => version + 1)
+        setShowSuccess(true)
       } catch (error) {
         showError(error, t('error.picturesTitle'), t('error.picturesMessage'))
       }
@@ -61,7 +69,7 @@ export function FacePhotoForm() {
 
       <div className="face-photo-form__fields">
         <form.Field
-          name="straightPhoto"
+          name="leftPhoto"
           validators={{
             onChange: ({ value }) =>
               value ? undefined : t('validation.photoRequired'),
@@ -69,7 +77,8 @@ export function FacePhotoForm() {
         >
           {(field) => (
             <FileInput
-              label={t('settings.straight')}
+              key={fileInputVersion}
+              label={t('settings.left')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -82,7 +91,7 @@ export function FacePhotoForm() {
         </form.Field>
 
         <form.Field
-          name="leftPhoto"
+          name="straightPhoto"
           validators={{
             onChange: ({ value }) =>
               value ? undefined : t('validation.photoRequired'),
@@ -90,7 +99,8 @@ export function FacePhotoForm() {
         >
           {(field) => (
             <FileInput
-              label={t('settings.left')}
+              key={fileInputVersion}
+              label={t('settings.straight')}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -111,6 +121,7 @@ export function FacePhotoForm() {
         >
           {(field) => (
             <FileInput
+              key={fileInputVersion}
               label={t('settings.right')}
               accept="image/*"
               onChange={field.handleChange}
@@ -123,6 +134,16 @@ export function FacePhotoForm() {
           )}
         </form.Field>
       </div>
+
+      {showSuccess && (
+        <p
+          className="face-photo-form__success"
+          role="status"
+          aria-live="polite"
+        >
+          {t('settings.picturesUpdated')}
+        </p>
+      )}
 
       <Button
         type="submit"
