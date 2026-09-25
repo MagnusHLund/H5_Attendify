@@ -1,5 +1,5 @@
 #include "HttpService.h"
-#include "config.h"
+#include "Config.h"
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
@@ -11,8 +11,8 @@ HttpService::HttpService(const char* baseUrl)
 
 bool HttpResponse::isSuccessful() const
 {
-    Serial.println(
-        "Request succeeded with response code: " + String(statusCode)
+Serial.println(
+        "Request returned response code: " + String(statusCode)
     );
 
     return statusCode >= 200 && statusCode < 300;
@@ -56,9 +56,8 @@ HttpResponse HttpService::request(
 
     WiFiClientSecure client;
 
-    // Temporary development setting.
-    // This disables TLS certificate verification.
-    client.setCACert(API_ROOT_CA); 
+// Verify the server certificate using the configured root CA.
+    client.setCACert(API_ROOT_CA);
 
     HTTPClient http;
 
