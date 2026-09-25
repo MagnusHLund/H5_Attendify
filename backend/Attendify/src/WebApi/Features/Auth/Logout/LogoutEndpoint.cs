@@ -24,7 +24,9 @@ public sealed class LogoutEndpoint(
         try
         {
             if (!string.IsNullOrWhiteSpace(refreshToken))
+            {
                 await refreshTokenService.RevokeTokenAsync(refreshToken, ct);
+            }
         }
         finally
         {
