@@ -5,14 +5,19 @@ import {
   useReactTable,
   type ColumnDef,
 } from '@tanstack/react-table'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { useMemo } from 'react'
 import { Button } from '../../../../components/ui'
 import { useTranslation } from '../../../../lib/i18n'
 import type { AttendanceRecord } from '../../types/AttendanceRecord'
 import './AttendanceTable.scss'
 
+const skeletonWidths = ['65%', '50%', '50%', '60%', '55%']
+
 interface AttendanceTableProps {
   data: AttendanceRecord[]
+  isLoading: boolean
   pageIndex: number
   pageSize: number
   onPageChange: (pageIndex: number) => void
@@ -20,6 +25,7 @@ interface AttendanceTableProps {
 
 export function AttendanceTable({
   data,
+  isLoading,
   pageIndex,
   pageSize,
   onPageChange,
@@ -66,7 +72,12 @@ export function AttendanceTable({
   return (
     <div className="attendance-table">
       <div className="attendance-table__container">
-        <table>
+        {isLoading && (
+          <span className="attendance-table__loading-status" role="status">
+            {isLoading ? t('overview.loading') : ''}
+          </span>
+        )}
+        <table aria-busy={isLoading}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -83,7 +94,21 @@ export function AttendanceTable({
           </thead>
 
           <tbody>
-            {table.getRowModel().rows.length > 0 ? (
+            {isLoading ? (
+              Array.from({ length: pageSize }, (_, rowIndex) => (
+                <tr key={`skeleton-${rowIndex}`} aria-hidden="true">
+                  {columns.map((_, columnIndex) => (
+                    <td key={columnIndex}>
+                      <Skeleton
+                        className="attendance-table__skeleton"
+                        height="1rem"
+                        width={skeletonWidths[columnIndex]}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
