@@ -11,8 +11,8 @@ HttpService::HttpService(const char* baseUrl)
 
 bool HttpResponse::isSuccessful() const
 {
-    Serial.println(
-        "Request succeeded with response code: " + String(statusCode)
+Serial.println(
+        "Request returned response code: " + String(statusCode)
     );
 
     return statusCode >= 200 && statusCode < 300;
