@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { useErrorModal } from "../../components/ui";
-import { AttendanceTable } from "./components/AttendanceTable/AttendanceTable";
-import type { AttendanceRecord } from "./types/AttendanceRecord";
-import { OverviewFilters } from "./components/OverviewFilters/OverviewFilters";
-import { useCurrentUser } from "../auth/hooks/useCurrentUser";
-import { useAttendance } from "./hooks/useAttendance";
-import { useTranslation } from "../../lib/i18n";
-import "./OverviewPage.scss";
+import { useEffect, useRef, useState } from 'react'
+import { useErrorModal } from '../../components/ui'
+import { AttendanceTable } from './components/AttendanceTable/AttendanceTable'
+import type { AttendanceRecord } from './types/AttendanceRecord'
+import { OverviewFilters } from './components/OverviewFilters/OverviewFilters'
+import { useCurrentUser } from '../auth/hooks/useCurrentUser'
+import { useAttendance } from './hooks/useAttendance'
+import { useTranslation } from '../../lib/i18n'
+import './OverviewPage.scss'
 
 export function OverviewPage() {
   const {

@@ -7,7 +7,6 @@ using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
 using Attendify.Features.Attendance.CreateAttendance;
 using Attendify.Features.Auth.PasswordReset;
-using Attendify.Features.Attendance.CreateAttendance;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

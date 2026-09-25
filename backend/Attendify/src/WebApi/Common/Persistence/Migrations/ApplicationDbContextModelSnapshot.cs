@@ -280,6 +280,9 @@ namespace Attendify.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("bytea");
 
+                    b.Property<Guid>("TokenFamilyId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -296,6 +299,8 @@ namespace Attendify.Migrations
 
                     b.HasIndex("TokenHash")
                         .IsUnique();
+
+                    b.HasIndex("TokenFamilyId");
 
                     b.HasIndex("UserId");
 

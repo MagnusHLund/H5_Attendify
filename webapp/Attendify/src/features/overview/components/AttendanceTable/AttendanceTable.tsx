@@ -3,16 +3,16 @@ import {
   getCoreRowModel,
   useReactTable,
   type ColumnDef,
-} from "@tanstack/react-table";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
-import { useMemo } from "react";
-import { Button } from "../../../../components/ui";
-import { useTranslation } from "../../../../lib/i18n";
-import type { AttendanceRecord } from "../../types/AttendanceRecord";
-import "./AttendanceTable.scss";
+} from '@tanstack/react-table'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import { useMemo } from 'react'
+import { Button } from '../../../../components/ui'
+import { useTranslation } from '../../../../lib/i18n'
+import type { AttendanceRecord } from '../../types/AttendanceRecord'
+import './AttendanceTable.scss'
 
-const skeletonWidths = ["65%", "50%", "50%", "60%", "55%"];
+const skeletonWidths = ['65%', '50%', '50%', '60%', '55%']
 
 interface AttendanceTableProps {
   data: AttendanceRecord[];
@@ -76,7 +76,7 @@ export function AttendanceTable({
       <div className="attendance-table__container">
         {isLoading && (
           <span className="attendance-table__loading-status" role="status">
-            {isLoading ? t("overview.loading") : ""}
+            {isLoading ? t('overview.loading') : ''}
           </span>
         )}
         <table aria-busy={isLoading}>
