@@ -3,7 +3,7 @@
 #include "img_converters.h"
 #include "fd_forward.h"
 #include "base64.h"
-#include "config.h"
+#include "Config.h"
 
 CameraController::CameraController(Camera* camera, HttpService* httpService)
   : _camera(camera), _httpService(httpService), _faceDetectorConfig(mtmn_init_config()) {}
