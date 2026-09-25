@@ -12,7 +12,6 @@ public sealed class AttendanceSpec : Specification<Attendance>
             {
                 ["attendanceDate"] = a => a.AttendanceDate,
                 ["arrivedAt"] = a => a.ArrivedAt,
-                ["departedAt"] = a => a.DepartedAt,
                 ["classroom"] = a => a.Classroom,
                 ["status"] = a => a.Status
             });

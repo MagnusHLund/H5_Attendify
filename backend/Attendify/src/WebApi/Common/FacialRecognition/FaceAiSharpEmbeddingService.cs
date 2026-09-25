@@ -66,4 +66,57 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
 
         return embeddings;
     }
+
+    public async Task<byte[]> CreateEmbeddingAsync(
+    byte[] photo,
+    CancellationToken cancellationToken)
+    {
+        await using var stream = new MemoryStream(photo);
+
+        Image<Rgb24> image;
+
+        try
+        {
+            image = await Image.LoadAsync<Rgb24>(
+                stream,
+                cancellationToken);
+        }
+        catch (ImageFormatException)
+        {
+            throw new FacePhotoValidationException(
+                "The provided image must be a valid image.");
+        }
+
+        using (image)
+        {
+            FaceDetectorResult[] faces =
+                _faceDetector.DetectFaces(image).ToArray();
+
+            if (faces.Length != 1 ||
+                faces[0].Landmarks is not IReadOnlyList<PointF> landmarks)
+            {
+                throw new FacePhotoValidationException(
+                    "The image must contain exactly one clearly visible face.");
+            }
+
+            _embeddingsGenerator.AlignFaceUsingLandmarks(
+                image,
+                landmarks);
+
+            float[] embedding =
+                _embeddingsGenerator.GenerateEmbedding(image);
+
+            byte[] embeddingBytes =
+                new byte[embedding.Length * sizeof(float)];
+
+            Buffer.BlockCopy(
+                embedding,
+                0,
+                embeddingBytes,
+                0,
+                embeddingBytes.Length);
+
+            return embeddingBytes;
+        }
+    }
 }

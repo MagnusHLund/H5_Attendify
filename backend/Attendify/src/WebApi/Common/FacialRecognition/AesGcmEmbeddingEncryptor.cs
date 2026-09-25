@@ -39,4 +39,40 @@ public sealed class AesGcmEmbeddingEncryptor : IEmbeddingEncryptor
 
         return new EncryptedEmbedding(ciphertextWithTag, nonce);
     }
+
+    public DecryptedEmbedding Decrypt(byte[] ciphertextWithTag, byte[] nonce)
+    {
+        ThrowIfNull(ciphertextWithTag);
+        ThrowIfNull(nonce);
+
+        if (nonce.Length != NonceLength)
+        {
+            throw new ArgumentException(
+                "Invalid nonce length.",
+                nameof(nonce));
+        }
+
+        if (ciphertextWithTag.Length < TagLength)
+        {
+            throw new ArgumentException(
+                "Invalid ciphertext.",
+                nameof(ciphertextWithTag));
+        }
+
+        int ciphertextLength = ciphertextWithTag.Length - TagLength;
+
+        byte[] plaintext = new byte[ciphertextLength];
+
+        using var aes = new AesGcm(_key, TagLength);
+
+        aes.Decrypt(
+            nonce,
+            ciphertextWithTag.AsSpan(0, ciphertextLength),
+            ciphertextWithTag.AsSpan(ciphertextLength, TagLength),
+            plaintext
+        );
+
+        return new DecryptedEmbedding(plaintext);
+    }
+
 }

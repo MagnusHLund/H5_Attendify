@@ -3,17 +3,20 @@ using System;
 using Attendify.Common.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Attendify.Migrations
+namespace Attendify.Common.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260925123814_RemoveDepartedAt")]
+    partial class RemoveDepartedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -280,9 +283,6 @@ namespace Attendify.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("bytea");
 
-                    b.Property<Guid>("TokenFamilyId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -299,8 +299,6 @@ namespace Attendify.Migrations
 
                     b.HasIndex("TokenHash")
                         .IsUnique();
-
-                    b.HasIndex("TokenFamilyId");
 
                     b.HasIndex("UserId");
 
