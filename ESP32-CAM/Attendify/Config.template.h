@@ -10,4 +10,8 @@
 
 // API/HTTP
 #define API_BASE ""
-static const char API_ROOT_CA[]
+static const char API_ROOT_CA[] = R"EOF(
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+)EOF";
