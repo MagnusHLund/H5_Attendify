@@ -74,7 +74,7 @@ export function AttendanceTable({
       <div className="attendance-table__container">
         {isLoading && (
           <span className="attendance-table__loading-status" role="status">
-            {t('overview.loading')}
+            {isLoading ? t('overview.loading') : ''}
           </span>
         )}
         <table aria-busy={isLoading}>
