@@ -1,4 +1,4 @@
-import { Navigate, Outlet, createRootRoute } from '@tanstack/react-router'
+import { Outlet, createRootRoute, useNavigate } from '@tanstack/react-router'
 import { Header, Footer } from '../components/layout'
 import { logout } from '../features/auth/api/logout'
 import { useErrorModal, useLoadingOverlay } from '../components/ui'
@@ -13,12 +13,13 @@ function RootComponent() {
   const { t } = useTranslation()
   const { showError } = useErrorModal()
   const { runWithLoading } = useLoadingOverlay()
+  const navigate = useNavigate()
 
   async function handleLogout() {
     try {
       await runWithLoading(() => logout())
       queryClient.removeQueries({ queryKey: ['student-access-code'] })
-      Navigate({ to: '/login' })
+      navigate({ to: '/login' })
     } catch (error) {
       showError(
         error,
