@@ -1,4 +1,5 @@
 let refreshPromise: Promise<boolean> | null = null
+let logoutInProgress = false
 
 export async function fetchApi(
   endpoint: string,
@@ -7,6 +8,10 @@ export async function fetchApi(
   let response = await fetch(endpoint, options)
 
   if (response.status !== 401) {
+    return response
+  }
+
+  if (logoutInProgress) {
     return response
   }
 
@@ -19,6 +24,10 @@ export async function fetchApi(
 }
 
 async function refreshAccessToken(): Promise<boolean> {
+  if (logoutInProgress) {
+    return false
+  }
+
   if (!refreshPromise) {
     refreshPromise = fetch('/api/auth/refresh', {
       method: 'POST',
@@ -31,4 +40,15 @@ async function refreshAccessToken(): Promise<boolean> {
   }
 
   return refreshPromise
+}
+
+export async function withRefreshPaused<T>(operation: () => Promise<T>): Promise<T> {
+  logoutInProgress = true
+
+  try {
+    await refreshPromise?.catch(() => false)
+    return await operation()
+  } finally {
+    logoutInProgress = false
+  }
 }

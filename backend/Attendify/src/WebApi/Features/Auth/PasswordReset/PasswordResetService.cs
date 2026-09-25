@@ -262,8 +262,6 @@ public sealed class PasswordResetService : IPasswordResetService
             );
     }
 
-    private sealed record PasswordResetContext(int UserId, PasswordResetToken? Token);
-
     private byte[] HashSecurityCode(int userId, string securityCode)
     {
         byte[] value = Encoding.UTF8.GetBytes($"{userId}:{securityCode}");

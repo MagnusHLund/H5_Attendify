@@ -29,15 +29,15 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         CancellationToken cancellationToken
     )
     {
-        var claims = CreateClaims(user);
-        string accessToken = _jwtTokenService.GenerateToken(claims);
-
-        string refreshToken = await _refreshTokenService.GenerateRefreshToken(
+        GeneratedRefreshToken refreshToken = await _refreshTokenService.GenerateRefreshToken(
             user.Id,
             cancellationToken
         );
+        string accessToken = _jwtTokenService.GenerateToken(
+            CreateClaims(user, refreshToken.TokenFamilyId)
+        );
 
-        return new AuthenticationSession(accessToken, refreshToken);
+        return new AuthenticationSession(accessToken, refreshToken.Token);
     }
 
     public void SetSessionCookies(AuthenticationSession session)
@@ -72,7 +72,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             return false;
         }
 
-        var claims = CreateClaims(result.User);
+        var claims = CreateClaims(result.User, result.TokenFamilyId);
         string accessToken = _jwtTokenService.GenerateToken(claims);
 
         _authenticationCookieService.SetAccessTokenCookie(accessToken);
@@ -81,7 +81,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         return true;
     }
 
-    private List<Claim> CreateClaims(User user)
+    private List<Claim> CreateClaims(User user, Guid tokenFamilyId)
     {
         string decryptedStudentId = _studentIdProtector.Unprotect(user.EncryptedStudentId);
 
@@ -90,6 +90,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             new Claim(AttendifyClaimTypes.UserId, user.Id.ToString()),
             new Claim(AttendifyClaimTypes.UserType, UserType.Student.ToString()),
             new Claim(AttendifyClaimTypes.StudentId, decryptedStudentId),
+            new Claim(AttendifyClaimTypes.TokenFamilyId, tokenFamilyId.ToString()),
         };
     }
 }

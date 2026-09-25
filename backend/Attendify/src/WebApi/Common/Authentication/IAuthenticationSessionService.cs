@@ -16,5 +16,3 @@ public interface IAuthenticationSessionService
     void SetSessionCookies(AuthenticationSession session);
     Task<bool> RefreshSessionAsync(string refreshToken, CancellationToken cancellationToken);
 }
-
-public sealed record AuthenticationSession(string AccessToken, string RefreshToken);

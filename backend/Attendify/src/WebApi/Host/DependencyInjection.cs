@@ -144,6 +144,29 @@ public static class DependencyInjection
 
                         return Task.CompletedTask;
                     },
+                    OnTokenValidated = async context =>
+                    {
+                        string? tokenFamilyIdValue = context.Principal?.FindFirst(
+                            AttendifyClaimTypes.TokenFamilyId
+                        )?.Value;
+
+                        if (!Guid.TryParse(tokenFamilyIdValue, out Guid tokenFamilyId))
+                        {
+                            context.Fail("The access token has no valid token family.");
+                            return;
+                        }
+
+                        IRefreshTokenService refreshTokenService = context.HttpContext
+                            .RequestServices.GetRequiredService<IRefreshTokenService>();
+
+                        if (!await refreshTokenService.IsTokenFamilyActiveAsync(
+                                tokenFamilyId,
+                                context.HttpContext.RequestAborted
+                            ))
+                        {
+                            context.Fail("The authentication session has been revoked.");
+                        }
+                    },
                 };
             }
         );
