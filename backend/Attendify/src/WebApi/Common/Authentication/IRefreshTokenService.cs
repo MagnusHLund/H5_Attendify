@@ -12,4 +12,5 @@ public interface IRefreshTokenService
         string token,
         CancellationToken cancellationToken
     );
+    Task<bool> RevokeTokenAsync(string token, CancellationToken cancellationToken);
 }

@@ -138,6 +138,34 @@ public sealed class RefreshTokenService : IRefreshTokenService
         );
     }
 
+    public async Task<bool> RevokeTokenAsync(string token, CancellationToken cancellationToken)
+    {
+        byte[] tokenBytes;
+
+        try
+        {
+            tokenBytes = Convert.FromBase64String(token);
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+
+        byte[] tokenHash = HashToken(tokenBytes);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+
+        int revokedRows = await _dbContext.RefreshTokens
+            .Where(refreshToken =>
+                refreshToken.TokenHash == tokenHash && refreshToken.RevokedAt == null
+            )
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(refreshToken => refreshToken.RevokedAt, now),
+                cancellationToken
+            );
+
+        return revokedRows == 1;
+    }
+
     private static byte[] HashToken(byte[] token)
     {
         return SHA256.HashData(token);
