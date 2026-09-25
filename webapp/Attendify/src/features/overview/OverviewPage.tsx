@@ -29,7 +29,7 @@ export function OverviewPage() {
   const {
     data: attendanceData,
     error: attendanceError,
-    isFetching: isAttendanceFetching,
+    isLoading: isAttendanceLoading,
   } = useAttendance({
     studentId,
     pageIndex,
@@ -85,7 +85,7 @@ export function OverviewPage() {
 
         <AttendanceTable
           data={attendanceRecords}
-          isLoading={isUserLoading || isAttendanceFetching}
+          isLoading={isUserLoading || isAttendanceLoading}
           pageIndex={pageIndex}
           pageSize={pageSize}
           onPageChange={setPageIndex}
