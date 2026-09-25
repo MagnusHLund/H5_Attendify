@@ -2,6 +2,18 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var resendApiKey = builder.AddParameter("ResendApiKey", secret: true);
+var emailFromAddress = builder.AddParameter("EmailFromAddress");
+var emailFromName = builder.AddParameter("EmailFromName");
+var passwordResetCodeHashKey = builder.AddParameter("PasswordResetCodeHashKey", secret: true);
+
+var controllerName = builder.AddParameter("PrivacyPolicyControllerName");
+var controllerAddress = builder.AddParameter("PrivacyPolicyControllerAddress");
+var controllerEmail = builder.AddParameter("PrivacyPolicyControllerEmail");
+var dpoContact = builder.AddParameter("PrivacyPolicyDpoContact");
+var authorityName = builder.AddParameter("PrivacyPolicyAuthorityName");
+var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
+
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
     throw new InvalidOperationException("CloudflareTunnelName is required.");
@@ -34,12 +46,22 @@ var api = builder
     .AddProject<WebApi>("api")
     .WithExternalHttpEndpoints()
     .WithReference(db)
+    .WithEnvironment("Resend__ApiKey", resendApiKey)
+    .WithEnvironment("Email__FromAddress", emailFromAddress)
+    .WithEnvironment("Email__FromName", emailFromName)
+    .WithEnvironment("ResetPasswordToken__SecurityCodeHashKey", passwordResetCodeHashKey)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
     .WaitForCompletion(migrationService);
 
 var webapp = builder
     .AddViteApp("webapp", "../../../../webapp/Attendify")
+    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_NAME", controllerName)
+    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_ADDRESS", controllerAddress)
+    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_EMAIL", controllerEmail)
+    .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
+    .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
+    .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();

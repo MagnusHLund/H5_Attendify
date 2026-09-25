@@ -9,17 +9,21 @@ public sealed class RefreshTokenConfiguration : AuditableConfiguration<RefreshTo
     {
         builder.HasKey(token => token.Id);
 
-        builder.Property(token => token.Id)
-            .ValueGeneratedOnAdd()
-            .UseIdentityByDefaultColumn();
+        builder.Property(token => token.Id).ValueGeneratedOnAdd().UseIdentityByDefaultColumn();
 
-        builder.Property(token => token.TokenHash)
-            .HasMaxLength(RefreshToken.TokenHashMaxLength)
+        builder
+            .Property(token => token.TokenHash)
+            .HasMaxLength(RefreshToken.TokenHashLength)
             .IsRequired();
 
         builder.Property(token => token.ExpiresAt).IsRequired();
+        builder.Property(token => token.TokenFamilyId).IsRequired();
 
-        builder.HasOne(token => token.User)
+        builder.HasIndex(token => token.TokenHash).IsUnique();
+        builder.HasIndex(token => token.TokenFamilyId);
+
+        builder
+            .HasOne(token => token.User)
             .WithMany(user => user.RefreshTokens)
             .HasForeignKey(token => token.UserId)
             .IsRequired();

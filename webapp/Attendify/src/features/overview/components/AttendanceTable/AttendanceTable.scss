@@ -10,6 +10,22 @@
   border-radius: 0.75rem;
 }
 
+.attendance-table__loading-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.attendance-table__skeleton {
+  display: block;
+}
+
 .attendance-table table {
   width: 100%;
   border-collapse: collapse;

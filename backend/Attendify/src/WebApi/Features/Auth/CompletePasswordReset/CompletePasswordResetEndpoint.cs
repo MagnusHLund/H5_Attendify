@@ -1,6 +1,8 @@
+using Attendify.Features.Auth.PasswordReset;
+
 namespace Attendify.Features.Auth.CompletePasswordReset;
 
-public sealed class CompletePasswordResetEndpoint(ApplicationDbContext dbContext)
+public sealed class CompletePasswordResetEndpoint(IPasswordResetService resetPasswordService)
     : Endpoint<CompletePasswordResetRequest>
 {
     public override void Configure()
@@ -11,8 +13,21 @@ public sealed class CompletePasswordResetEndpoint(ApplicationDbContext dbContext
         Description(x => x.WithName("CompletePasswordReset"));
     }
 
-    public override async Task HandleAsync(
-        CompletePasswordResetRequest req,
-        CancellationToken ct
-    ) { }
+    public override async Task HandleAsync(CompletePasswordResetRequest req, CancellationToken ct)
+    {
+        bool success = await resetPasswordService.CompleteResetPasswordAsync(
+            req.Email,
+            req.SecurityCode,
+            req.NewPassword,
+            ct
+        );
+
+        if (success)
+        {
+            await Send.NoContentAsync(ct);
+            return;
+        }
+
+        await Send.ErrorsAsync(cancellation: ct);
+    }
 }

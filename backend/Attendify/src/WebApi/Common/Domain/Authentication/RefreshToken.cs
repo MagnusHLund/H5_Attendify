@@ -5,17 +5,19 @@ namespace Attendify.Common.Domain.Authentication;
 
 public sealed class RefreshToken : AggregateRoot<int>
 {
-    public const int TokenHashMaxLength = 512;
+    public const int TokenHashLength = 32;
 
     public int UserId { get; set; }
 
-    public string TokenHash
+    public Guid TokenFamilyId { get; set; }
+
+    public byte[] TokenHash
     {
         get;
         set
         {
-            ThrowIfNullOrWhiteSpace(value, nameof(TokenHash));
-            ThrowIfGreaterThan(value.Length, TokenHashMaxLength, nameof(TokenHash));
+            ThrowIfNull(value, nameof(TokenHash));
+            ThrowIfNotEqual(value.Length, TokenHashLength, nameof(TokenHash));
             field = value;
         }
     } = null!;
@@ -30,17 +32,24 @@ public sealed class RefreshToken : AggregateRoot<int>
 
     public static RefreshToken Create(
         int userId,
-        string tokenHash,
+        Guid tokenFamilyId,
+        byte[] tokenHash,
         DateTimeOffset expiresAt,
-        DateTimeOffset? revokedAt
+        DateTimeOffset? revokedAt = null
     )
     {
         return new RefreshToken
         {
             UserId = userId,
+            TokenFamilyId = tokenFamilyId,
             TokenHash = tokenHash,
             ExpiresAt = expiresAt,
             RevokedAt = revokedAt,
         };
+    }
+
+    public void Revoke()
+    {
+        RevokedAt = DateTimeOffset.UtcNow;
     }
 }

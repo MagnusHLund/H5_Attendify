@@ -1,3 +1,4 @@
+import { fetchApi } from '../../../lib/api/client'
 import type { AttendanceResponse } from '../types/attendance'
 
 interface GetAttendanceOptions {
@@ -17,7 +18,7 @@ export async function getAttendance({
     pageSize: String(pageSize),
   })
 
-  const response = await fetch(`/api/attendance?${params}`, {
+  const response = await fetchApi(`/api/attendance?${params}`, {
     credentials: 'include',
   })
 

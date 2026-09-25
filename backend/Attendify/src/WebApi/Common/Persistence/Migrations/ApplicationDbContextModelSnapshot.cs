@@ -205,6 +205,54 @@ namespace Attendify.Migrations
                     b.ToTable("AdminAccessCodes");
                 });
 
+            modelBuilder.Entity("Attendify.Common.Domain.Authentication.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset?>("ConsumedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FailedAttempts")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("SecurityCodeHash")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("Attendify.Common.Domain.Authentication.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -227,10 +275,13 @@ namespace Attendify.Migrations
                     b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("TokenHash")
+                    b.Property<byte[]>("TokenHash")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                        .HasMaxLength(32)
+                        .HasColumnType("bytea");
+
+                    b.Property<Guid>("TokenFamilyId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -243,6 +294,11 @@ namespace Attendify.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("TokenFamilyId");
 
                     b.HasIndex("UserId");
 
@@ -465,6 +521,17 @@ namespace Attendify.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Attendify.Common.Domain.Authentication.PasswordResetToken", b =>
+                {
+                    b.HasOne("Attendify.Common.Domain.Users.User", "User")
+                        .WithMany("PasswordResetTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Attendify.Common.Domain.Authentication.RefreshToken", b =>
                 {
                     b.HasOne("Attendify.Common.Domain.Users.User", "User")
@@ -528,6 +595,8 @@ namespace Attendify.Migrations
                     b.Navigation("AttendanceRecords");
 
                     b.Navigation("FacialProfile");
+
+                    b.Navigation("PasswordResetTokens");
 
                     b.Navigation("RefreshTokens");
                 });

@@ -1,8 +1,12 @@
+using Attendify.Common.Authentication;
 using Attendify.Common.Domain.FacialRecognition;
 using Attendify.Common.Domain.Users;
+using Attendify.Common.Encoding;
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Services;
+using Attendify.Features.Auth.Shared;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 
 namespace Attendify.Features.Auth.RegisterStudent;
 
@@ -12,63 +16,75 @@ public sealed class RegisterStudentEndpoint(
     IStudentIdProtector studentIdProtector,
     IFacialEmbeddingService facialEmbeddingService,
     IEmbeddingEncryptor embeddingEncryptor,
-    ILogger<RegisterStudentEndpoint> logger
-) : Endpoint<RegisterStudentRequest, RegisterStudentResponse>
+    IAuthenticationSessionService authenticationSessionService,
+    IServiceScopeFactory serviceScopeFactory
+) : Endpoint<RegisterStudentRequest>
 {
     private const long MaxPhotoSizeBytes = 5 * 1024 * 1024;
+
+    private readonly ILogger _logger = Log.ForContext<RegisterStudentEndpoint>();
 
     public override void Configure()
     {
         Post("/register");
         Group<AuthenticationGroup>();
         AllowAnonymous();
-        AllowFormData();
-        AllowFileUploads();
         Description(x => x.WithName("RegisterStudent"));
     }
 
     public override async Task HandleAsync(RegisterStudentRequest request, CancellationToken ct)
     {
-        string email = NormalizeEmail(request.Email);
-        IFormFile[] photos = GetPhotos(request);
+        string email = EmailNormalizer.Normalize(request.Email);
 
-        if (logger.IsEnabled(LogLevel.Information))
+        byte[][] photos;
+
+        try
         {
-            logger.LogInformation(
-                "Registering student for educational institute {EducationalInstituteId} with photo sizes {StraightPhotoSize}, {LeftPhotoSize}, and {RightPhotoSize}",
-                request.EducationalInstituteId,
-                photos[0].Length,
-                photos[1].Length,
-                photos[2].Length
-            );
+            photos = GetPhotos(request);
         }
+        catch (ArgumentException)
+        {
+            await SendPhotoValidationError(ct);
+            return;
+        }
+
+        _logger.Information(
+            "Registering student for educational institute {EducationalInstituteId} with photo sizes {StraightPhotoSize}, {LeftPhotoSize}, and {RightPhotoSize}",
+            request.EducationalInstituteId,
+            photos[0].Length,
+            photos[1].Length,
+            photos[2].Length
+        );
 
         if (await EmailAlreadyExists(email, ct))
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because the email is already registered for educational institute {EducationalInstituteId}",
                 request.EducationalInstituteId
             );
+
             await SendEmailAlreadyExistsError(request, ct);
             return;
         }
 
         if (!await EducationalInstituteExists(request.EducationalInstituteId, ct))
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because educational institute {EducationalInstituteId} does not exist",
                 request.EducationalInstituteId
             );
+
             await SendEducationalInstituteNotFoundError(request, ct);
             return;
         }
 
         if (!ValidatePhotos(photos))
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because one or more face photos are invalid for educational institute {EducationalInstituteId}",
                 request.EducationalInstituteId
             );
+
             await SendPhotoValidationError(ct);
             return;
         }
@@ -81,40 +97,72 @@ public sealed class RegisterStudentEndpoint(
         }
         catch (FacePhotoValidationException exception)
         {
-            logger.LogWarning(
+            _logger.Warning(
                 "Student registration rejected because face photos could not be processed for educational institute {EducationalInstituteId}: {Reason}",
                 request.EducationalInstituteId,
                 exception.Message
             );
+
             AddError(exception.Message);
             await Send.ErrorsAsync(StatusCodes.Status400BadRequest, ct);
+
             return;
         }
 
-        User user = CreateUser(request, email, embeddings);
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        AuthenticationSession? session = null;
+        int registeredUserId = 0;
 
-        dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync(ct);
-
-        if (logger.IsEnabled(LogLevel.Information))
+        await strategy.ExecuteAsync(async () =>
         {
-            logger.LogInformation(
-                "Student registration completed for user {UserId} at educational institute {EducationalInstituteId}",
-                user.Id,
-                request.EducationalInstituteId
-            );
-        }
+            await using AsyncServiceScope scope = serviceScopeFactory.CreateAsyncScope();
+            ApplicationDbContext attemptDbContext =
+                scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            IAuthenticationSessionService attemptSessionService =
+                scope.ServiceProvider.GetRequiredService<IAuthenticationSessionService>();
+            await using var transaction = await attemptDbContext.Database.BeginTransactionAsync(ct);
 
-        await Send.ResponseAsync(
-            new RegisterStudentResponse(user.Id),
-            StatusCodes.Status201Created,
-            ct
+            try
+            {
+                User? user = await attemptDbContext.Users.SingleOrDefaultAsync(
+                    candidate => candidate.Email == email,
+                    ct
+                );
+
+                if (user is null)
+                {
+                    user = CreateUser(request, email, embeddings);
+                    attemptDbContext.Users.Add(user);
+                    await attemptDbContext.SaveChangesAsync(ct);
+                }
+
+                if (session is null || !await attemptSessionService.IsPersistedAsync(user, session, ct))
+                {
+                    session = await attemptSessionService.CreateSessionAsync(user, ct);
+                }
+
+                registeredUserId = user.Id;
+
+                await transaction.CommitAsync(ct);
+            }
+            catch
+            {
+                await transaction.RollbackAsync(ct);
+                throw;
+            }
+        });
+
+        authenticationSessionService.SetSessionCookies(
+            session ?? throw new InvalidOperationException("Registration session was not created.")
         );
-    }
 
-    private static string NormalizeEmail(string email)
-    {
-        return email.Trim().ToLowerInvariant();
+        _logger.Information(
+            "Student registration completed for user {UserId} at educational institute {EducationalInstituteId}",
+            registeredUserId,
+            request.EducationalInstituteId
+        );
+
+        await Send.CreatedAtAsync<RegisterStudentEndpoint>(cancellation: ct);
     }
 
     private async Task<bool> EmailAlreadyExists(string email, CancellationToken ct)
@@ -130,20 +178,24 @@ public sealed class RegisterStudentEndpoint(
         );
     }
 
-    private static bool ValidatePhotos(IReadOnlyCollection<IFormFile> photos)
+    private static byte[][] GetPhotos(RegisterStudentRequest request)
+    {
+        return
+        [
+            Base64Encoding.Decode(request.StraightPhoto),
+            Base64Encoding.Decode(request.LeftPhoto),
+            Base64Encoding.Decode(request.RightPhoto),
+        ];
+    }
+
+    private static bool ValidatePhotos(IReadOnlyCollection<byte[]> photos)
     {
         return photos.All(IsValidPhoto);
     }
 
-    private static bool IsValidPhoto(IFormFile photo)
+    private static bool IsValidPhoto(byte[] photo)
     {
-        return photo.Length is > 0 and <= MaxPhotoSizeBytes
-            && photo.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static IFormFile[] GetPhotos(RegisterStudentRequest request)
-    {
-        return [request.StraightPhoto, request.LeftPhoto, request.RightPhoto];
+        return photo.Length is > 0 and <= (int)MaxPhotoSizeBytes;
     }
 
     private User CreateUser(
@@ -206,7 +258,7 @@ public sealed class RegisterStudentEndpoint(
 
     private async Task SendPhotoValidationError(CancellationToken ct)
     {
-        AddError("Each face photo must be an image no larger than 5 MB.");
+        AddError("Each face photo must be a valid image no larger than 5 MB.");
 
         await Send.ErrorsAsync(StatusCodes.Status400BadRequest, ct);
     }

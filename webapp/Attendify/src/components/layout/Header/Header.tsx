@@ -5,7 +5,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { useRef, useState } from 'react'
-import { Image, LanguageSwitcher } from '../../ui'
+import { Button, Image, LanguageSwitcher } from '../../ui'
 import { useTranslation } from '../../../lib/i18n'
 import { Sidebar } from '../Sidebar/Sidebar'
 import { useCurrentUser } from '../../../features/auth/hooks/useCurrentUser'
@@ -36,7 +36,7 @@ export function Header({ onLogout }: HeaderProps) {
   const pageName = pageNameKey ? t(pageNameKey) : t('common.attendifyLogo')
 
   const handleAction = () => {
-    if (userRole === 'school_administrator') {
+    if (userRole === 'school_administrator' || isSettingsPage) {
       onLogout()
       return
     }
@@ -47,7 +47,7 @@ export function Header({ onLogout }: HeaderProps) {
   }
 
   const actionLabel =
-    userRole === 'school_administrator'
+    userRole === 'school_administrator' || isSettingsPage
       ? t('navigation.logout')
       : t('navigation.settings')
 
@@ -69,6 +69,15 @@ export function Header({ onLogout }: HeaderProps) {
       <div className="header__actions">
         {userRole === 'school_administrator' && <LanguageSwitcher compact />}
         {(userRole === 'school_administrator' || !isSettingsPage) && (
+          <Button
+            className="header__action"
+            type="button"
+            onClick={handleAction}
+          >
+            {actionLabel}
+          </Button>
+        )}
+        {isSettingsPage && (
           <button
             className="header__action"
             type="button"

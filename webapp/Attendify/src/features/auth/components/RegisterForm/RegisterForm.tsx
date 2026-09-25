@@ -1,15 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
 import {
   Button,
   Dropdown,
-  ErrorModal,
   FileInput,
   Spinner,
   TextInput,
+  useErrorModal,
+  useLoadingOverlay,
 } from '../../../../components/ui'
+import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
+import { fileToBase64 } from '../../../../lib/encoding/base64'
 import {
   minPasswordLength,
   required,
@@ -23,9 +25,8 @@ type RegistrationStep = 'details' | 'photos'
 
 export function RegisterForm() {
   const [step, setStep] = useState<RegistrationStep>('details')
-  const [registrationError, setRegistrationError] = useState<string | null>(
-    null,
-  )
+  const { showError } = useErrorModal()
+  const { runWithLoading } = useLoadingOverlay()
   const navigate = useNavigate()
   const {
     data: educationalInstitutes,
@@ -33,6 +34,28 @@ export function RegisterForm() {
     isError,
   } = useEducationalInstitutes()
   const { t } = useTranslation()
+
+  const institutesErrorShown = useRef(false)
+
+  const institutesUnavailable =
+    !isPending &&
+    (isError || !educationalInstitutes || educationalInstitutes.length === 0)
+
+  useEffect(() => {
+    if (!institutesUnavailable) {
+      institutesErrorShown.current = false
+      return
+    }
+
+    if (institutesErrorShown.current) return
+
+    institutesErrorShown.current = true
+    showError(
+      new Error(t('error.educationalInstitutesNotFound')),
+      t('error.educationalInstitutesNotFoundTitle'),
+      t('error.educationalInstitutesNotFound'),
+    )
+  }, [institutesUnavailable, showError, t])
 
   const detailsForm = useForm({
     defaultValues: {
@@ -43,13 +66,9 @@ export function RegisterForm() {
       studentId: '',
     },
 
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       // The details are valid, so move to the photo step.
       setStep('photos')
-
-      // The values remain available in detailsForm while this component
-      // is mounted and can be used when the registration is completed.
-      console.log(value)
     },
   })
 
@@ -66,24 +85,30 @@ export function RegisterForm() {
       }
 
       try {
-        setRegistrationError(null)
+        await runWithLoading(async () => {
+          const registration = {
+            email: detailsForm.state.values.email,
+            password: detailsForm.state.values.password,
+            educationalInstituteId:
+              detailsForm.state.values.educationalInstituteId,
+            studentId: detailsForm.state.values.studentId,
+            straightPhoto: await fileToBase64(value.straightPhoto),
+            leftPhoto: await fileToBase64(value.leftPhoto),
+            rightPhoto: await fileToBase64(value.rightPhoto),
+          }
 
-        await registerStudent({
-          email: detailsForm.state.values.email,
-          password: detailsForm.state.values.password,
-          educationalInstituteId:
-            detailsForm.state.values.educationalInstituteId,
-          studentId: detailsForm.state.values.studentId,
-          straightPhoto: value.straightPhoto,
-          leftPhoto: value.leftPhoto,
-          rightPhoto: value.rightPhoto,
+          await registerStudent(registration)
         })
-        await navigate({ to: '/login' })
+
+        await navigate({ to: '/overview' })
       } catch (error) {
-        setRegistrationError(
-          error instanceof Error
-            ? error.message
-            : t('error.registrationFailed'),
+        const message =
+          error instanceof Error ? error.message : t('error.registrationFailed')
+
+        showError(
+          new Error(message),
+          t('error.registrationFailedTitle'),
+          t('error.registrationFailed'),
         )
       }
     },
@@ -93,45 +118,12 @@ export function RegisterForm() {
     setStep('details')
   }
 
-  if (registrationError) {
-    return (
-      <ErrorModal
-        title={t('error.registrationFailedTitle')}
-        message={registrationError}
-        isOpen={true}
-        onClose={() => setRegistrationError(null)}
-      />
-    )
-  }
-
   if (isPending) {
     return <Spinner className="register-form__spinner" />
   }
 
-  if (isError || educationalInstitutes?.length === 0) {
-    return (
-      <ErrorModal
-        title={t('error.educationalInstitutesNotFoundTitle')}
-        message={t('error.educationalInstitutesNotFound')}
-        isOpen={true}
-        onClose={() => {
-          navigate({ to: '/login' })
-        }}
-      />
-    )
-  }
-
-  if (!educationalInstitutes) {
-    return (
-      <ErrorModal
-        title={t('error.educationalInstitutesNotFoundTitle')}
-        message={t('error.educationalInstitutesNotFound')}
-        isOpen={true}
-        onClose={() => {
-          navigate({ to: '/login' })
-        }}
-      />
-    )
+  if (institutesUnavailable) {
+    return null
   }
 
   if (step === 'details') {
@@ -290,9 +282,9 @@ export function RegisterForm() {
         </div>
 
         <Button
-          type="submit"
-          className="register-form__submit"
-          loading={detailsForm.state.isSubmitting}
+        type="submit"
+        className="register-form__submit"
+        disabled={detailsForm.state.isSubmitting}
         >
           {t('common.next')}
         </Button>
@@ -383,7 +375,7 @@ export function RegisterForm() {
       <Button
         type="submit"
         className="register-form__submit"
-        loading={photosForm.state.isSubmitting}
+        disabled={photosForm.state.isSubmitting}
       >
         {t('auth.completeRegistration')}
       </Button>
