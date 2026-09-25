@@ -18,6 +18,12 @@ import { Button } from '../../../../components/ui'
 import { useTranslation } from '../../../../lib/i18n'
 import type { AttendanceRecord } from '../../types/AttendanceRecord'
 import './AttendanceTable.scss'
+} from "@tanstack/react-table";
+import { useMemo } from "react";
+import { Button } from "../../../../components/ui";
+import { useTranslation } from "../../../../lib/i18n";
+import type { AttendanceRecord } from "../../types/AttendanceRecord";
+import "./AttendanceTable.scss";
 
 const skeletonWidths = ['65%', '50%', '50%', '60%', '55%']
 
@@ -32,6 +38,11 @@ interface AttendanceTableProps {
   pageIndex: number
   pageSize: number
   onPageChange: (pageIndex: number) => void
+  data: AttendanceRecord[];
+  pageIndex: number;
+  pageCount: number;
+  pageSize: number;
+  onPageChange: (pageIndex: number) => void;
 }
 
 export function AttendanceTable({

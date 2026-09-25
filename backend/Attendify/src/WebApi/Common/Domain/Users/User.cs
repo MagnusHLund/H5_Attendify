@@ -87,15 +87,3 @@ public sealed class User : AggregateRoot<int>
             AttendanceEnabled = true,
         };
 }
-
-    public void UpdatePassword(string newHashedPassword)
-    {
-        ThrowIfNullOrWhiteSpace(newHashedPassword, nameof(newHashedPassword));
-        ThrowIfGreaterThan(
-            newHashedPassword.Length,
-            PasswordHashMaxLength,
-            nameof(newHashedPassword)
-        );
-        PasswordHash = newHashedPassword;
-    }
-}
