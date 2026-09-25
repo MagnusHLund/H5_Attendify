@@ -43,8 +43,16 @@ public class AuthenticationCookieService : IAuthenticationCookieService
 
     public void ClearAuthenticationCookies()
     {
-        _httpContextAccessor?.HttpContext?.Response?.Cookies.Delete(AccessTokenCookieName);
-        _httpContextAccessor?.HttpContext?.Response?.Cookies.Delete(RefreshTokenCookieName);
+        CookieOptions cookieOptions = CreateCookieOptions(expiresInMinutes: -1);
+
+        _httpContextAccessor?.HttpContext?.Response?.Cookies.Delete(
+            AccessTokenCookieName,
+            cookieOptions
+        );
+        _httpContextAccessor?.HttpContext?.Response?.Cookies.Delete(
+            RefreshTokenCookieName,
+            cookieOptions
+        );
     }
 
     private CookieOptions CreateCookieOptions(int expiresInMinutes)

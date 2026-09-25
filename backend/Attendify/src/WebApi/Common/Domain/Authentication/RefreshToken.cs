@@ -9,6 +9,8 @@ public sealed class RefreshToken : AggregateRoot<int>
 
     public int UserId { get; set; }
 
+    public Guid TokenFamilyId { get; set; }
+
     public byte[] TokenHash
     {
         get;
@@ -30,6 +32,7 @@ public sealed class RefreshToken : AggregateRoot<int>
 
     public static RefreshToken Create(
         int userId,
+        Guid tokenFamilyId,
         byte[] tokenHash,
         DateTimeOffset expiresAt,
         DateTimeOffset? revokedAt = null
@@ -38,6 +41,7 @@ public sealed class RefreshToken : AggregateRoot<int>
         return new RefreshToken
         {
             UserId = userId,
+            TokenFamilyId = tokenFamilyId,
             TokenHash = tokenHash,
             ExpiresAt = expiresAt,
             RevokedAt = revokedAt,

@@ -2,7 +2,10 @@ namespace Attendify.Common.Authentication;
 
 public interface IRefreshTokenService
 {
-    Task<string> GenerateRefreshToken(int userId, CancellationToken cancellationToken);
+    Task<GeneratedRefreshToken> GenerateRefreshToken(
+        int userId,
+        CancellationToken cancellationToken
+    );
     Task<bool> IsPersistedAsync(
         int userId,
         string token,
@@ -12,4 +15,6 @@ public interface IRefreshTokenService
         string token,
         CancellationToken cancellationToken
     );
+    Task<bool> RevokeTokenAsync(string token, CancellationToken cancellationToken);
+    Task<bool> IsTokenFamilyActiveAsync(Guid tokenFamilyId, CancellationToken cancellationToken);
 }
