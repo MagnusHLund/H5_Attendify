@@ -26,7 +26,7 @@ class Camera {
 
   public:
     const framesize_t _lowResolution = FRAMESIZE_QVGA;
-    const framesize_t _highResolution = FRAMESIZE_VGA;
+    const framesize_t _highResolution = FRAMESIZE_SVGA;
 
     bool init();
     camera_fb_t* takePicture();

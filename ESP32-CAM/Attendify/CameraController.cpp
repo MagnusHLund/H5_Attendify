@@ -2,9 +2,11 @@
 #include "CameraController.h"
 #include "img_converters.h"
 #include "fd_forward.h"
+#include "base64.h"
+#include "Config.h"
 
-CameraController::CameraController(Camera* camera)
-  : _camera(camera), _faceDetectorConfig(mtmn_init_config()) {}
+CameraController::CameraController(Camera* camera, HttpService* httpService)
+  : _camera(camera), _httpService(httpService), _faceDetectorConfig(mtmn_init_config()) {}
 
 void CameraController::main()
 {
@@ -20,7 +22,25 @@ void CameraController::main()
     {
         Serial.println("High resolution image captured");
 
-        // TODO: Send image via HTTP
+        base64 encoder;
+
+        String encodedPicture = encoder.encode(
+            picture->buf,
+            picture->len
+        );
+
+        String json = "{\"classroom\":\"";
+        json += CLASSROOM;
+        json += "\",\"picture\":\"";
+        json += encodedPicture;
+        json += "\"}";
+
+        HttpResponse response = _httpService->request(
+            "POST",
+            "/api/attendance",
+            json,
+            "application/json"
+        );
 
         esp_camera_fb_return(picture);
 
