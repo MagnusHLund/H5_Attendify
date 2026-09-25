@@ -18,8 +18,10 @@ function RootComponent() {
   async function handleLogout() {
     try {
       await runWithLoading(() => logout())
+      queryClient.removeQueries({ queryKey: ['current-user'] })
+      queryClient.removeQueries({ queryKey: ['attendance'] })
       queryClient.removeQueries({ queryKey: ['student-access-code'] })
-      navigate({ to: '/login' })
+      await navigate({ to: '/login' })
     } catch (error) {
       showError(
         error,
