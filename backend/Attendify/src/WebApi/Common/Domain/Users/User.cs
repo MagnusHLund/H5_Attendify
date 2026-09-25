@@ -7,6 +7,9 @@ using EducationalInstituteEntity = Attendify.Common.Domain.EducationalInstitute.
 
 namespace Attendify.Common.Domain.Users;
 
+[ValueObject<int>]
+public readonly partial struct UserId;
+
 public sealed class User : AggregateRoot<int>
 {
     public const int EmailMaxLength = 320;

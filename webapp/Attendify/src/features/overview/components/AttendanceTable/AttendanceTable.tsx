@@ -4,37 +4,39 @@ import {
   getPaginationRowModel,
   useReactTable,
   type ColumnDef,
-} from '@tanstack/react-table'
-import { useMemo } from 'react'
-import { Button } from '../../../../components/ui'
-import { useTranslation } from '../../../../lib/i18n'
-import type { AttendanceRecord } from '../../types/AttendanceRecord'
-import './AttendanceTable.scss'
+} from "@tanstack/react-table";
+import { useMemo } from "react";
+import { Button } from "../../../../components/ui";
+import { useTranslation } from "../../../../lib/i18n";
+import type { AttendanceRecord } from "../../types/AttendanceRecord";
+import "./AttendanceTable.scss";
 
 interface AttendanceTableProps {
-  data: AttendanceRecord[]
-  pageIndex: number
-  pageSize: number
-  onPageChange: (pageIndex: number) => void
+  data: AttendanceRecord[];
+  pageIndex: number;
+  pageCount: number;
+  pageSize: number;
+  onPageChange: (pageIndex: number) => void;
 }
 
 export function AttendanceTable({
   data,
   pageIndex,
+  pageCount,
   pageSize,
   onPageChange,
 }: AttendanceTableProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const columns = useMemo<ColumnDef<AttendanceRecord>[]>(
     () => [
-      { accessorKey: 'date', header: t('overview.date') },
-      { accessorKey: 'arrivedAt', header: t('overview.arrived') },
-      { accessorKey: 'departedAt', header: t('overview.departed') },
-      { accessorKey: 'classroom', header: t('overview.classroom') },
-      { accessorKey: 'status', header: t('overview.status') },
+      { accessorKey: "attendanceDate", header: t("overview.date") },
+      { accessorKey: "arrivedAt", header: t("overview.arrived") },
+      { accessorKey: "departedAt", header: t("overview.departed") },
+      { accessorKey: "classroom", header: t("overview.classroom") },
+      { accessorKey: "status", header: t("overview.status") },
     ],
     [t],
-  )
+  );
 
   const table = useReactTable({
     data,
@@ -51,17 +53,18 @@ export function AttendanceTable({
       const currentPagination = {
         pageIndex,
         pageSize,
-      }
+      };
 
       const nextPagination =
-        typeof updater === 'function' ? updater(currentPagination) : updater
+        typeof updater === "function" ? updater(currentPagination) : updater;
 
-      onPageChange(nextPagination.pageIndex)
+      onPageChange(nextPagination.pageIndex);
     },
 
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  })
+    manualPagination: true,
+    pageCount,
+  });
 
   return (
     <div className="attendance-table">
@@ -98,7 +101,7 @@ export function AttendanceTable({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length}>{t('overview.empty')}</td>
+                <td colSpan={columns.length}>{t("overview.empty")}</td>
               </tr>
             )}
           </tbody>
@@ -112,11 +115,11 @@ export function AttendanceTable({
           disabled={!table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
-          {t('overview.previous')}
+          {t("overview.previous")}
         </Button>
 
         <span className="attendance-table__page">
-          {t('overview.page', {
+          {t("overview.page", {
             current: pageIndex + 1,
             total: Math.max(table.getPageCount(), 1),
           })}
@@ -128,9 +131,9 @@ export function AttendanceTable({
           disabled={!table.getCanNextPage()}
           onClick={() => table.nextPage()}
         >
-          {t('overview.next')}
+          {t("overview.next")}
         </Button>
       </div>
     </div>
-  )
+  );
 }
