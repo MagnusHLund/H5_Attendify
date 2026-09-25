@@ -81,7 +81,7 @@ public sealed class FaceAiSharpEmbeddingService : IFacialEmbeddingService
                 stream,
                 cancellationToken);
         }
-        catch (UnknownImageFormatException)
+        catch (ImageFormatException)
         {
             throw new FacePhotoValidationException(
                 "The provided image must be a valid image.");

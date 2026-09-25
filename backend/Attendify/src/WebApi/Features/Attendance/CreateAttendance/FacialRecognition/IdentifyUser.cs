@@ -67,7 +67,7 @@ public sealed class FacialUserIdentifier(
             }
         }
 
-        throw new InvalidOperationException(
+        throw new NoMatchingUserException(
             "No matching user was found.");
     }
 }

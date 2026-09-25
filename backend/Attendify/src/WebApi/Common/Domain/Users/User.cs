@@ -86,4 +86,15 @@ public sealed class User : AggregateRoot<int>
             EncryptedStudentId = encryptedStudentId,
             AttendanceEnabled = true,
         };
+
+    public void UpdatePassword(string newHashedPassword)
+    {
+        ThrowIfNullOrWhiteSpace(newHashedPassword, nameof(newHashedPassword));
+        ThrowIfGreaterThan(
+            newHashedPassword.Length,
+            PasswordHashMaxLength,
+            nameof(newHashedPassword)
+        );
+        PasswordHash = newHashedPassword;
+    }
 }
