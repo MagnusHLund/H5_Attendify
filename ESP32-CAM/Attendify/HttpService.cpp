@@ -56,9 +56,8 @@ HttpResponse HttpService::request(
 
     WiFiClientSecure client;
 
-    // Temporary development setting.
-    // This disables TLS certificate verification.
-    client.setCACert(API_ROOT_CA); 
+// Verify the server certificate using the configured root CA.
+    client.setCACert(API_ROOT_CA);
 
     HTTPClient http;
 
