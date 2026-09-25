@@ -9,10 +9,3 @@ public sealed record OutboundEmail(
 {
     public IReadOnlyList<OutboundEmailAttachment> Attachments { get; init; } = [];
 }
-
-public sealed record OutboundEmailAttachment(
-    string Filename,
-    string ContentType,
-    byte[] Content,
-    string? ContentId = null
-);

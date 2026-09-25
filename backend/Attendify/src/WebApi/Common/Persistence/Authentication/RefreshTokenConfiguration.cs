@@ -17,8 +17,10 @@ public sealed class RefreshTokenConfiguration : AuditableConfiguration<RefreshTo
             .IsRequired();
 
         builder.Property(token => token.ExpiresAt).IsRequired();
+        builder.Property(token => token.TokenFamilyId).IsRequired();
 
         builder.HasIndex(token => token.TokenHash).IsUnique();
+        builder.HasIndex(token => token.TokenFamilyId);
 
         builder
             .HasOne(token => token.User)
