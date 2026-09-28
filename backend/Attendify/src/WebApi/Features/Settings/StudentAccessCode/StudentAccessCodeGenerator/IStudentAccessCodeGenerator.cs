@@ -5,5 +5,10 @@ public interface IStudentAccessCodeGenerator
 {
     Task<(StudentAccessCode entity, string plainTextCode)> GenerateAccessCode(
             int userId,
-            CancellationToken ct);
+            CancellationToken ct
+    );
+
+    string GetPlainTextCode(
+            int userId, DateOnly generationDate
+    );
 }

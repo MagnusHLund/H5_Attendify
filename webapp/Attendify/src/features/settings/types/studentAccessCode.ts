@@ -1,3 +1,3 @@
 export interface StudentAccessCode {
-  code: string
+  studentAccessCode: string;
 }

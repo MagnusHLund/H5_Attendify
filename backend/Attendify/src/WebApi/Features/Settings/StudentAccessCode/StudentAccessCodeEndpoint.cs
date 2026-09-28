@@ -22,27 +22,58 @@ public class StudentAccessCodeEndpoint(
         CancellationToken ct
     )
     {
-        UserId userIdClaim = UserId.From(int.Parse(User.FindFirstValue(AttendifyClaimTypes.UserId)!));
-
-        var accessCode = await dbContext.StudentAccessCodes
-            .SingleOrDefaultAsync(
-                x => x.UserId == userIdClaim,
-                ct);
-
-        if (accessCode is null)
+        try
         {
-            (studentAccessCodeClass? accessCodeEntity, string generatedPlainTextCode) = await accessCodeGenerator.GenerateAccessCode(
-                userIdClaim.Value,
-                ct);
+            UserId userIdClaim = UserId.From(int.Parse(User.FindFirstValue(AttendifyClaimTypes.UserId)!));
+            var generationDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
-            dbContext.StudentAccessCodes.Add(accessCodeEntity);
-            await dbContext.SaveChangesAsync(ct);
+            var accessCode = await dbContext.StudentAccessCodes
+                .SingleOrDefaultAsync(
+                    x => x.UserId == userIdClaim.Value &&
+                    x.GenerationDate == generationDate,
+                    ct);
+
+            if (accessCode is null)
+            {
+                var (accessCodeEntity, plainTextCode) =
+                    await accessCodeGenerator.GenerateAccessCode(
+                        userIdClaim.Value,
+                        ct);
+
+                dbContext.StudentAccessCodes.Add(accessCodeEntity);
+                await dbContext.SaveChangesAsync(ct);
+
+                await Send.OkAsync(
+                    new StudentAccessCodeResponse(plainTextCode),
+                    cancellation: ct);
+
+                return;
+            }
+
+            string existingPlainTextCode =
+                accessCodeGenerator.GetPlainTextCode(
+                    userIdClaim.Value,
+                    accessCode.GenerationDate);
 
             await Send.OkAsync(
-                new StudentAccessCodeResponse(generatedPlainTextCode),
-                cancellation: ct
-            );
+                new StudentAccessCodeResponse(existingPlainTextCode),
+                cancellation: ct);
+        }
+        catch (ArgumentException)
+        {
+            AddError(StudentAccessCodeErrors.InvalidUser.Description);
 
+            await Send.ErrorsAsync(
+                StatusCodes.Status400BadRequest,
+                ct);
+        }
+        catch (DbUpdateException)
+        {
+            AddError(StudentAccessCodeErrors.PersistenceFailed.Description);
+
+            await Send.ErrorsAsync(
+                StatusCodes.Status500InternalServerError,
+                ct);
         }
     }
 }

@@ -50,7 +50,7 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddSingleton<IFacialEmbeddingService, FaceAiSharpEmbeddingService>();
         services.AddSingleton<IFacialComparisonService, FaceAiSharpComparisonService>();
-        services.AddSingleton<IStudentAccessCodeGenerator, StudentAccessCodeGenerator>();
+        services.AddScoped<IStudentAccessCodeGenerator, StudentAccessCodeGenerator>();
         services.AddScoped<IFacialUserIdentifier, FacialUserIdentifier>();
         services.AddSingleton<IEmbeddingEncryptor, AesGcmEmbeddingEncryptor>();
 
