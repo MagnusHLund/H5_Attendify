@@ -34,7 +34,7 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUse
         }
         catch (ArgumentException)
         {
-            AddError(FacialError.InvalidBase64.Description);
+            AddError(FacialErrors.InvalidBase64.Description);
             await Send.ErrorsAsync(StatusCodes.Status400BadRequest, ct);
         }
         catch (FacePhotoValidationException exception)
@@ -44,7 +44,7 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUse
         }
         catch (NoMatchingUserException)
         {
-            AddError(FacialError.NotFound.Description);
+            AddError(FacialErrors.NotFound.Description);
             await Send.ErrorsAsync(StatusCodes.Status404NotFound, ct);
         }
     }
