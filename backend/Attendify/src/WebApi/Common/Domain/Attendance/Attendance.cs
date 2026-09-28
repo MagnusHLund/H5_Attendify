@@ -1,4 +1,5 @@
 using Attendify.Common.Domain.Base;
+using Attendify.Common.Domain.Users;
 
 namespace Attendify.Common.Domain.Attendance;
 
@@ -10,7 +11,7 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
     public const int ClassroomMaxLength = 100;
 
     // TODO: Change to "UserId" once the UserId has been implemented, then make new migrations.
-    public int UserId
+    public UserId UserId
     {
         get;
         set
@@ -34,16 +35,6 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
         set
         {
             field = value;
-        }
-    }
-
-    public TimeOnly? DepartedAt
-    {
-        get;
-        set
-        {
-            field = value;
-
         }
     }
 
@@ -71,8 +62,7 @@ public sealed class Attendance : AggregateRoot<AttendanceId>
 
     public static Attendance Create(
             string classroom,
-            int userId //TODO: Change UserId type here as well
-    )
+            UserId userId)
     {
         DateTime currentDatetime = DateTime.Now;
 

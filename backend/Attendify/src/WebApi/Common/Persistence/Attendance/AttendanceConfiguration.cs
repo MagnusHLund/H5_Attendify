@@ -22,9 +22,6 @@ public sealed class AttendanceConfiguration : AuditableConfiguration<Attendance>
         builder.Property(attendance => attendance.ArrivedAt)
             .IsRequired();
 
-        builder.Property(attendance => attendance.DepartedAt)
-            .IsRequired(false);
-
         builder.Property(attendance => attendance.Classroom)
             .HasMaxLength(Attendance.ClassroomMaxLength)
             .IsRequired();

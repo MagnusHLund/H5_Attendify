@@ -6,4 +6,8 @@ public interface IFacialEmbeddingService
         IReadOnlyList<byte[]> photos,
         CancellationToken cancellationToken
     );
+
+    Task<byte[]> CreateEmbeddingAsync(
+     byte[] photo,
+     CancellationToken cancellationToken);
 }

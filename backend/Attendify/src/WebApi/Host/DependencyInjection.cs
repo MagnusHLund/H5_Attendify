@@ -5,6 +5,7 @@ using Attendify.Common.Email;
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
+using Attendify.Features.Attendance.CreateAttendance;
 using Attendify.Features.Auth.PasswordReset;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
@@ -47,6 +48,8 @@ public static class DependencyInjection
         services.AddSingleton<IStudentIdProtector, StudentIdProtector>();
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddSingleton<IFacialEmbeddingService, FaceAiSharpEmbeddingService>();
+        services.AddSingleton<IFacialComparisonService, FaceAiSharpComparisonService>();
+        services.AddScoped<IFacialUserIdentifier, FacialUserIdentifier>();
         services.AddSingleton<IEmbeddingEncryptor, AesGcmEmbeddingEncryptor>();
 
         IConfigurationSection facialEmbeddingSection = builder.Configuration.GetRequiredSection(
