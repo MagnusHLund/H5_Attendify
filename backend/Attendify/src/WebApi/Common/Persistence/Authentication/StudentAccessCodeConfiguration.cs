@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Attendify.Common.Persistence;
 
-public sealed class AdminAccessCodeConfiguration : AuditableConfiguration<AdminAccessCode>
+public sealed class StudentAccessCodeConfiguration : AuditableConfiguration<StudentAccessCode>
 {
-    public override void PostConfigure(EntityTypeBuilder<AdminAccessCode> builder)
+    public override void PostConfigure(EntityTypeBuilder<StudentAccessCode> builder)
     {
         builder.HasKey(accessCode => accessCode.Id);
 
@@ -15,8 +15,8 @@ public sealed class AdminAccessCodeConfiguration : AuditableConfiguration<AdminA
             .UseIdentityByDefaultColumn();
 
         builder
-            .Property(accessCode => accessCode.EncryptedAccessCode)
-            .HasMaxLength(AdminAccessCode.CodeMaxLength)
+            .Property(accessCode => accessCode.AccessCodeHash)
+            .HasMaxLength(StudentAccessCode.CodeMaxLength)
             .IsRequired();
 
         builder.Property(accessCode => accessCode.GeneratedAt).IsRequired();
@@ -24,7 +24,7 @@ public sealed class AdminAccessCodeConfiguration : AuditableConfiguration<AdminA
 
         builder
             .HasOne(accessCode => accessCode.User)
-            .WithMany(user => user.AdminAccessCodes)
+            .WithMany(user => user.StudentAccessCodes)
             .HasForeignKey(accessCode => accessCode.UserId)
             .IsRequired();
     }

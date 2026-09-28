@@ -4,7 +4,7 @@ namespace Attendify.Common.Persistence;
 
 public partial class ApplicationDbContext
 {
-    public DbSet<AdminAccessCode> AdminAccessCodes => AggregateRootSet<AdminAccessCode>();
+    public DbSet<StudentAccessCode> StudentAccessCodes => AggregateRootSet<StudentAccessCode>();
 
     public DbSet<RefreshToken> RefreshTokens => AggregateRootSet<RefreshToken>();
 

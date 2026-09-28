@@ -7,6 +7,7 @@ using Attendify.Common.Interfaces;
 using Attendify.Common.Services;
 using Attendify.Features.Attendance.CreateAttendance;
 using Attendify.Features.Auth.PasswordReset;
+using Attendify.Features.Settings.StudentAccessCode;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,7 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddSingleton<IFacialEmbeddingService, FaceAiSharpEmbeddingService>();
         services.AddSingleton<IFacialComparisonService, FaceAiSharpComparisonService>();
+        services.AddSingleton<IStudentAccessCodeGenerator, StudentAccessCodeGenerator>();
         services.AddScoped<IFacialUserIdentifier, FacialUserIdentifier>();
         services.AddSingleton<IEmbeddingEncryptor, AesGcmEmbeddingEncryptor>();
 
