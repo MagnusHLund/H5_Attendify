@@ -5,12 +5,12 @@
 #include "base64.h"
 #include "Config.h"
 
-CameraController::CameraController(Camera* camera, HttpService* httpService)
-  : _camera(camera), _httpService(httpService), _faceDetectorConfig(mtmn_init_config()) {}
+CameraController::CameraController(Camera *camera, HttpService *httpService)
+    : _camera(camera), _httpService(httpService), _faceDetectorConfig(mtmn_init_config()) {}
 
 void CameraController::main()
 {
-    camera_fb_t* picture = _camera->takePicture();
+    camera_fb_t *picture = _camera->takePicture();
 
     if (picture == nullptr)
     {
@@ -26,8 +26,9 @@ void CameraController::main()
 
         String encodedPicture = encoder.encode(
             picture->buf,
-            picture->len
-        );
+            picture->len);
+
+        esp_camera_fb_return(picture);
 
         String json = "{\"classroom\":\"";
         json += CLASSROOM;
@@ -39,10 +40,7 @@ void CameraController::main()
             "POST",
             "/api/attendance",
             json,
-            "application/json"
-        );
-
-        esp_camera_fb_return(picture);
+            "application/json");
 
         _camera->setResolution(_camera->_lowResolution);
         _isHighResolutionImage = false;
@@ -63,17 +61,16 @@ void CameraController::main()
     _isHighResolutionImage = true;
 }
 
-bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
+bool CameraController::isFacePresentInPicture(camera_fb_t *picture)
 {
     Serial.println("Checking for face");
 
-    dl_matrix3du_t* imageMatrix =
+    dl_matrix3du_t *imageMatrix =
         dl_matrix3du_alloc(
             1,
             picture->width,
             picture->height,
-            3
-        );
+            3);
 
     if (imageMatrix == nullptr)
     {
@@ -85,8 +82,7 @@ bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
         picture->buf,
         picture->len,
         picture->format,
-        imageMatrix->item
-    );
+        imageMatrix->item);
 
     if (!conversionSuccessful)
     {
@@ -95,10 +91,9 @@ bool CameraController::isFacePresentInPicture(camera_fb_t* picture)
         return false;
     }
 
-    box_array_t* boxes = face_detect(
+    box_array_t *boxes = face_detect(
         imageMatrix,
-        &_faceDetectorConfig
-    );
+        &_faceDetectorConfig);
 
     bool facePresent = boxes != nullptr;
 
