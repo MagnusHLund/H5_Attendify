@@ -1,6 +1,6 @@
 namespace Attendify.Common.Domain.FacialRecognition;
 
-public static class FacialError
+public static class FacialErrors
 {
     public static readonly Error NotFound = Error.NotFound(
             "FacialProfile.NotFound",
