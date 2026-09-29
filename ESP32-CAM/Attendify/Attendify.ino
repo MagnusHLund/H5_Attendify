@@ -22,7 +22,7 @@ void setup() {
   _camera = new Camera();
   _light = new Light(LIGHT_PIN, 1);
 
-  _httpService = new HttpService(API_BASE, 443);
+  _httpService = new HttpService(API_BASE, API_PORT);
   _cameraController = new CameraController(_camera, _light, _httpService);
 
   _wifiManager->connect();
