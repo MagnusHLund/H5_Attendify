@@ -4,5 +4,5 @@ namespace Attendify.Common.Authentication;
 
 public interface IJwtTokenService
 {
-    string GenerateToken(IReadOnlyList<Claim> claims);
+    Task<string> GenerateTokenAsync(IReadOnlyList<Claim> claims);
 }

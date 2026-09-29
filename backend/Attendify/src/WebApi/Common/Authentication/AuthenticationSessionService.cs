@@ -33,11 +33,23 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             user.Id,
             cancellationToken
         );
-        string accessToken = _jwtTokenService.GenerateToken(
+        string accessToken = await _jwtTokenService.GenerateTokenAsync(
             CreateClaims(user, refreshToken.TokenFamilyId)
         );
 
         return new AuthenticationSession(accessToken, refreshToken.Token);
+    }
+
+    public async Task<AdministrativeSession> CreateAdministrativeSessionAsync(
+        User user,
+        CancellationToken cancellationToken
+    )
+    {
+        string accessToken = await _jwtTokenService.GenerateTokenAsync(
+                CreateAdministrativeClaims(user)
+        );
+
+        return new AdministrativeSession(accessToken);
     }
 
     public void SetSessionCookies(AuthenticationSession session)
@@ -73,7 +85,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         }
 
         var claims = CreateClaims(result.User, result.TokenFamilyId);
-        string accessToken = _jwtTokenService.GenerateToken(claims);
+        string accessToken = await _jwtTokenService.GenerateTokenAsync(claims);
 
         _authenticationCookieService.SetAccessTokenCookie(accessToken);
         _authenticationCookieService.SetRefreshTokenCookie(result.Token);
@@ -92,5 +104,24 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             new Claim(AttendifyClaimTypes.StudentId, decryptedStudentId),
             new Claim(AttendifyClaimTypes.TokenFamilyId, tokenFamilyId.ToString()),
         };
+    }
+    private List<Claim> CreateAdministrativeClaims(User user)
+    {
+        string decryptedStudentId = _studentIdProtector.Unprotect(user.EncryptedStudentId);
+
+        return
+        [
+            new Claim(
+            AttendifyClaimTypes.UserId,
+            user.Id.ToString()),
+
+        new Claim(
+            AttendifyClaimTypes.UserType,
+            UserType.SchoolAdministrator.ToString()),
+
+        new Claim(
+            AttendifyClaimTypes.StudentId, decryptedStudentId),
+        new Claim(AttendifyClaimTypes.AccessCodeSession, bool.TrueString),
+        ];
     }
 }

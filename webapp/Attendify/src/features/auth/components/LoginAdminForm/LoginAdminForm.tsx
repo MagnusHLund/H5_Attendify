@@ -1,75 +1,76 @@
-import { useForm } from '@tanstack/react-form'
-import { useNavigate } from '@tanstack/react-router'
+import { useForm } from "@tanstack/react-form";
+import { useNavigate } from "@tanstack/react-router";
 
 import {
   Button,
   TextInput,
   useErrorModal,
   useLoadingOverlay,
-} from '../../../../components/ui'
-import { loginWithStudentAccessCode } from '../../api/loginWithStudentAccessCode'
-import { required } from '../../../../lib/validation'
-import { useTranslation } from '../../../../lib/i18n'
-import './LoginAdminForm.scss'
+} from "../../../../components/ui";
+import { loginWithStudentAccessCode } from "../../api/loginWithStudentAccessCode";
+import { required } from "../../../../lib/validation";
+import { useTranslation } from "../../../../lib/i18n";
+import "./LoginAdminForm.scss";
 
 export function LoginAdminForm() {
-  const navigate = useNavigate()
-  const { showError } = useErrorModal()
-  const { runWithLoading } = useLoadingOverlay()
-  const { t } = useTranslation()
+  const navigate = useNavigate();
+  const { showError } = useErrorModal();
+  const { runWithLoading } = useLoadingOverlay();
+  const { t } = useTranslation();
 
   const form = useForm({
     defaultValues: {
-      accessCode: '',
+      accessCode: "",
     },
 
     onSubmit: async ({ value }) => {
       try {
         await runWithLoading(() =>
           loginWithStudentAccessCode(value.accessCode),
-        )
+        );
+        sessionStorage.setItem("auth-flow", "access-code");
         navigate({
-          to: '/overview',
-        })
+          to: "/overview",
+        });
       } catch (error) {
         showError(
           error,
-          t('error.loginFailedTitle'),
-          t('error.loginFailedAccessCode'),
-        )
+          t("error.loginFailedTitle"),
+          t("error.loginFailedAccessCode"),
+        );
       }
     },
-  })
+  });
 
   function handleStudentLogin() {
     navigate({
-      to: '/login',
-    })
+      to: "/login",
+    });
   }
 
   return (
     <form
       className="login-admin-form"
       onSubmit={(event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        form.handleSubmit()
+        event.preventDefault();
+        event.stopPropagation();
+        form.handleSubmit();
       }}
     >
       <h1 className="login-admin-form__title">
-        {t('auth.loginAdministrator')}
+        {t("auth.loginAdministrator")}
       </h1>
 
       <div className="login-admin-form__fields">
         <form.Field
           name="accessCode"
           validators={{
-            onChange: required(t('validation.accessCodeRequired')),
+            onChange: required(t("validation.accessCodeRequired")),
           }}
         >
           {(field) => (
             <TextInput
-              label={t('auth.studentAccessCode')}
+              label={t("auth.studentAccessCode")}
               type="text"
               name={field.name}
               value={field.state.value}
@@ -92,14 +93,14 @@ export function LoginAdminForm() {
         className="login-admin-form__submit"
         disabled={form.state.isSubmitting}
       >
-        {t('auth.login')}
+        {t("auth.login")}
       </Button>
 
       <div className="login-admin-form__student">
         <Button type="button" variant="secondary" onClick={handleStudentLogin}>
-          {t('auth.loginStudent')}
+          {t("auth.loginStudent")}
         </Button>
       </div>
     </form>
-  )
+  );
 }
