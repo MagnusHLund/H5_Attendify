@@ -38,7 +38,7 @@ export function StudentAccessCode() {
         </div>
       )}
 
-      {data && <CopyField label={t('settings.accessCode')} value={data.code} />}
+      {data && <CopyField label={t('settings.accessCode')} value={data.studentAccessCode} />}
     </div>
   )
 }

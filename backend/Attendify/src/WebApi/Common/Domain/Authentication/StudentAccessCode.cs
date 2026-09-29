@@ -3,19 +3,19 @@ using Attendify.Common.Domain.Users;
 
 namespace Attendify.Common.Domain.Authentication;
 
-public sealed class AdminAccessCode : AggregateRoot<int>
+public sealed class StudentAccessCode : AggregateRoot<int>
 {
     public const int CodeMaxLength = 128;
 
     public int UserId { get; set; }
 
-    public string EncryptedAccessCode
+    public string AccessCodeHash
     {
         get;
         set
         {
-            ThrowIfNullOrWhiteSpace(value, nameof(EncryptedAccessCode));
-            ThrowIfGreaterThan(value.Length, CodeMaxLength, nameof(EncryptedAccessCode));
+            ThrowIfNullOrWhiteSpace(value, nameof(AccessCodeHash));
+            ThrowIfGreaterThan(value.Length, CodeMaxLength, nameof(AccessCodeHash));
             field = value;
         }
     } = null!;
@@ -24,23 +24,27 @@ public sealed class AdminAccessCode : AggregateRoot<int>
 
     public DateTimeOffset ExpiresAt { get; set; }
 
+    public DateOnly GenerationDate { get; set; }
+
     public User User { get; set; } = null!;
 
-    private AdminAccessCode() { }
+    private StudentAccessCode() { }
 
-    public static AdminAccessCode Create(
+    public static StudentAccessCode Create(
         int userId,
         string code,
         DateTimeOffset generatedAt,
+        DateOnly generationDate,
         DateTimeOffset expiresAt
     )
     {
-        return new AdminAccessCode
+        return new StudentAccessCode
         {
             UserId = userId,
-            EncryptedAccessCode = code,
+            AccessCodeHash = code,
             GeneratedAt = generatedAt,
-            ExpiresAt = expiresAt,
+            GenerationDate = generationDate,
+            ExpiresAt = expiresAt
         };
     }
 }

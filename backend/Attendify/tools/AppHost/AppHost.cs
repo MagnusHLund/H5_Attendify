@@ -6,6 +6,7 @@ var resendApiKey = builder.AddParameter("ResendApiKey", secret: true);
 var emailFromAddress = builder.AddParameter("EmailFromAddress");
 var emailFromName = builder.AddParameter("EmailFromName");
 var passwordResetCodeHashKey = builder.AddParameter("PasswordResetCodeHashKey", secret: true);
+var studentAccessCodeSecret = builder.AddParameter("StudentAccessCodeGenSecret", secret: true); 
 
 var controllerName = builder.AddParameter("PrivacyPolicyControllerName");
 var controllerAddress = builder.AddParameter("PrivacyPolicyControllerAddress");
@@ -50,6 +51,7 @@ var api = builder
     .WithEnvironment("Email__FromAddress", emailFromAddress)
     .WithEnvironment("Email__FromName", emailFromName)
     .WithEnvironment("ResetPasswordToken__SecurityCodeHashKey", passwordResetCodeHashKey)
+    .WithEnvironment("Parameters__StudentAccessCodeGenSecret", studentAccessCodeSecret)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
     .WaitForCompletion(migrationService);

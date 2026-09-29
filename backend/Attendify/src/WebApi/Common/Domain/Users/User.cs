@@ -64,7 +64,7 @@ public sealed class User : AggregateRoot<int>
 
     public ICollection<AttendanceRecord> AttendanceRecords { get; } = [];
 
-    public ICollection<AdminAccessCode> AdminAccessCodes { get; } = [];
+    public ICollection<StudentAccessCode> StudentAccessCodes { get; } = [];
 
     public ICollection<RefreshToken> RefreshTokens { get; } = [];
 
