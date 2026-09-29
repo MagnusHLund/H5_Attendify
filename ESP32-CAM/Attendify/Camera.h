@@ -27,7 +27,7 @@ private:
 
 public:
   const framesize_t _lowResolution = FRAMESIZE_QVGA;
-  const framesize_t _highResolution = FRAMESIZE_UXGA;
+  const framesize_t _highResolution = FRAMESIZE_VGA;
 
   bool init();
   camera_fb_t *takePicture();
