@@ -9,13 +9,15 @@ public sealed class CreateAttendanceValidator : Validator<CreateAttendanceReques
         RuleFor(request => request.Classroom).NotEmpty().MaximumLength(100);
 
         RuleFor(request => request.Picture).NotNull().WithMessage("A picture is required.");
-        RuleFor(request => request.Picture.Length)
+        RuleFor(request => request.Picture!.Length)
             .GreaterThan(0)
             .WithMessage("The picture cannot be empty.")
             .LessThanOrEqualTo(MaxPhotoSizeInBytes)
-            .WithMessage("The picture cannot exceed 5 MB.");
-        RuleFor(request => request.Picture.ContentType)
+            .WithMessage("The picture cannot exceed 5 MB.")
+            .When(request => request.Picture is not null);
+        RuleFor(request => request.Picture!.ContentType)
             .Equal("image/jpeg")
-            .WithMessage("The picture must be a JPEG image.");
+            .WithMessage("The picture must be a JPEG image.")
+            .When(request => request.Picture is not null);
     }
 }
