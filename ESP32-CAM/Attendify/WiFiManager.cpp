@@ -34,6 +34,9 @@ void WiFiManager::connect()
 
     Serial.println("Connecting to WiFi...");
 
+    WiFi.mode(WIFI_STA);
+    WiFi.setSleep(false);
+
     // Configure static IP
     if (!WiFi.config(_localIp, _gateway, _subnet, _dnsServer)) {
         Serial.println("Failed to configure static IP!");
@@ -52,6 +55,8 @@ void WiFiManager::connect()
 
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
+
+    Serial.println("WiFi RSSI: " + String(WiFi.RSSI()) + " dBm");
 }
 
 void WiFiManager::ensureConnectivity()

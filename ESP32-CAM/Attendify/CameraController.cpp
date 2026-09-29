@@ -1,15 +1,24 @@
 #include <Arduino.h>
+
 #include "CameraController.h"
 #include "img_converters.h"
-#include "fd_forward.h"
-#include "base64.h"
 #include "Config.h"
 
-CameraController::CameraController(Camera *camera, HttpService *httpService)
-    : _camera(camera), _httpService(httpService), _faceDetectorConfig(mtmn_init_config()) {}
+CameraController::CameraController(
+    Camera *camera,
+    Light *light,
+    HttpService *httpService)
+    : _camera(camera),
+      _light(light),
+      _httpService(httpService),
+      _faceDetectorConfig(mtmn_init_config())
+{
+}
 
 void CameraController::main()
 {
+    _light->setState(LightState::Off);
+
     camera_fb_t *picture = _camera->takePicture();
 
     if (picture == nullptr)
@@ -22,25 +31,7 @@ void CameraController::main()
     {
         Serial.println("High resolution image captured");
 
-        base64 encoder;
-
-        String encodedPicture = encoder.encode(
-            picture->buf,
-            picture->len);
-
-        esp_camera_fb_return(picture);
-
-        String json = "{\"classroom\":\"";
-        json += CLASSROOM;
-        json += "\",\"picture\":\"";
-        json += encodedPicture;
-        json += "\"}";
-
-        HttpResponse response = _httpService->request(
-            "POST",
-            "/api/attendance",
-            json,
-            "application/json");
+        sendImage(picture);
 
         _camera->setResolution(_camera->_lowResolution);
         _isHighResolutionImage = false;
@@ -48,20 +39,23 @@ void CameraController::main()
         return;
     }
 
-    bool isFacePresent = isFacePresentInPicture(picture);
+    bool facePresent = isFacePresentInPicture(picture);
 
     esp_camera_fb_return(picture);
 
-    if (!isFacePresent)
+    if (!facePresent)
     {
         return;
     }
+
+    _light->setState(LightState::Detected);
 
     _camera->setResolution(_camera->_highResolution);
     _isHighResolutionImage = true;
 }
 
-bool CameraController::isFacePresentInPicture(camera_fb_t *picture)
+bool CameraController::isFacePresentInPicture(
+    camera_fb_t *picture)
 {
     Serial.println("Checking for face");
 
@@ -87,7 +81,9 @@ bool CameraController::isFacePresentInPicture(camera_fb_t *picture)
     if (!conversionSuccessful)
     {
         Serial.println("fmt2rgb888 failed");
+
         dl_matrix3du_free(imageMatrix);
+
         return false;
     }
 
@@ -110,4 +106,32 @@ bool CameraController::isFacePresentInPicture(camera_fb_t *picture)
     dl_matrix3du_free(imageMatrix);
 
     return facePresent;
+}
+
+void CameraController::sendImage(camera_fb_t *picture)
+{
+    Serial.print("Sending image: ");
+    Serial.print(picture->len);
+    Serial.println(" bytes");
+
+    _light->setState(LightState::Uploading);
+
+    bool success = _httpService->uploadImage(
+        "/api/attendance",
+        picture->buf,
+        picture->len,
+        CLASSROOM);
+
+    if (success)
+    {
+        _light->setState(LightState::Success);
+        Serial.println("Image uploaded successfully");
+    }
+    else
+    {
+        _light->setState(LightState::Failure);
+        Serial.println("Image upload failed");
+    }
+
+    esp_camera_fb_return(picture);
 }

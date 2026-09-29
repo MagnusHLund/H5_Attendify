@@ -57,4 +57,12 @@ void Camera::setResolution(framesize_t resolution)
     {
         sensor->set_framesize(sensor, resolution);
     }
+
+    // Sensor needs one frame to settle after a resolution switch;
+    // discard it so the next real capture is guaranteed clean.
+    camera_fb_t *warmupFrame = esp_camera_fb_get();
+    if (warmupFrame != nullptr)
+    {
+        esp_camera_fb_return(warmupFrame);
+    }
 }
