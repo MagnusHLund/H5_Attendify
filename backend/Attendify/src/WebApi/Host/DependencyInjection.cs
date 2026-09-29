@@ -157,7 +157,9 @@ public static class DependencyInjection
 
                         if (!Guid.TryParse(tokenFamilyIdValue, out Guid tokenFamilyId))
                         {
-                            context.Fail("The access token has no valid token family.");
+                            // Access-code sessions are short-lived, access-token-only sessions
+                            // and do not have a refresh-token family. Regular login sessions
+                            // include this claim and are checked for revocation below.
                             return;
                         }
 

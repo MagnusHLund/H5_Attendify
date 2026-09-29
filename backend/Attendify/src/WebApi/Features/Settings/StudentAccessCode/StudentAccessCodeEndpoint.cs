@@ -47,7 +47,7 @@ public class StudentAccessCodeEndpoint(
             if (accessCode is null)
             {
                 var (accessCodeEntity, plainTextCode) =
-                    await accessCodeGenerator.GenerateAccessCode(
+                    await accessCodeGenerator.GenerateAccessCodeAsync(
                         userIdClaim.Value,
                         ct);
 

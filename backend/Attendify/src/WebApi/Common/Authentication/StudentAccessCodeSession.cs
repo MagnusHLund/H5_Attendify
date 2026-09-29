@@ -1,0 +1,1 @@
+public sealed record AdministrativeSession(string AccessToken);

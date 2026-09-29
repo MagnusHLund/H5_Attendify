@@ -8,11 +8,19 @@ public interface IAuthenticationSessionService
         User user,
         CancellationToken cancellationToken
     );
+
+    Task<AdministrativeSession> CreateAdministrativeSessionAsync(
+        User user,
+        CancellationToken cancellationToken
+    );
+
     Task<bool> IsPersistedAsync(
         User user,
         AuthenticationSession session,
         CancellationToken cancellationToken
     );
     void SetSessionCookies(AuthenticationSession session);
+
     Task<bool> RefreshSessionAsync(string refreshToken, CancellationToken cancellationToken);
+
 }

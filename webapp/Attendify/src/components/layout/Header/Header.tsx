@@ -3,56 +3,56 @@ import {
   useLocation,
   useMatches,
   useNavigate,
-} from '@tanstack/react-router'
-import { useRef, useState } from 'react'
-import { Button, Image, LanguageSwitcher } from '../../ui'
-import { useTranslation } from '../../../lib/i18n'
-import { Sidebar } from '../Sidebar/Sidebar'
-import { useCurrentUser } from '../../../features/auth/hooks/useCurrentUser'
+} from "@tanstack/react-router";
+import { useRef, useState } from "react";
+import { Button, Image, LanguageSwitcher } from "../../ui";
+import { useTranslation } from "../../../lib/i18n";
+import { Sidebar } from "../Sidebar/Sidebar";
+import { useCurrentUser } from "../../../features/auth/hooks/useCurrentUser";
 
-import './Header.scss'
+import "./Header.scss";
 
 type HeaderProps = {
-  onLogout: () => void
-}
+  onLogout: () => void;
+};
 
 export function Header({ onLogout }: HeaderProps) {
-  const location = useLocation()
-  const matches = useMatches()
-  const navigate = useNavigate()
-  const { t } = useTranslation()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const location = useLocation();
+  const matches = useMatches();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  const isSettingsPage = location.pathname === '/settings'
-  const isOverviewPage = location.pathname === '/overview'
+  const isSettingsPage = location.pathname === "/settings";
+  const isOverviewPage = location.pathname === "/overview";
 
-  const { data: user } = useCurrentUser(isSettingsPage || isOverviewPage)
-  const userRole = user?.role ?? 'student'
+  const { data: user } = useCurrentUser(isSettingsPage || isOverviewPage);
+  const userRole = user?.userType ?? "student";
 
   const pageNameKey = [...matches]
     .reverse()
-    .find((match) => match.staticData.pageNameKey)?.staticData.pageNameKey
-  const pageName = pageNameKey ? t(pageNameKey) : t('common.attendifyLogo')
+    .find((match) => match.staticData.pageNameKey)?.staticData.pageNameKey;
+  const pageName = pageNameKey ? t(pageNameKey) : t("common.attendifyLogo");
 
   const handleAction = () => {
-    if (userRole === 'school_administrator' || isSettingsPage) {
-      onLogout()
-      return
+    if (userRole === "school_administrator" || isSettingsPage) {
+      onLogout();
+      return;
     }
 
     navigate({
-      to: isSettingsPage ? '/overview' : '/settings',
-    })
-  }
+      to: isSettingsPage ? "/overview" : "/settings",
+    });
+  };
 
   const actionLabel =
-    userRole === 'school_administrator' || isSettingsPage
-      ? t('navigation.logout')
-      : t('navigation.settings')
+    userRole === "school_administrator" || isSettingsPage
+      ? t("navigation.logout")
+      : t("navigation.settings");
 
   if (!isSettingsPage && !isOverviewPage) {
-    return null
+    return null;
   }
 
   return (
@@ -60,15 +60,15 @@ export function Header({ onLogout }: HeaderProps) {
       <Link className="header__logo" to="/overview">
         <Image
           src="/internal/logos/Attendify-large.png"
-          alt={t('common.attendifyLogo')}
+          alt={t("common.attendifyLogo")}
         />
       </Link>
 
       <h1 className="header__title">{pageName}</h1>
 
       <div className="header__actions">
-        {userRole === 'school_administrator' && <LanguageSwitcher compact />}
-        {(userRole === 'school_administrator' || !isSettingsPage) && (
+        {userRole === "school_administrator" && <LanguageSwitcher compact />}
+        {(userRole === "school_administrator" || !isSettingsPage) && (
           <Button
             className="header__action"
             type="button"
@@ -93,7 +93,7 @@ export function Header({ onLogout }: HeaderProps) {
         className="header__menu-button"
         type="button"
         aria-label={
-          isMenuOpen ? t('navigation.closeMenu') : t('navigation.openMenu')
+          isMenuOpen ? t("navigation.closeMenu") : t("navigation.openMenu")
         }
         aria-controls="mobile-navigation"
         aria-expanded={isMenuOpen}
@@ -114,5 +114,5 @@ export function Header({ onLogout }: HeaderProps) {
         />
       )}
     </header>
-  )
+  );
 }
