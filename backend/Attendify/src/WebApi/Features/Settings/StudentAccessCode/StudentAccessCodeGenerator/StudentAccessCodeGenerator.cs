@@ -16,8 +16,9 @@ public sealed class StudentAccessCodeGenerator(
     private const int CodeLength = 12;
 
     private readonly byte[] _secret = Encoding.ASCII.GetBytes(
-            configuration.GetRequiredSection("Parameters:StudentAccessCodeGenSecret").Value
-    );
+    configuration.GetRequiredSection("Parameters:StudentAccessCodeGenSecret").Value
+        ?? throw new InvalidOperationException(
+            "Configuration 'Parameters:StudentAccessCodeGenSecret' is missing or empty."));
 
     public Task<(
         studentAccessCodeClass.StudentAccessCode entity,

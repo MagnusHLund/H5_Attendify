@@ -15,6 +15,7 @@ public class StudentAccessCodeEndpoint(
     {
         Get("/student-access-code");
         Group<SettingsGroup>();
+        Policies(JwtOptions.AuthenticatedUserPolicy);
         Description(x => x.WithName("StudentAccessCode"));
     }
 

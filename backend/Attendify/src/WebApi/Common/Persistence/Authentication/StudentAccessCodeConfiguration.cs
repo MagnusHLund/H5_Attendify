@@ -23,6 +23,14 @@ public sealed class StudentAccessCodeConfiguration : AuditableConfiguration<Stud
         builder.Property(accessCode => accessCode.ExpiresAt).IsRequired();
 
         builder
+           .HasIndex(accessCode => new
+           {
+               accessCode.UserId,
+               accessCode.GenerationDate
+           })
+           .IsUnique();
+
+        builder
             .HasOne(accessCode => accessCode.User)
             .WithMany(user => user.StudentAccessCodes)
             .HasForeignKey(accessCode => accessCode.UserId)
