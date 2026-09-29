@@ -33,7 +33,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             user.Id,
             cancellationToken
         );
-        string accessToken = _jwtTokenService.GenerateToken(
+        string accessToken = await _jwtTokenService.GenerateTokenAsync(
             CreateClaims(user, refreshToken.TokenFamilyId)
         );
 
@@ -45,7 +45,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         CancellationToken cancellationToken
     )
     {
-        string accessToken = _jwtTokenService.GenerateToken(
+        string accessToken = await _jwtTokenService.GenerateTokenAsync(
                 CreateAdministrativeClaims(user)
         );
 
@@ -85,7 +85,7 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
         }
 
         var claims = CreateClaims(result.User, result.TokenFamilyId);
-        string accessToken = _jwtTokenService.GenerateToken(claims);
+        string accessToken = await _jwtTokenService.GenerateTokenAsync(claims);
 
         _authenticationCookieService.SetAccessTokenCookie(accessToken);
         _authenticationCookieService.SetRefreshTokenCookie(result.Token);
@@ -120,7 +120,8 @@ public sealed class AuthenticationSessionService : IAuthenticationSessionService
             UserType.SchoolAdministrator.ToString()),
 
         new Claim(
-            AttendifyClaimTypes.StudentId, decryptedStudentId)
+            AttendifyClaimTypes.StudentId, decryptedStudentId),
+        new Claim(AttendifyClaimTypes.AccessCodeSession, bool.TrueString),
         ];
     }
 }

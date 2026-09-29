@@ -25,7 +25,7 @@ public sealed class LoginWithAccessCodeEndpoint(
     {
         string submittedCodeHash = accessCodeGenerator.HashCode(req.StudentAccessCode);
 
-        StudentAccessCode accessCode = await dbContext.StudentAccessCodes
+        StudentAccessCode? accessCode = await dbContext.StudentAccessCodes
             .Include(x => x.User)
             .SingleOrDefaultAsync(
                 x =>
