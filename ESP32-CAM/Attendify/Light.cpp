@@ -2,7 +2,7 @@
 
 namespace
 {
-    constexpr uint8_t PWM_CHANNEL = 0;
+    constexpr uint8_t PWM_CHANNEL = 2;
     constexpr uint32_t PWM_FREQUENCY = 5000;
     constexpr uint8_t PWM_RESOLUTION = 8;
 }
