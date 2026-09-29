@@ -25,10 +25,11 @@ export function LoginForm() {
 
     onSubmit: async ({ value }) => {
       try {
-        sessionStorage.setItem("auth-flow", "password");
         await runWithLoading(() =>
           loginWithPassword(value.email, value.password),
         );
+        sessionStorage.setItem("auth-flow", "password");
+
         navigate({
           to: "/overview",
         });

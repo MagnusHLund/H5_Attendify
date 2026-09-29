@@ -25,10 +25,10 @@ export function LoginAdminForm() {
 
     onSubmit: async ({ value }) => {
       try {
-        sessionStorage.setItem("auth-flow", "access-code");
         await runWithLoading(() =>
           loginWithStudentAccessCode(value.accessCode),
         );
+        sessionStorage.setItem("auth-flow", "access-code");
         navigate({
           to: "/overview",
         });
