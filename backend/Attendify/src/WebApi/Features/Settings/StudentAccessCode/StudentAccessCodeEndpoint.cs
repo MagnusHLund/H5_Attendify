@@ -25,8 +25,18 @@ public class StudentAccessCodeEndpoint(
     {
         try
         {
-            UserId userIdClaim = UserId.From(int.Parse(User.FindFirstValue(AttendifyClaimTypes.UserId)!));
-            var generationDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            var userIdValue = User.FindFirstValue(AttendifyClaimTypes.UserId);
+
+            if (!int.TryParse(userIdValue, out var parsedUserId))
+            {
+                AddError(StudentAccessCodeErrors.InvalidUser.Description);
+                await Send.ErrorsAsync(
+                    StatusCodes.Status400BadRequest,
+                    ct);
+                return;
+            }
+
+            UserId userIdClaim = UserId.From(parsedUserId); var generationDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
             var accessCode = await dbContext.StudentAccessCodes
                 .SingleOrDefaultAsync(
@@ -59,14 +69,6 @@ public class StudentAccessCodeEndpoint(
             await Send.OkAsync(
                 new StudentAccessCodeResponse(existingPlainTextCode),
                 cancellation: ct);
-        }
-        catch (ArgumentException)
-        {
-            AddError(StudentAccessCodeErrors.InvalidUser.Description);
-
-            await Send.ErrorsAsync(
-                StatusCodes.Status400BadRequest,
-                ct);
         }
         catch (DbUpdateException)
         {
