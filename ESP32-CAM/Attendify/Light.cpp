@@ -7,26 +7,25 @@ namespace
     constexpr uint8_t PWM_RESOLUTION = 8;
 }
 
-Light::Light(byte pin, byte brightness)
+Light::Light(
+    uint8_t pin,
+    uint8_t brightness)
     : _pin(pin),
       _brightness(brightness),
-      _state(LightState::Off)
+      _taskHandle(nullptr)
 {
     ledcSetup(
         PWM_CHANNEL,
         PWM_FREQUENCY,
-        PWM_RESOLUTION
-    );
+        PWM_RESOLUTION);
 
     ledcAttachPin(
         _pin,
-        PWM_CHANNEL
-    );
+        PWM_CHANNEL);
 
     ledcWrite(
         PWM_CHANNEL,
-        0
-    );
+        0);
 
     xTaskCreate(
         taskEntry,
@@ -34,18 +33,26 @@ Light::Light(byte pin, byte brightness)
         2048,
         this,
         1,
-        nullptr
-    );
+        &_taskHandle);
 }
 
 void Light::setState(LightState state)
 {
-    _state = state;
+    if (_taskHandle == nullptr)
+    {
+        return;
+    }
+
+    xTaskNotify(
+        _taskHandle,
+        static_cast<uint32_t>(state),
+        eSetValueWithOverwrite);
 }
 
-void Light::taskEntry(void* parameter)
+void Light::taskEntry(void *parameter)
 {
-    auto* light = static_cast<Light*>(parameter);
+    auto *light =
+        static_cast<Light *>(parameter);
 
     light->run();
 
@@ -54,73 +61,212 @@ void Light::taskEntry(void* parameter)
 
 void Light::run()
 {
+    LightState state = LightState::Off;
+
     while (true)
     {
-        switch (_state)
+        uint32_t notificationValue;
+
+        // Check for a new state without blocking.
+        if (xTaskNotifyWait(
+                0,
+                UINT32_MAX,
+                &notificationValue,
+                0) == pdTRUE)
         {
-            case LightState::Off:
-            {
-                ledcWrite(PWM_CHANNEL, 0);
+            state = static_cast<LightState>(
+                notificationValue);
+        }
 
-                vTaskDelay(pdMS_TO_TICKS(100));
+        switch (state)
+        {
+        case LightState::Off:
+        {
+            ledcWrite(PWM_CHANNEL, 0);
+
+            // Stay here until another state arrives.
+            if (xTaskNotifyWait(
+                    0,
+                    UINT32_MAX,
+                    &notificationValue,
+                    portMAX_DELAY) == pdTRUE)
+            {
+                state = static_cast<LightState>(
+                    notificationValue);
+            }
+
+            break;
+        }
+
+        case LightState::Detected:
+        {
+            ledcWrite(
+                PWM_CHANNEL,
+                _brightness);
+
+            if (xTaskNotifyWait(
+                    0,
+                    UINT32_MAX,
+                    &notificationValue,
+                    pdMS_TO_TICKS(100)) == pdTRUE)
+            {
+                state = static_cast<LightState>(
+                    notificationValue);
+
+                ledcWrite(PWM_CHANNEL, 0);
                 break;
             }
 
-            case LightState::Detected:
+            ledcWrite(
+                PWM_CHANNEL,
+                0);
+
+            state = LightState::Off;
+
+            break;
+        }
+
+        case LightState::Uploading:
+        {
+            ledcWrite(
+                PWM_CHANNEL,
+                _brightness);
+
+            if (xTaskNotifyWait(
+                    0,
+                    UINT32_MAX,
+                    &notificationValue,
+                    pdMS_TO_TICKS(300)) == pdTRUE)
             {
-                ledcWrite(PWM_CHANNEL, _brightness);
-                vTaskDelay(pdMS_TO_TICKS(100));
+                state = static_cast<LightState>(
+                    notificationValue);
 
                 ledcWrite(PWM_CHANNEL, 0);
-
-                _state = LightState::Off;
-
-                vTaskDelay(pdMS_TO_TICKS(100));
                 break;
             }
 
-            case LightState::Uploading:
+            ledcWrite(
+                PWM_CHANNEL,
+                0);
+
+            if (xTaskNotifyWait(
+                    0,
+                    UINT32_MAX,
+                    &notificationValue,
+                    pdMS_TO_TICKS(500)) == pdTRUE)
             {
-                ledcWrite(PWM_CHANNEL, _brightness);
-                vTaskDelay(pdMS_TO_TICKS(300));
-
-                ledcWrite(PWM_CHANNEL, 0);
-                vTaskDelay(pdMS_TO_TICKS(500));
-
-                break;
+                state = static_cast<LightState>(
+                    notificationValue);
             }
 
-            case LightState::Success:
+            break;
+        }
+
+        case LightState::Success:
+        {
+            bool interrupted = false;
+
+            for (int i = 0; i < 2; i++)
             {
-                for (int i = 0; i < 2; i++)
+                ledcWrite(
+                    PWM_CHANNEL,
+                    _brightness);
+
+                if (xTaskNotifyWait(
+                        0,
+                        UINT32_MAX,
+                        &notificationValue,
+                        pdMS_TO_TICKS(100)) == pdTRUE)
                 {
-                    ledcWrite(PWM_CHANNEL, _brightness);
-                    vTaskDelay(pdMS_TO_TICKS(100));
+                    state = static_cast<LightState>(
+                        notificationValue);
 
-                    ledcWrite(PWM_CHANNEL, 0);
-                    vTaskDelay(pdMS_TO_TICKS(100));
+                    interrupted = true;
+                    break;
                 }
 
-                _state = LightState::Off;
+                ledcWrite(
+                    PWM_CHANNEL,
+                    0);
 
-                break;
+                if (xTaskNotifyWait(
+                        0,
+                        UINT32_MAX,
+                        &notificationValue,
+                        pdMS_TO_TICKS(100)) == pdTRUE)
+                {
+                    state = static_cast<LightState>(
+                        notificationValue);
+
+                    interrupted = true;
+                    break;
+                }
             }
 
-            case LightState::Failure:
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    ledcWrite(PWM_CHANNEL, _brightness);
-                    vTaskDelay(pdMS_TO_TICKS(150));
+            ledcWrite(
+                PWM_CHANNEL,
+                0);
 
-                    ledcWrite(PWM_CHANNEL, 0);
-                    vTaskDelay(pdMS_TO_TICKS(150));
+            if (!interrupted)
+            {
+                state = LightState::Off;
+            }
+
+            break;
+        }
+
+        case LightState::Failure:
+        {
+            bool interrupted = false;
+
+            for (int i = 0; i < 3; i++)
+            {
+                ledcWrite(
+                    PWM_CHANNEL,
+                    _brightness);
+
+                if (xTaskNotifyWait(
+                        0,
+                        UINT32_MAX,
+                        &notificationValue,
+                        pdMS_TO_TICKS(150)) == pdTRUE)
+                {
+                    state = static_cast<LightState>(
+                        notificationValue);
+
+                    interrupted = true;
+                    break;
                 }
 
-                _state = LightState::Off;
+                ledcWrite(
+                    PWM_CHANNEL,
+                    0);
 
-                break;
+                if (xTaskNotifyWait(
+                        0,
+                        UINT32_MAX,
+                        &notificationValue,
+                        pdMS_TO_TICKS(150)) == pdTRUE)
+                {
+                    state = static_cast<LightState>(
+                        notificationValue);
+
+                    interrupted = true;
+                    break;
+                }
             }
+
+            ledcWrite(
+                PWM_CHANNEL,
+                0);
+
+            if (!interrupted)
+            {
+                state = LightState::Off;
+            }
+
+            break;
+        }
         }
     }
 }

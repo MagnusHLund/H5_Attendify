@@ -17,8 +17,6 @@ CameraController::CameraController(
 
 void CameraController::main()
 {
-    _light->setState(LightState::Off);
-
     camera_fb_t *picture = _camera->takePicture();
 
     if (picture == nullptr)

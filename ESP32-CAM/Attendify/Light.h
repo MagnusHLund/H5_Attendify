@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-enum class LightState
+enum class LightState : uint8_t
 {
     Off,
     Detected,
@@ -14,16 +14,22 @@ enum class LightState
 class Light
 {
 private:
-    byte _pin;
-    byte _brightness;
+    uint8_t _pin;
+    uint8_t _brightness;
 
-    volatile LightState _state;
+    TaskHandle_t _taskHandle;
 
-    static void taskEntry(void* parameter);
+    static void taskEntry(void *parameter);
+
     void run();
 
+    bool waitForState(
+        TickType_t timeout);
+
 public:
-    explicit Light(byte pin, byte brightness = 30);
+    explicit Light(
+        uint8_t pin,
+        uint8_t brightness = 30);
 
     void setState(LightState state);
 };
