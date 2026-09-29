@@ -56,6 +56,10 @@ public sealed class User : AggregateRoot<int>
 
     public bool AttendanceEnabled { get; set; }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTimeOffset? DeletedAt { get; private set; }
+
     public EducationalInstituteEntity EducationalInstitute { get; set; } = null!;
 
     public FacialProfile? FacialProfile { get; set; }
@@ -96,5 +100,14 @@ public sealed class User : AggregateRoot<int>
             nameof(newHashedPassword)
         );
         PasswordHash = newHashedPassword;
+    }
+
+    public void AnonymizeForDeletion(string anonymizedEmail, string anonymizedStudentId, DateTimeOffset deletedAt)
+    {
+        Email = anonymizedEmail;
+        EncryptedStudentId = anonymizedStudentId;
+        AttendanceEnabled = false;
+        IsDeleted = true;
+        DeletedAt = deletedAt;
     }
 }

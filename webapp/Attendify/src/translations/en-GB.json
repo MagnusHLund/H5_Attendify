@@ -47,7 +47,8 @@
     "completeRegistration": "Complete registration",
     "photoStraight": "Take a photo of your face from a straight angle",
     "photoLeft": "Take a photo of your face looking slightly towards the left",
-    "photoRight": "Take a photo of your face looking slightly towards the right"
+    "photoRight": "Take a photo of your face looking slightly towards the right",
+    "faceRecognitionNotice": "When you complete registration, facial recognition for attendance is enabled using the face templates created from these photos. You can turn it off later in Settings, which removes your saved templates; existing attendance records remain. Ask your educational institution about alternatives. Read our"
   },
   "reset": {
     "forgotTitle": "Forgot password",
@@ -101,7 +102,28 @@
     "accessCodeTitle": "Student access code",
     "accessCodeDescription": "Use this code when an administrator needs access to your attendance information.",
     "loadingAccessCode": "Loading access code...",
-    "accessCode": "Access code"
+    "accessCode": "Access code",
+    "privacyTitle": "Your data and attendance preferences",
+    "privacyDescription": "Manage facial attendance recognition, download your data or delete your account.",
+    "attendancePreferenceDescription": "Enabled when you create an account. Turning it off removes your stored face templates, but existing attendance records remain. You can upload new photos and enable it again later.",
+    "exportDescription": "Download account details, attendance records and access-code information. This export omits face templates and passwords and is not a full GDPR access request; contact your educational institution for full access.",
+    "downloadPersonalData": "Download my personal data",
+    "exportReady": "Your personal data download is ready.",
+    "exportFailed": "Could not prepare your personal data download. Please try again.",
+    "attendancePreference": "Facial recognition for attendance",
+    "attendanceEnabled": "Facial attendance recognition is enabled.",
+    "attendanceDisabled": "Facial attendance recognition is disabled and your stored face template was removed.",
+    "addPhotosBeforeEnabling": "Add new face photos before enabling attendance recognition.",
+    "preferenceFailed": "Could not update your attendance preference. Please try again.",
+    "privacyLoadFailed": "Could not load your attendance preference.",
+    "retryPrivacyLoad": "Retry loading preference",
+    "deleteAccountTitle": "Delete account",
+    "deleteAccountDescription": "Confirming immediately deactivates your account, replaces your email and student ID with random values, removes saved face templates, linked attendance records and student access codes, and signs you out. A minimal account marker remains. This cannot be undone.",
+    "currentPassword": "Current password",
+    "deleteAccount": "Delete my account",
+    "deleteConfirm": "This immediately deactivates your account, replaces your email and student ID, and removes saved face templates, attendance records and student access codes. A minimal account marker remains. You will be signed out. This cannot be undone. Continue?",
+    "deleteInvalidPassword": "The current password is incorrect.",
+    "deleteFailed": "Could not delete your account. Please try again."
   },
   "overview": {
     "student": "Looking at student: {studentId}",
@@ -162,7 +184,7 @@
       "account": "Account information",
       "accountDescription": "This may include your email address, student ID and authentication information.",
       "facial": "Facial data",
-      "facialDescription": "During registration and when updating your profile, Attendify may collect facial photographs for the facial-recognition functionality used by the attendance system.",
+      "facialDescription": "When you upload face photos, Attendify processes them to create encrypted face templates used for attendance matching. The application does not retain the original photo files.",
       "attendance": "Attendance data",
       "attendanceDescription": "This may include attendance events, arrival and departure times, classroom information and related attendance status.",
       "telemetry": "System telemetry",
@@ -174,23 +196,23 @@
     },
     "legalBasis": {
       "title": "Legal basis",
-      "text": "Each processing activity is assigned an appropriate legal basis under Article 6 of the General Data Protection Regulation (GDPR). Where facial data constitutes biometric data used for uniquely identifying an individual, an applicable condition under Article 9 is established before that processing takes place."
+      "unconfigured": "Ask the educational institution responsible for your account which legal basis applies to each use of your data and which special-category condition applies to facial recognition."
     },
     "facialData": {
       "title": "Facial and biometric data",
-      "text": "Facial processing is used only for the attendance-monitoring functionality. Attendify assesses whether the processing constitutes biometric processing under the GDPR. Where Article 9 applies, the processing is subject to an appropriate Article 9 condition and additional safeguards."
+      "text": "Face photos are converted into encrypted facial embeddings for matching. Facial attendance recognition is enabled on registration. The original uploaded photos are not kept as photo files by the application. Turning recognition off removes the stored face template. The responsible institution must determine the applicable GDPR requirements before using this feature."
     },
     "retention": {
       "title": "Data retention",
-      "text": "Personal data is retained only for as long as necessary for the purposes for which it was collected or as otherwise required by applicable law. Data is deleted when it is no longer required, subject to applicable legal obligations."
+      "unconfigured": "Ask the educational institution responsible for your account for the retention period that applies to each category of your data."
     },
     "sharing": {
       "title": "Who can access your data",
-      "text": "Access to personal data is restricted according to the user's role and the purposes of the system. Educational institution administrators may access attendance information where authorised. External service providers may process personal data only where necessary to provide services to Attendify and under appropriate contractual and data-protection requirements."
+      "unconfigured": "Ask the educational institution responsible for your account which organizations receive or can access your data."
     },
     "internationalTransfers": {
       "title": "International data transfers",
-      "text": "Where personal data is transferred outside the European Economic Area, appropriate safeguards are implemented as required by the GDPR."
+      "unconfigured": "Ask the educational institution responsible for your account whether your data is transferred outside the European Economic Area and which safeguards apply."
     },
     "security": {
       "title": "Security",
@@ -216,7 +238,7 @@
     },
     "dpia": {
       "title": "Data protection impact assessment",
-      "text": "The facial-data and computer-vision processing is assessed through a Data Protection Impact Assessment to evaluate its necessity, proportionality, risks and appropriate mitigation measures."
+      "unconfigured": "Ask the educational institution responsible for your account about its data protection impact assessment for facial attendance recognition."
     },
     "changes": {
       "title": "Changes to this policy",

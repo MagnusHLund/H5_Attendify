@@ -24,6 +24,16 @@ public static class DependencyInjection
     {
         var services = builder.Services;
 
+        services.AddOptions<DataRetentionOptions>()
+            .Bind(builder.Configuration.GetSection(DataRetentionOptions.SectionName))
+            .Validate(
+                options => new[] { options.AttendanceRecordDays, options.AttendanceDetectionDays, options.AttendanceEventDays }
+                    .All(days => days is null or > 0),
+                "Configured attendance retention periods must be positive day counts."
+            )
+            .ValidateOnStart();
+        services.AddHostedService<DataRetentionWorker>();
+
         services.AddHttpContextAccessor();
 
         string resendApiKey =

@@ -36,6 +36,8 @@ public sealed class FacialUserIdentifier(
         var users = await dbContext.Users
             .AsNoTracking()
             .Where(user =>
+                user.AttendanceEnabled &&
+                !user.IsDeleted &&
                 user.FacialProfile != null &&
                 user.FacialProfile.FacialEmbeddings.Any())
             .Select(user => new

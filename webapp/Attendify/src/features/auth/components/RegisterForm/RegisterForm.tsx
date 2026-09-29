@@ -84,6 +84,7 @@ export function RegisterForm() {
         return
       }
 
+      const { straightPhoto, leftPhoto, rightPhoto } = value
       try {
         await runWithLoading(async () => {
           const registration = {
@@ -92,9 +93,9 @@ export function RegisterForm() {
             educationalInstituteId:
               detailsForm.state.values.educationalInstituteId,
             studentId: detailsForm.state.values.studentId,
-            straightPhoto: await fileToBase64(value.straightPhoto),
-            leftPhoto: await fileToBase64(value.leftPhoto),
-            rightPhoto: await fileToBase64(value.rightPhoto),
+            straightPhoto: await fileToBase64(straightPhoto),
+            leftPhoto: await fileToBase64(leftPhoto),
+            rightPhoto: await fileToBase64(rightPhoto),
           }
 
           await registerStudent(registration)
@@ -282,9 +283,9 @@ export function RegisterForm() {
         </div>
 
         <Button
-        type="submit"
-        className="register-form__submit"
-        disabled={detailsForm.state.isSubmitting}
+          type="submit"
+          className="register-form__submit"
+          disabled={detailsForm.state.isSubmitting}
         >
           {t('common.next')}
         </Button>
@@ -371,6 +372,11 @@ export function RegisterForm() {
           )}
         </photosForm.Field>
       </div>
+
+      <p className="register-form__privacy-notice">
+        {t('auth.faceRecognitionNotice')}{' '}
+        <Link to="/privacy-policy">{t('footer.privacyPolicy')}</Link>
+      </p>
 
       <Button
         type="submit"

@@ -36,7 +36,14 @@ public class StudentAccessCodeEndpoint(
                 return;
             }
 
-            UserId userIdClaim = UserId.From(parsedUserId); var generationDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            UserId userIdClaim = UserId.From(parsedUserId);
+            var generationDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            if (!await dbContext.Users.AnyAsync(user => user.Id == parsedUserId && !user.IsDeleted, ct))
+            {
+                await Send.UnauthorizedAsync(ct);
+                return;
+            }
 
             var accessCode = await dbContext.StudentAccessCodes
                 .SingleOrDefaultAsync(

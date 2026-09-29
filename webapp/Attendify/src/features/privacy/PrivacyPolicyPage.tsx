@@ -13,6 +13,16 @@ const privacyPolicyConfig: PrivacyPolicyConfiguration = {
   AuthorityName:
     import.meta.env.VITE_PRIVACY_POLICY_AUTHORITY_NAME?.trim() ?? '',
   AuthorityUrl: import.meta.env.VITE_PRIVACY_POLICY_AUTHORITY_URL?.trim() ?? '',
+  LegalBasisDetails:
+    import.meta.env.VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS?.trim(),
+  BiometricConditionDetails:
+    import.meta.env.VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS?.trim(),
+  RetentionDetails: import.meta.env.VITE_PRIVACY_POLICY_RETENTION_DETAILS?.trim(),
+  RecipientsDetails:
+    import.meta.env.VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS?.trim(),
+  TransferDetails:
+    import.meta.env.VITE_PRIVACY_POLICY_TRANSFER_DETAILS?.trim(),
+  DpiaDetails: import.meta.env.VITE_PRIVACY_POLICY_DPIA_DETAILS?.trim(),
 }
 
 export function PrivacyPolicyPage() {
@@ -89,7 +99,13 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2>{t('privacy.legalBasis.title')}</h2>
-          <p>{t('privacy.legalBasis.text')}</p>
+          <p>
+            {privacyPolicyConfig.LegalBasisDetails ||
+              t('privacy.legalBasis.unconfigured')}
+          </p>
+          {privacyPolicyConfig.BiometricConditionDetails && (
+            <p>{privacyPolicyConfig.BiometricConditionDetails}</p>
+          )}
         </section>
 
         <section>
@@ -99,17 +115,26 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2>{t('privacy.retention.title')}</h2>
-          <p>{t('privacy.retention.text')}</p>
+          <p>
+            {privacyPolicyConfig.RetentionDetails ||
+              t('privacy.retention.unconfigured')}
+          </p>
         </section>
 
         <section>
           <h2>{t('privacy.sharing.title')}</h2>
-          <p>{t('privacy.sharing.text')}</p>
+          <p>
+            {privacyPolicyConfig.RecipientsDetails ||
+              t('privacy.sharing.unconfigured')}
+          </p>
         </section>
 
         <section>
           <h2>{t('privacy.internationalTransfers.title')}</h2>
-          <p>{t('privacy.internationalTransfers.text')}</p>
+          <p>
+            {privacyPolicyConfig.TransferDetails ||
+              t('privacy.internationalTransfers.unconfigured')}
+          </p>
         </section>
 
         <section>
@@ -155,7 +180,9 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2>{t('privacy.dpia.title')}</h2>
-          <p>{t('privacy.dpia.text')}</p>
+          <p>
+            {privacyPolicyConfig.DpiaDetails || t('privacy.dpia.unconfigured')}
+          </p>
         </section>
 
         <section>

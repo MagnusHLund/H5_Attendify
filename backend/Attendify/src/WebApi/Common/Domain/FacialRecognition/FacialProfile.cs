@@ -18,4 +18,10 @@ public sealed class FacialProfile : AggregateRoot<int>
         {
             User = user,
         };
+
+    public static FacialProfile Create(int userId) =>
+        new()
+        {
+            UserId = userId,
+        };
 }

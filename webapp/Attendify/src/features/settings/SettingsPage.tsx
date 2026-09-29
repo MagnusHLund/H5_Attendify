@@ -1,6 +1,7 @@
 import { FacePhotoForm } from './components/FacePhotoForm/FacePhotoForm'
 import { StudentAccessCode } from './components/StudentAccessCode/StudentAccessCode'
 import { LanguageSwitcher } from '../../components/ui'
+import { PrivacyControls } from './components/PrivacyControls/PrivacyControls'
 import { useTranslation } from '../../lib/i18n'
 import './SettingsPage.scss'
 
@@ -10,8 +11,6 @@ export function SettingsPage() {
   return (
     <div className="settings-page">
       <section className="settings-page__section">
-        <h1 className="settings-page__title">{t('settings.title')}</h1>
-
         <FacePhotoForm />
       </section>
 
@@ -25,6 +24,10 @@ export function SettingsPage() {
 
       <section className="settings-page__section">
         <StudentAccessCode />
+      </section>
+
+      <section className="settings-page__section">
+        <PrivacyControls />
       </section>
     </div>
   )

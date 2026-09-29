@@ -1,12 +1,13 @@
 using Attendify.Common.Domain.FacialRecognition;
 using Attendify.Common.Domain.Users;
 using Attendify.Common.FacialRecognition;
+using Attendify.Common.Persistence;
 using attendanceClass = Attendify.Common.Domain.Attendance;
 
 namespace Attendify.Features.Attendance.CreateAttendance;
 
 
-public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUserIdentifier facialUserIdentifier)
+public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUserIdentifier facialUserIdentifier, IServiceScopeFactory scopeFactory)
     : Endpoint<CreateAttendanceRequest>
 {
 
@@ -24,10 +25,23 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUse
         {
             UserId userId = await facialUserIdentifier.IdentifyUserAsync(req.Picture, ct);
 
-            var attendance = attendanceClass.Attendance.Create(req.Classroom, userId);
+            var strategy = dbContext.Database.CreateExecutionStrategy();
+            bool recorded = await strategy.ExecuteAsync(async () =>
+            {
+                await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+                ApplicationDbContext attempt = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await using var transaction = await attempt.Database.BeginTransactionAsync(ct);
+                if (!await ActiveUserLock.AcquireAsync(attempt, userId.Value, ct) ||
+                    !await attempt.Users.AnyAsync(user => user.Id == userId.Value && user.AttendanceEnabled, ct))
+                    return false;
 
-            dbContext.Attendances.Add(attendance);
-            await dbContext.SaveChangesAsync(ct);
+                attempt.Attendances.Add(attendanceClass.Attendance.Create(req.Classroom, userId));
+                await attempt.SaveChangesAsync(ct);
+                await transaction.CommitAsync(ct);
+                return true;
+            });
+            if (!recorded)
+                throw new NoMatchingUserException("Recognition is disabled for this account.");
 
             await Send.CreatedAtAsync<CreateAttendanceEndpoint>(cancellation: ct);
 

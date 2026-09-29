@@ -1,0 +1,86 @@
+.privacy-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px rgba($color-gray-900, 0.05);
+}
+
+.privacy-controls__header {
+  h2 {
+    margin: 0 0 0.5rem;
+    color: $color-text;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.privacy-controls p {
+  margin: 0;
+  max-width: 48rem;
+  color: $color-text-muted;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.privacy-controls__preference,
+.privacy-controls__export {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.privacy-controls__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: $color-text;
+  font-weight: 600;
+  cursor: pointer;
+
+  input {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    accent-color: $color-primary;
+    cursor: inherit;
+  }
+
+  &:has(input:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.privacy-controls__message {
+  color: $color-text;
+}
+
+.privacy-controls__delete {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $color-border;
+
+  h3 {
+    margin: 0;
+    color: $color-text;
+    font-size: 1.1rem;
+  }
+
+  .input-field {
+    width: min(100%, 28rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .privacy-controls {
+    padding: 1.25rem;
+  }
+}
