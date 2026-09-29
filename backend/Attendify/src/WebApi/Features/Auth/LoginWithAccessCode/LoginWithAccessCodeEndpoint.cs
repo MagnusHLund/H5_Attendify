@@ -46,6 +46,7 @@ public sealed class LoginWithAccessCodeEndpoint(
 
         AdministrativeSession session = await sessionService.CreateAdministrativeSessionAsync(accessCode.User, ct);
 
+        cookieService.ClearAuthenticationCookies();
         cookieService.SetAccessTokenCookie(session.AccessToken);
 
         await Send.NoContentAsync(cancellation: ct);
