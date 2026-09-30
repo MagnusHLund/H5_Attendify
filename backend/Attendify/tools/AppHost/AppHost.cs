@@ -3,11 +3,13 @@ using Projects;
 
 #pragma warning disable ASPIRECOMPUTE003
 
+var builder = DistributedApplication.CreateBuilder(args);
+
 var resendApiKey = builder.AddParameter("ResendApiKey", secret: true);
 var emailFromAddress = builder.AddParameter("EmailFromAddress");
 var emailFromName = builder.AddParameter("EmailFromName");
 var passwordResetCodeHashKey = builder.AddParameter("PasswordResetCodeHashKey", secret: true);
-var studentAccessCodeSecret = builder.AddParameter("StudentAccessCodeGenSecret", secret: true); 
+var studentAccessCodeSecret = builder.AddParameter("StudentAccessCodeGenSecret", secret: true);
 
 var controllerName = builder.AddParameter("PrivacyPolicyControllerName");
 var controllerAddress = builder.AddParameter("PrivacyPolicyControllerAddress");
@@ -19,9 +21,8 @@ var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
     throw new InvalidOperationException("CloudflareTunnelName is required.");
-var builder = DistributedApplication.CreateBuilder(args);
 
-var tunnel = builder.AddCloudflareTunnel("lunnel");
+var tunnel = builder.AddCloudflareTunnel(tunnelName);
 
 var hostname = builder.Configuration.GetSection("Parameters")["Hostname"];
 if (string.IsNullOrWhiteSpace(hostname))

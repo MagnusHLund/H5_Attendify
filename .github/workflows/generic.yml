@@ -10,8 +10,6 @@ env:
   IMAGE_TAG: ${{ github.sha }}
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  Parameters__CloudflareTunnelName: AttendifyCiCd
-  Parameters__Hostname: attendify.online
 
 jobs:
   test:
@@ -78,4 +76,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - run: make deploy IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
+      - name: Deploy with Aspire
+        run: make deploy IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
