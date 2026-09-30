@@ -47,7 +47,8 @@
     "completeRegistration": "Færdiggør oprettelse",
     "photoStraight": "Tag et billede af dit ansigt lige forfra",
     "photoLeft": "Tag et billede af dit ansigt, der kigger let mod venstre",
-    "photoRight": "Tag et billede af dit ansigt, der kigger let mod højre"
+    "photoRight": "Tag et billede af dit ansigt, der kigger let mod højre",
+    "faceRecognitionNotice": "Når du færdiggør oprettelsen, er ansigtsgenkendelse til fremmøderegistrering slået til med ansigtsskabeloner fra disse billeder. Du kan senere slå funktionen fra under Indstillinger; så fjernes dine gemte skabeloner, men eksisterende fremmøderegistreringer bevares. Spørg din uddannelsesinstitution om alternativer. Læs vores"
   },
   "reset": {
     "forgotTitle": "Glemt adgangskode",
@@ -101,7 +102,28 @@
     "accessCodeTitle": "Elevadgangskode",
     "accessCodeDescription": "Brug denne kode, når en administrator skal have adgang til dine fremmødeoplysninger.",
     "loadingAccessCode": "Indlæser adgangskode...",
-    "accessCode": "Adgangskode"
+    "accessCode": "Adgangskode",
+    "privacyTitle": "Dine data og indstillinger for fremmøde",
+    "privacyDescription": "Administrer ansigtsgenkendelse til fremmøderegistrering, download dine oplysninger eller slet din konto.",
+    "attendancePreferenceDescription": "Funktionen er slået til, når du opretter en konto. Hvis du slår den fra, fjernes din gemte ansigtsskabelon, men eksisterende fremmøderegistreringer bevares. Du kan senere uploade nye ansigtsbilleder og slå funktionen til igen.",
+    "exportDescription": "Download kontooplysninger, fremmøderegistreringer og oplysninger om elevadgangskoder. Eksporten indeholder ikke ansigtsskabeloner eller adgangskoder og er ikke en fuld GDPR-indsigtsanmodning. Kontakt din uddannelsesinstitution for fuld indsigt.",
+    "downloadPersonalData": "Download mine personoplysninger",
+    "exportReady": "Din download af personoplysninger er klar.",
+    "exportFailed": "Kunne ikke klargøre dine personoplysninger. Prøv igen.",
+    "attendancePreference": "Ansigtsgenkendelse til fremmøderegistrering",
+    "attendanceEnabled": "Ansigtsgenkendelse til fremmøderegistrering er slået til.",
+    "attendanceDisabled": "Ansigtsgenkendelse til fremmøderegistrering er slået fra, og din gemte ansigtsskabelon er fjernet.",
+    "addPhotosBeforeEnabling": "Tilføj nye ansigtsbilleder, før du slår fremmøderegistrering til.",
+    "preferenceFailed": "Kunne ikke opdatere din indstilling for fremmøde. Prøv igen.",
+    "privacyLoadFailed": "Kunne ikke hente din indstilling for fremmøde.",
+    "retryPrivacyLoad": "Prøv at hente indstillingen igen",
+    "deleteAccountTitle": "Slet konto",
+    "deleteAccountDescription": "Når du bekræfter sletningen, deaktiveres din konto med det samme, din e-mail og dit elev-ID erstattes med tilfældige værdier, gemte ansigtsskabeloner, tilknyttede fremmøderegistreringer og elevadgangskoder fjernes, og du logges ud. En minimal kontomarkør bevares. Handlingen kan ikke fortrydes.",
+    "currentPassword": "Nuværende adgangskode",
+    "deleteAccount": "Slet min konto",
+    "deleteConfirm": "Dette deaktiverer din konto med det samme, erstatter din e-mail og dit elev-ID og fjerner gemte ansigtsskabeloner, fremmøderegistreringer og elevadgangskoder. En minimal kontomarkør bevares. Du logges ud. Handlingen kan ikke fortrydes. Vil du fortsætte?",
+    "deleteInvalidPassword": "Den nuværende adgangskode er forkert.",
+    "deleteFailed": "Kunne ikke slette kontoen. Prøv igen."
   },
   "overview": {
     "student": "Viser elev: {studentId}",
@@ -162,7 +184,7 @@
       "account": "Kontooplysninger",
       "accountDescription": "Dette kan omfatte din e-mailadresse, dit elev-ID og oplysninger om godkendelse og login.",
       "facial": "Ansigtsdata",
-      "facialDescription": "Under registrering og ved opdatering af din profil kan Attendify indsamle ansigtsbilleder til den ansigtsgenkendelsesfunktion, der anvendes af fremmødesystemet.",
+      "facialDescription": "Når du uploader ansigtsbilleder, behandler Attendify dem for at oprette krypterede ansigtsskabeloner, der bruges til fremmøderegistrering. Applikationen gemmer ikke de oprindelige billedfiler.",
       "attendance": "Fremmødedata",
       "attendanceDescription": "Dette kan omfatte fremmødehændelser, ankomst- og afgangstidspunkter, oplysninger om undervisningslokaler og relateret fremmødestatus.",
       "telemetry": "Systemtelemetri",
@@ -173,24 +195,20 @@
       "text": "Personoplysninger behandles kun til definerede formål relateret til overvågning af fremmøde, administration af konti, identifikation af elever, systemdrift og sikkerhed."
     },
     "legalBasis": {
-      "title": "Retsgrundlag",
-      "text": "Hver behandlingsaktivitet har et passende retsgrundlag i henhold til artikel 6 i databeskyttelsesforordningen (GDPR). Hvis ansigtsdata udgør biometriske data, der anvendes til entydigt at identificere en person, fastlægges en relevant betingelse i henhold til artikel 9, inden denne behandling finder sted."
+      "title": "Retsgrundlag"
     },
     "facialData": {
       "title": "Ansigtsdata og biometriske data",
-      "text": "Behandling af ansigtsdata anvendes udelukkende til funktionaliteten til overvågning af fremmøde. Attendify vurderer, om behandlingen udgør biometrisk databehandling i henhold til GDPR. Hvis artikel 9 finder anvendelse, sker behandlingen på grundlag af en relevant betingelse i artikel 9 og med yderligere sikkerhedsforanstaltninger."
+      "text": "Ansigtsbilleder omdannes til krypterede ansigtsskabeloner til sammenligning. Ansigtsgenkendelse til fremmøderegistrering er slået til ved oprettelse. Applikationen gemmer ikke de oprindeligt uploadede billeder som billedfiler. Hvis du slår funktionen fra, fjernes den gemte ansigtsskabelon. Den ansvarlige institution skal fastlægge de relevante GDPR-krav, før funktionen anvendes."
     },
     "retention": {
-      "title": "Opbevaring af data",
-      "text": "Personoplysninger opbevares kun, så længe det er nødvendigt for de formål, de blev indsamlet til, eller så længe det på anden måde kræves i henhold til gældende lovgivning. Data slettes, når de ikke længere er nødvendige, med forbehold for eventuelle retlige forpligtelser."
+      "title": "Opbevaring af data"
     },
     "sharing": {
-      "title": "Hvem kan få adgang til dine oplysninger",
-      "text": "Adgangen til personoplysninger begrænses ud fra brugerens rolle og systemets formål. Administratorer på uddannelsesinstitutionen kan få adgang til oplysninger om fremmøde, når de er autoriseret til det. Eksterne tjenesteudbydere må kun behandle personoplysninger, når det er nødvendigt for at levere tjenester til Attendify, og under passende kontraktlige og databeskyttelsesmæssige krav."
+      "title": "Hvem kan få adgang til dine oplysninger"
     },
     "internationalTransfers": {
-      "title": "Internationale dataoverførsler",
-      "text": "Hvis personoplysninger overføres uden for Det Europæiske Økonomiske Samarbejdsområde (EØS), anvendes passende sikkerhedsforanstaltninger i overensstemmelse med GDPR."
+      "title": "Internationale dataoverførsler"
     },
     "security": {
       "title": "Sikkerhed",
@@ -215,8 +233,7 @@
       "text": "Attendify er designet til at minimere indsamlingen af personoplysninger, begrænse adgangen til følsomme oplysninger, begrænse opbevaringsperioder og undgå lagring af unødvendige ansigtsoplysninger."
     },
     "dpia": {
-      "title": "Konsekvensanalyse for databeskyttelse",
-      "text": "Behandlingen af ansigtsdata og computer vision vurderes gennem en konsekvensanalyse for databeskyttelse (DPIA) for at vurdere nødvendighed, proportionalitet, risici og passende foranstaltninger til risikoreduktion."
+      "title": "Konsekvensanalyse for databeskyttelse"
     },
     "changes": {
       "title": "Ændringer i denne politik",

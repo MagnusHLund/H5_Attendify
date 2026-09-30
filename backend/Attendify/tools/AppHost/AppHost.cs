@@ -14,6 +14,15 @@ var controllerEmail = builder.AddParameter("PrivacyPolicyControllerEmail");
 var dpoContact = builder.AddParameter("PrivacyPolicyDpoContact");
 var authorityName = builder.AddParameter("PrivacyPolicyAuthorityName");
 var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
+var legalBasisDetails = builder.AddParameter("PrivacyPolicyLegalBasisDetails");
+var biometricConditionDetails = builder.AddParameter("PrivacyPolicyBiometricConditionDetails");
+var retentionDetails = builder.AddParameter("PrivacyPolicyRetentionDetails");
+var recipientsDetails = builder.AddParameter("PrivacyPolicyRecipientsDetails");
+var transferDetails = builder.AddParameter("PrivacyPolicyTransferDetails");
+var dpiaDetails = builder.AddParameter("PrivacyPolicyDpiaDetails");
+var attendanceRecordRetentionDays = builder.AddParameter("AttendanceRecordRetentionDays");
+var attendanceDetectionRetentionDays = builder.AddParameter("AttendanceDetectionRetentionDays");
+var attendanceEventRetentionDays = builder.AddParameter("AttendanceEventRetentionDays");
 
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
@@ -54,6 +63,9 @@ var api = builder
     .WithEnvironment("Parameters__StudentAccessCodeGenSecret", studentAccessCodeSecret)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
+    .WithEnvironment("DataRetention__AttendanceRecordDays", attendanceRecordRetentionDays)
+    .WithEnvironment("DataRetention__AttendanceDetectionDays", attendanceDetectionRetentionDays)
+    .WithEnvironment("DataRetention__AttendanceEventDays", attendanceEventRetentionDays)
     .WaitForCompletion(migrationService);
 
 var webapp = builder
@@ -64,6 +76,12 @@ var webapp = builder
     .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
     .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
     .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
+    .WithEnvironment("VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS", legalBasisDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS", biometricConditionDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_RETENTION_DETAILS", retentionDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS", recipientsDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_TRANSFER_DETAILS", transferDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_DPIA_DETAILS", dpiaDetails)
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();

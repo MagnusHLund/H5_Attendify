@@ -23,6 +23,18 @@
   gap: 1.25rem;
 }
 
+.register-form__privacy-notice {
+  margin: 1.5rem 0 0;
+  color: $color-text-muted;
+  font-size: 0.9rem;
+  line-height: 1.5;
+
+  a {
+    color: $color-primary;
+    text-decoration: underline;
+  }
+}
+
 .register-form__submit {
   width: 100%;
   margin-top: 1.5rem;

@@ -6,6 +6,7 @@ public sealed class JwtOptions
 {
     public const string SectionName = "Jwt";
     public const string AuthenticatedUserPolicy = "AuthenticatedUser";
+    public const string StudentPolicy = "Student";
 
     [Required]
     public string Issuer { get; init; } = null!;

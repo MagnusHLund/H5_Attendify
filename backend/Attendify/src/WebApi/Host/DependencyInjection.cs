@@ -24,6 +24,16 @@ public static class DependencyInjection
     {
         var services = builder.Services;
 
+        services.AddOptions<DataRetentionOptions>()
+            .Bind(builder.Configuration.GetSection(DataRetentionOptions.SectionName))
+            .Validate(
+                options => new[] { options.AttendanceRecordDays, options.AttendanceDetectionDays, options.AttendanceEventDays }
+                    .All(days => days > 0),
+                "DataRetention:AttendanceRecordDays, DataRetention:AttendanceDetectionDays and DataRetention:AttendanceEventDays must all be configured as positive day counts."
+            )
+            .ValidateOnStart();
+        services.AddHostedService<DataRetentionWorker>();
+
         services.AddHttpContextAccessor();
 
         string resendApiKey =
@@ -165,7 +175,21 @@ public static class DependencyInjection
 
                             if (isAccessCodeSession)
                             {
-                                // Access-code sessions have no refresh-token family.
+                                // Access-code sessions have no refresh-token family, so they are
+                                // revoked by checking that the student's account is still active.
+                                bool isActiveUser = int.TryParse(
+                                        context.Principal?.FindFirst(AttendifyClaimTypes.UserId)?.Value,
+                                        out int accessCodeUserId
+                                    )
+                                    && await context.HttpContext.RequestServices
+                                        .GetRequiredService<ApplicationDbContext>()
+                                        .Users.AnyAsync(
+                                            user => user.Id == accessCodeUserId && !user.IsDeleted,
+                                            context.HttpContext.RequestAborted
+                                        );
+
+                                if (!isActiveUser)
+                                    context.Fail("The authentication session has been revoked.");
                                 return;
                             }
 
@@ -193,6 +217,12 @@ public static class DependencyInjection
             options.AddPolicy(
                 JwtOptions.AuthenticatedUserPolicy,
                 policy => policy.RequireAuthenticatedUser()
+            );
+            options.AddPolicy(
+                JwtOptions.StudentPolicy,
+                policy => policy
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(AttendifyClaimTypes.UserType, UserType.Student.ToString())
             );
         });
 

@@ -25,7 +25,7 @@ public sealed class LoginWithPasswordEndpoint(
     {
         string email = EmailNormalizer.Normalize(req.Email);
 
-        User? user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
+        User? user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted, ct);
         if (user == null)
         {
             await SendLoginFailedError(email, ct);
@@ -47,10 +47,16 @@ public sealed class LoginWithPasswordEndpoint(
 
         _logger.Information("Login attempt succeeded");
 
-        AuthenticationSession session = await authenticationSessionService.CreateSessionAsync(
-            user,
-            ct
-        );
+        AuthenticationSession session;
+        try
+        {
+            session = await authenticationSessionService.CreateSessionAsync(user, ct);
+        }
+        catch (DeletedAccountException)
+        {
+            await SendLoginFailedError(email, ct);
+            return;
+        }
         authenticationSessionService.SetSessionCookies(session);
 
         await Send.NoContentAsync(cancellation: ct);

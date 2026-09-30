@@ -5,4 +5,10 @@ export interface PrivacyPolicyConfiguration {
   DpoContact?: string
   AuthorityName: string
   AuthorityUrl: string
+  LegalBasisDetails: string
+  BiometricConditionDetails: string
+  RetentionDetails: string
+  RecipientsDetails: string
+  TransferDetails: string
+  DpiaDetails: string
 }
