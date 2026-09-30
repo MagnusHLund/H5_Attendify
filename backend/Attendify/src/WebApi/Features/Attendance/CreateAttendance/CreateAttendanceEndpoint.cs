@@ -5,16 +5,17 @@ using attendanceClass = Attendify.Common.Domain.Attendance;
 
 namespace Attendify.Features.Attendance.CreateAttendance;
 
-
-public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUserIdentifier facialUserIdentifier)
-    : Endpoint<CreateAttendanceRequest>
+public class CreateAttendanceEndpoint(
+    ApplicationDbContext dbContext,
+    IFacialUserIdentifier facialUserIdentifier
+) : Endpoint<CreateAttendanceRequest>
 {
-
     public override void Configure()
     {
         Post("/");
         Group<AttendanceGroup>();
         AllowAnonymous();
+        AllowFileUploads();
         Description(x => x.WithName("CreateAttendance"));
     }
 
@@ -30,7 +31,6 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUse
             await dbContext.SaveChangesAsync(ct);
 
             await Send.CreatedAtAsync<CreateAttendanceEndpoint>(cancellation: ct);
-
         }
         catch (ArgumentException)
         {

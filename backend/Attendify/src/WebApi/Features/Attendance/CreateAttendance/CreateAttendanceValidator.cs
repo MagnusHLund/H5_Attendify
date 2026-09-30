@@ -1,43 +1,23 @@
 namespace Attendify.Features.Attendance.CreateAttendance;
 
-public sealed class CreateAttendanceValidator
-    : Validator<CreateAttendanceRequest>
+public sealed class CreateAttendanceValidator : Validator<CreateAttendanceRequest>
 {
     private const int MaxPhotoSizeInBytes = 5 * 1024 * 1024;
 
-    private const int MaxBase64Length = ((MaxPhotoSizeInBytes + 2) / 3) * 4;
-
     public CreateAttendanceValidator()
     {
-        RuleFor(request => request.Picture)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .MaximumLength(MaxBase64Length)
-            .Must(BeValidBase64)
-            .WithMessage("Picture must be a valid Base64-encoded image.");
+        RuleFor(request => request.Classroom).NotEmpty().MaximumLength(100);
 
-        RuleFor(request => request.Classroom)
-            .NotEmpty()
-            .MaximumLength(100);
-    }
-
-    private static bool BeValidBase64(string picture)
-    {
-        if (string.IsNullOrWhiteSpace(picture))
-        {
-            return false;
-        }
-
-        try
-        {
-            byte[] decodedPhoto = Convert.FromBase64String(picture);
-
-            return decodedPhoto.Length > 0 &&
-                   decodedPhoto.Length <= MaxPhotoSizeInBytes;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
+        RuleFor(request => request.Picture).NotNull().WithMessage("A picture is required.");
+        RuleFor(request => request.Picture!.Length)
+            .GreaterThan(0)
+            .WithMessage("The picture cannot be empty.")
+            .LessThanOrEqualTo(MaxPhotoSizeInBytes)
+            .WithMessage("The picture cannot exceed 5 MB.")
+            .When(request => request.Picture is not null);
+        RuleFor(request => request.Picture!.ContentType)
+            .Equal("image/jpeg")
+            .WithMessage("The picture must be a JPEG image.")
+            .When(request => request.Picture is not null);
     }
 }
