@@ -61,7 +61,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
       volumes:
-        - /home/github-runner/.kube/config:/root/.kube/config:ro
+        - /root/.kube/config:/root/.kube/config:ro
     steps:
       - name: Configure submodule auth
         run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
