@@ -45,28 +45,13 @@ jobs:
           submodules: recursive
       - run: make build IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
 
-  push:
-    needs: build
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/magnushlund/cicd:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Configure submodule auth
-        run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - run: make push IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
-
   deploy:
-    needs: push
+    needs: build
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: self-hosted
     environment: production
+    env:
+      KUBECONFIG: /root/.kube/config
     permissions:
       contents: read
       packages: write
@@ -75,6 +60,8 @@ jobs:
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      volumes:
+        - /home/github-runner/.kube/config:/root/.kube/config:ro
     steps:
       - name: Configure submodule auth
         run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
