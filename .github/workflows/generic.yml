@@ -57,6 +57,7 @@ jobs:
       packages: write
     container:
       image: ghcr.io/magnushlund/cicd:latest
+      options: --add-host=host.docker.internal:host-gateway
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -72,6 +73,16 @@ jobs:
         run: printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Kubernetes access from the job container
+        run: |
+          cp "$KUBECONFIG" "$RUNNER_TEMP/kubeconfig"
+          cluster="$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')"
+          kubectl config set-cluster "$cluster" \
+            --server=https://host.docker.internal:6443 \
+            --tls-server-name=127.0.0.1 \
+            --kubeconfig="$RUNNER_TEMP/kubeconfig"
+          echo "KUBECONFIG=$RUNNER_TEMP/kubeconfig" >> "$GITHUB_ENV"
+          KUBECONFIG="$RUNNER_TEMP/kubeconfig" kubectl get nodes
       - name: Deploy with Aspire
         run: make deploy
         env:
