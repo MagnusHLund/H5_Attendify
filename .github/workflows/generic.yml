@@ -46,7 +46,6 @@ jobs:
       - run: make build IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
 
   deploy:
-    needs: build
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: self-hosted
     environment: production
@@ -75,14 +74,14 @@ jobs:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Configure Kubernetes access from the job container
         run: |
-          cp "$KUBECONFIG" "$RUNNER_TEMP/kubeconfig"
-          cluster="$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')"
-          kubectl config set-cluster "$cluster" \
-            --server=https://host.docker.internal:6443 \
-            --tls-server-name=127.0.0.1 \
-            --kubeconfig="$RUNNER_TEMP/kubeconfig"
+          sed -E 's#^([[:space:]]*)server: https://127\.0\.0\.1:6443$#\1server: https://host.docker.internal:6443\n\1tls-server-name: 127.0.0.1#' \
+            "$KUBECONFIG" > "$RUNNER_TEMP/kubeconfig"
+          grep -q 'server: https://host.docker.internal:6443' "$RUNNER_TEMP/kubeconfig" || {
+            echo "Could not update the kubeconfig API server address" >&2
+            exit 1
+          }
           echo "KUBECONFIG=$RUNNER_TEMP/kubeconfig" >> "$GITHUB_ENV"
-          KUBECONFIG="$RUNNER_TEMP/kubeconfig" kubectl get nodes
+          KUBECONFIG="$RUNNER_TEMP/kubeconfig" helm list --namespace default >/dev/null
       - name: Deploy with Aspire
         run: make deploy
         env:
