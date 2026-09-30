@@ -16,7 +16,7 @@ public sealed class UpdateAttendancePreferenceEndpoint(
     {
         Patch("/attendance-preference");
         Group<SettingsGroup>();
-        Policies(JwtOptions.AuthenticatedUserPolicy);
+        Policies(JwtOptions.StudentPolicy);
         Description(x => x.WithName("UpdateAttendancePreference"));
     }
 

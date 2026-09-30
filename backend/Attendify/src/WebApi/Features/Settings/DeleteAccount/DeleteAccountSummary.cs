@@ -10,5 +10,6 @@ public sealed class DeleteAccountSummary : Summary<DeleteAccountEndpoint>
         Response(204, "The account was deleted and the session was ended.");
         Response(400, "The current password is missing or incorrect.");
         Response(401, "The request is not authenticated or the account has already been deleted.");
+        Response(403, "Only student sessions can use this endpoint.");
     }
 }

@@ -19,7 +19,7 @@ public sealed class DeleteAccountEndpoint(
     {
         Delete("/account");
         Group<SettingsGroup>();
-        Policies(JwtOptions.AuthenticatedUserPolicy);
+        Policies(JwtOptions.StudentPolicy);
         Description(x => x.WithName("DeleteAccount"));
     }
 

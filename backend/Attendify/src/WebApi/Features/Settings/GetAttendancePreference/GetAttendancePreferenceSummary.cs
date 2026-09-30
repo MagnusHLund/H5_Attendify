@@ -8,5 +8,6 @@ public sealed class GetAttendancePreferenceSummary : Summary<GetAttendancePrefer
         Description = "Returns whether facial attendance recognition is enabled for the user.";
         Response<GetAttendancePreferenceResponse>(200, "The current attendance preference.");
         Response(401, "The request is not authenticated or the account has been deleted.");
+        Response(403, "Only student sessions can use this endpoint.");
     }
 }

@@ -14,7 +14,7 @@ public sealed class ExportPersonalDataEndpoint(
     {
         Get("/personal-data");
         Group<SettingsGroup>();
-        Policies(JwtOptions.AuthenticatedUserPolicy);
+        Policies(JwtOptions.StudentPolicy);
         Description(x => x.WithName("ExportPersonalData"));
     }
 

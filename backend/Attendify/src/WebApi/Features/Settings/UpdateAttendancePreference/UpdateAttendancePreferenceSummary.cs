@@ -10,6 +10,7 @@ public sealed class UpdateAttendancePreferenceSummary : Summary<UpdateAttendance
         Response(204, "The attendance preference was updated.");
         Response(400, "The request is invalid.");
         Response(401, "The request is not authenticated or the account has been deleted.");
+        Response(403, "Only student sessions can use this endpoint.");
         Response(409, "Recognition cannot be enabled because no face photos have been added.");
     }
 }

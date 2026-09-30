@@ -10,7 +10,7 @@ public sealed class GetAttendancePreferenceEndpoint(ApplicationDbContext dbConte
     {
         Get("/attendance-preference");
         Group<SettingsGroup>();
-        Policies(JwtOptions.AuthenticatedUserPolicy);
+        Policies(JwtOptions.StudentPolicy);
         Description(x => x.WithName("GetAttendancePreference"));
     }
 
