@@ -10,6 +10,16 @@ namespace Attendify.Common.Persistence.Migrations
     /// <inheritdoc />
     public partial class SeedEducationalInstitutes : Migration
     {
+        private static readonly string[] EducationalInstituteColumns =
+        {
+            "Id",
+            "CreatedAt",
+            "CreatedBy",
+            "Name",
+            "UpdatedAt",
+            "UpdatedBy"
+        };
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,7 +30,7 @@ namespace Attendify.Common.Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "EducationalInstitutes",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "Name", "UpdatedAt", "UpdatedBy" },
+                columns: EducationalInstituteColumns,
                 values: new object[,]
                 {
                     { new Guid("8d6f2f7b-6c1b-4f6d-9f43-4e0e6c4c1a11"), new DateTimeOffset(new DateTime(2026, 9, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System", "ZBC - Ringsted", new DateTimeOffset(new DateTime(2026, 9, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), "System" },

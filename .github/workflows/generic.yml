@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches: [main]
-    tags: ['*']
+    tags: ["*"]
 
 env:
   IMAGE_TAG: ${{ github.sha }}
@@ -79,6 +79,6 @@ jobs:
         with:
           submodules: recursive
       - name: Deploy with Aspire
-        run: make deploy IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
+        run: make deploy
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
