@@ -30,6 +30,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    env:
+      Parameters__CloudflareTunnelName: AttendifyCiCd
     container:
       image: ghcr.io/magnushlund/cicd:latest
       credentials:
