@@ -488,3 +488,4 @@ appsettings.*.json
 # Aspire publish artifacts
 **/aspire-output/
 **/k8s-artifacts/
+!appsettings.*.sops.json
