@@ -195,24 +195,20 @@
       "text": "Personoplysninger behandles kun til definerede formål relateret til overvågning af fremmøde, administration af konti, identifikation af elever, systemdrift og sikkerhed."
     },
     "legalBasis": {
-      "title": "Retsgrundlag",
-      "unconfigured": "Spørg den uddannelsesinstitution, der er ansvarlig for din konto, hvilket retsgrundlag der gælder for hver brug af dine oplysninger, og hvilken betingelse for særlige kategorier der gælder for ansigtsgenkendelse."
+      "title": "Retsgrundlag"
     },
     "facialData": {
       "title": "Ansigtsdata og biometriske data",
       "text": "Ansigtsbilleder omdannes til krypterede ansigtsskabeloner til sammenligning. Ansigtsgenkendelse til fremmøderegistrering er slået til ved oprettelse. Applikationen gemmer ikke de oprindeligt uploadede billeder som billedfiler. Hvis du slår funktionen fra, fjernes den gemte ansigtsskabelon. Den ansvarlige institution skal fastlægge de relevante GDPR-krav, før funktionen anvendes."
     },
     "retention": {
-      "title": "Opbevaring af data",
-      "unconfigured": "Spørg den uddannelsesinstitution, der er ansvarlig for din konto, hvor længe hver kategori af dine oplysninger opbevares."
+      "title": "Opbevaring af data"
     },
     "sharing": {
-      "title": "Hvem kan få adgang til dine oplysninger",
-      "unconfigured": "Spørg den uddannelsesinstitution, der er ansvarlig for din konto, hvilke organisationer der modtager eller kan få adgang til dine oplysninger."
+      "title": "Hvem kan få adgang til dine oplysninger"
     },
     "internationalTransfers": {
-      "title": "Internationale dataoverførsler",
-      "unconfigured": "Spørg den uddannelsesinstitution, der er ansvarlig for din konto, om dine oplysninger overføres uden for Det Europæiske Økonomiske Samarbejdsområde (EØS), og hvilke garantier der gælder."
+      "title": "Internationale dataoverførsler"
     },
     "security": {
       "title": "Sikkerhed",
@@ -237,8 +233,7 @@
       "text": "Attendify er designet til at minimere indsamlingen af personoplysninger, begrænse adgangen til følsomme oplysninger, begrænse opbevaringsperioder og undgå lagring af unødvendige ansigtsoplysninger."
     },
     "dpia": {
-      "title": "Konsekvensanalyse for databeskyttelse",
-      "unconfigured": "Spørg den uddannelsesinstitution, der er ansvarlig for din konto, om dens konsekvensanalyse for databeskyttelse ved ansigtsgenkendelse til fremmøderegistrering."
+      "title": "Konsekvensanalyse for databeskyttelse"
     },
     "changes": {
       "title": "Ændringer i denne politik",

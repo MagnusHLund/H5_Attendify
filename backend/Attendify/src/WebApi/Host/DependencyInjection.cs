@@ -28,8 +28,8 @@ public static class DependencyInjection
             .Bind(builder.Configuration.GetSection(DataRetentionOptions.SectionName))
             .Validate(
                 options => new[] { options.AttendanceRecordDays, options.AttendanceDetectionDays, options.AttendanceEventDays }
-                    .All(days => days is null or > 0),
-                "Configured attendance retention periods must be positive day counts."
+                    .All(days => days > 0),
+                "DataRetention:AttendanceRecordDays, DataRetention:AttendanceDetectionDays and DataRetention:AttendanceEventDays must all be configured as positive day counts."
             )
             .ValidateOnStart();
         services.AddHostedService<DataRetentionWorker>();

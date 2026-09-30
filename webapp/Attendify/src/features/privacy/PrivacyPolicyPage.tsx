@@ -14,15 +14,17 @@ const privacyPolicyConfig: PrivacyPolicyConfiguration = {
     import.meta.env.VITE_PRIVACY_POLICY_AUTHORITY_NAME?.trim() ?? '',
   AuthorityUrl: import.meta.env.VITE_PRIVACY_POLICY_AUTHORITY_URL?.trim() ?? '',
   LegalBasisDetails:
-    import.meta.env.VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS?.trim(),
+    import.meta.env.VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS?.trim() ?? '',
   BiometricConditionDetails:
-    import.meta.env.VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS?.trim(),
-  RetentionDetails: import.meta.env.VITE_PRIVACY_POLICY_RETENTION_DETAILS?.trim(),
+    import.meta.env.VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS?.trim() ??
+    '',
+  RetentionDetails:
+    import.meta.env.VITE_PRIVACY_POLICY_RETENTION_DETAILS?.trim() ?? '',
   RecipientsDetails:
-    import.meta.env.VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS?.trim(),
+    import.meta.env.VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS?.trim() ?? '',
   TransferDetails:
-    import.meta.env.VITE_PRIVACY_POLICY_TRANSFER_DETAILS?.trim(),
-  DpiaDetails: import.meta.env.VITE_PRIVACY_POLICY_DPIA_DETAILS?.trim(),
+    import.meta.env.VITE_PRIVACY_POLICY_TRANSFER_DETAILS?.trim() ?? '',
+  DpiaDetails: import.meta.env.VITE_PRIVACY_POLICY_DPIA_DETAILS?.trim() ?? '',
 }
 
 export function PrivacyPolicyPage() {
@@ -99,13 +101,8 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2>{t('privacy.legalBasis.title')}</h2>
-          <p>
-            {privacyPolicyConfig.LegalBasisDetails ||
-              t('privacy.legalBasis.unconfigured')}
-          </p>
-          {privacyPolicyConfig.BiometricConditionDetails && (
-            <p>{privacyPolicyConfig.BiometricConditionDetails}</p>
-          )}
+          <p>{privacyPolicyConfig.LegalBasisDetails}</p>
+          <p>{privacyPolicyConfig.BiometricConditionDetails}</p>
         </section>
 
         <section>
@@ -115,26 +112,17 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2>{t('privacy.retention.title')}</h2>
-          <p>
-            {privacyPolicyConfig.RetentionDetails ||
-              t('privacy.retention.unconfigured')}
-          </p>
+          <p>{privacyPolicyConfig.RetentionDetails}</p>
         </section>
 
         <section>
           <h2>{t('privacy.sharing.title')}</h2>
-          <p>
-            {privacyPolicyConfig.RecipientsDetails ||
-              t('privacy.sharing.unconfigured')}
-          </p>
+          <p>{privacyPolicyConfig.RecipientsDetails}</p>
         </section>
 
         <section>
           <h2>{t('privacy.internationalTransfers.title')}</h2>
-          <p>
-            {privacyPolicyConfig.TransferDetails ||
-              t('privacy.internationalTransfers.unconfigured')}
-          </p>
+          <p>{privacyPolicyConfig.TransferDetails}</p>
         </section>
 
         <section>
@@ -180,9 +168,7 @@ export function PrivacyPolicyPage() {
 
         <section>
           <h2>{t('privacy.dpia.title')}</h2>
-          <p>
-            {privacyPolicyConfig.DpiaDetails || t('privacy.dpia.unconfigured')}
-          </p>
+          <p>{privacyPolicyConfig.DpiaDetails}</p>
         </section>
 
         <section>

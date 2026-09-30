@@ -195,24 +195,20 @@
       "text": "Personal data is processed only for defined purposes related to attendance monitoring, account management, student identification, system operation and security."
     },
     "legalBasis": {
-      "title": "Legal basis",
-      "unconfigured": "Ask the educational institution responsible for your account which legal basis applies to each use of your data and which special-category condition applies to facial recognition."
+      "title": "Legal basis"
     },
     "facialData": {
       "title": "Facial and biometric data",
       "text": "Face photos are converted into encrypted facial embeddings for matching. Facial attendance recognition is enabled on registration. The original uploaded photos are not kept as photo files by the application. Turning recognition off removes the stored face template. The responsible institution must determine the applicable GDPR requirements before using this feature."
     },
     "retention": {
-      "title": "Data retention",
-      "unconfigured": "Ask the educational institution responsible for your account for the retention period that applies to each category of your data."
+      "title": "Data retention"
     },
     "sharing": {
-      "title": "Who can access your data",
-      "unconfigured": "Ask the educational institution responsible for your account which organizations receive or can access your data."
+      "title": "Who can access your data"
     },
     "internationalTransfers": {
-      "title": "International data transfers",
-      "unconfigured": "Ask the educational institution responsible for your account whether your data is transferred outside the European Economic Area and which safeguards apply."
+      "title": "International data transfers"
     },
     "security": {
       "title": "Security",
@@ -237,8 +233,7 @@
       "text": "Attendify is designed to minimise the collection of personal data, restrict access to sensitive information, limit retention and avoid storing unnecessary facial information."
     },
     "dpia": {
-      "title": "Data protection impact assessment",
-      "unconfigured": "Ask the educational institution responsible for your account about its data protection impact assessment for facial attendance recognition."
+      "title": "Data protection impact assessment"
     },
     "changes": {
       "title": "Changes to this policy",

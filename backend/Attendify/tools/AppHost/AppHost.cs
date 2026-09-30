@@ -14,15 +14,15 @@ var controllerEmail = builder.AddParameter("PrivacyPolicyControllerEmail");
 var dpoContact = builder.AddParameter("PrivacyPolicyDpoContact");
 var authorityName = builder.AddParameter("PrivacyPolicyAuthorityName");
 var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
-var legalBasisDetails = builder.Configuration["Parameters:PrivacyPolicyLegalBasisDetails"];
-var biometricConditionDetails = builder.Configuration["Parameters:PrivacyPolicyBiometricConditionDetails"];
-var retentionDetails = builder.Configuration["Parameters:PrivacyPolicyRetentionDetails"];
-var recipientsDetails = builder.Configuration["Parameters:PrivacyPolicyRecipientsDetails"];
-var transferDetails = builder.Configuration["Parameters:PrivacyPolicyTransferDetails"];
-var dpiaDetails = builder.Configuration["Parameters:PrivacyPolicyDpiaDetails"];
-var attendanceRecordRetentionDays = builder.Configuration["Parameters:AttendanceRecordRetentionDays"];
-var attendanceDetectionRetentionDays = builder.Configuration["Parameters:AttendanceDetectionRetentionDays"];
-var attendanceEventRetentionDays = builder.Configuration["Parameters:AttendanceEventRetentionDays"];
+var legalBasisDetails = builder.AddParameter("PrivacyPolicyLegalBasisDetails");
+var biometricConditionDetails = builder.AddParameter("PrivacyPolicyBiometricConditionDetails");
+var retentionDetails = builder.AddParameter("PrivacyPolicyRetentionDetails");
+var recipientsDetails = builder.AddParameter("PrivacyPolicyRecipientsDetails");
+var transferDetails = builder.AddParameter("PrivacyPolicyTransferDetails");
+var dpiaDetails = builder.AddParameter("PrivacyPolicyDpiaDetails");
+var attendanceRecordRetentionDays = builder.AddParameter("AttendanceRecordRetentionDays");
+var attendanceDetectionRetentionDays = builder.AddParameter("AttendanceDetectionRetentionDays");
+var attendanceEventRetentionDays = builder.AddParameter("AttendanceEventRetentionDays");
 
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
@@ -63,14 +63,10 @@ var api = builder
     .WithEnvironment("Parameters__StudentAccessCodeGenSecret", studentAccessCodeSecret)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
+    .WithEnvironment("DataRetention__AttendanceRecordDays", attendanceRecordRetentionDays)
+    .WithEnvironment("DataRetention__AttendanceDetectionDays", attendanceDetectionRetentionDays)
+    .WithEnvironment("DataRetention__AttendanceEventDays", attendanceEventRetentionDays)
     .WaitForCompletion(migrationService);
-
-if (attendanceRecordRetentionDays is not null)
-    api.WithEnvironment("DataRetention__AttendanceRecordDays", attendanceRecordRetentionDays);
-if (attendanceDetectionRetentionDays is not null)
-    api.WithEnvironment("DataRetention__AttendanceDetectionDays", attendanceDetectionRetentionDays);
-if (attendanceEventRetentionDays is not null)
-    api.WithEnvironment("DataRetention__AttendanceEventDays", attendanceEventRetentionDays);
 
 var webapp = builder
     .AddViteApp("webapp", "../../../../webapp/Attendify")
@@ -80,22 +76,15 @@ var webapp = builder
     .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
     .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
     .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
+    .WithEnvironment("VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS", legalBasisDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS", biometricConditionDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_RETENTION_DETAILS", retentionDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS", recipientsDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_TRANSFER_DETAILS", transferDetails)
+    .WithEnvironment("VITE_PRIVACY_POLICY_DPIA_DETAILS", dpiaDetails)
     .WithReference(api)
     .WaitFor(api)
     .WithExternalHttpEndpoints();
-
-if (!string.IsNullOrWhiteSpace(legalBasisDetails))
-    webapp.WithEnvironment("VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS", legalBasisDetails);
-if (!string.IsNullOrWhiteSpace(biometricConditionDetails))
-    webapp.WithEnvironment("VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS", biometricConditionDetails);
-if (!string.IsNullOrWhiteSpace(retentionDetails))
-    webapp.WithEnvironment("VITE_PRIVACY_POLICY_RETENTION_DETAILS", retentionDetails);
-if (!string.IsNullOrWhiteSpace(recipientsDetails))
-    webapp.WithEnvironment("VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS", recipientsDetails);
-if (!string.IsNullOrWhiteSpace(transferDetails))
-    webapp.WithEnvironment("VITE_PRIVACY_POLICY_TRANSFER_DETAILS", transferDetails);
-if (!string.IsNullOrWhiteSpace(dpiaDetails))
-    webapp.WithEnvironment("VITE_PRIVACY_POLICY_DPIA_DETAILS", dpiaDetails);
 
 var gateway = builder
     .AddYarp("gateway")

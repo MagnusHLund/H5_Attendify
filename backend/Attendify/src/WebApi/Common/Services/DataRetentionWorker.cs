@@ -34,41 +34,51 @@ public sealed class DataRetentionWorker(
     private async Task DeleteExpiredDataAsync(CancellationToken ct)
     {
         DataRetentionOptions retention = options.Value;
-        if (retention.AttendanceRecordDays is null && retention.AttendanceDetectionDays is null && retention.AttendanceEventDays is null)
-        {
-            _logger.Warning("Attendance retention cleanup is not configured; no attendance rows were deleted.");
-            return;
-        }
 
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         DateTimeOffset now = DateTimeOffset.UtcNow;
 
-        if (retention.AttendanceRecordDays is int recordDays)
-        {
-            DateOnly cutoff = DateOnly.FromDateTime(now.UtcDateTime.AddDays(-recordDays));
-            int deleted = await dbContext.AttendanceRecords
-                .Where(record => record.AttendanceDate < cutoff)
-                .ExecuteDeleteAsync(ct);
-            _logger.Information("Deleted {Count} attendance records past the configured retention period.", deleted);
-        }
+        DateOnly recordCutoff = DateOnly.FromDateTime(now.UtcDateTime.AddDays(-retention.AttendanceRecordDays));
+        await DeleteCategoryAsync(
+            "attendance records",
+            () => dbContext.AttendanceRecords
+                .Where(record => record.AttendanceDate < recordCutoff)
+                .ExecuteDeleteAsync(ct),
+            ct);
 
-        if (retention.AttendanceDetectionDays is int detectionDays)
-        {
-            DateTimeOffset cutoff = now.AddDays(-detectionDays);
-            int deleted = await dbContext.AttendanceDetections
-                .Where(detection => detection.DetectedAt < cutoff)
-                .ExecuteDeleteAsync(ct);
-            _logger.Information("Deleted {Count} attendance detections past the configured retention period.", deleted);
-        }
+        DateTimeOffset detectionCutoff = now.AddDays(-retention.AttendanceDetectionDays);
+        await DeleteCategoryAsync(
+            "attendance detections",
+            () => dbContext.AttendanceDetections
+                .Where(detection => detection.DetectedAt < detectionCutoff)
+                .ExecuteDeleteAsync(ct),
+            ct);
 
-        if (retention.AttendanceEventDays is int eventDays)
+        DateOnly eventCutoff = DateOnly.FromDateTime(now.UtcDateTime.AddDays(-retention.AttendanceEventDays));
+        await DeleteCategoryAsync(
+            "attendance events",
+            () => dbContext.Attendances
+                .Where(attendance => attendance.AttendanceDate < eventCutoff)
+                .ExecuteDeleteAsync(ct),
+            ct);
+    }
+
+    private async Task DeleteCategoryAsync(string category, Func<Task<int>> delete, CancellationToken ct)
+    {
+        try
         {
-            DateOnly cutoff = DateOnly.FromDateTime(now.UtcDateTime.AddDays(-eventDays));
-            int deleted = await dbContext.Attendances
-                .Where(attendance => attendance.AttendanceDate < cutoff)
-                .ExecuteDeleteAsync(ct);
-            _logger.Information("Deleted {Count} attendance events past the configured retention period.", deleted);
+            int deleted = await delete();
+            _logger.Information(
+                "Deleted {Count} {Category} past the configured retention period.", deleted, category);
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception, "Retention cleanup failed for {Category}.", category);
         }
     }
 }
