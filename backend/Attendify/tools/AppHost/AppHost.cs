@@ -20,8 +20,6 @@ var retentionDetails = builder.AddParameter("PrivacyPolicyRetentionDetails");
 var recipientsDetails = builder.AddParameter("PrivacyPolicyRecipientsDetails");
 var transferDetails = builder.AddParameter("PrivacyPolicyTransferDetails");
 var dpiaDetails = builder.AddParameter("PrivacyPolicyDpiaDetails");
-var attendanceRecordRetentionDays = builder.AddParameter("AttendanceRecordRetentionDays");
-var attendanceDetectionRetentionDays = builder.AddParameter("AttendanceDetectionRetentionDays");
 var attendanceEventRetentionDays = builder.AddParameter("AttendanceEventRetentionDays");
 
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
@@ -63,8 +61,6 @@ var api = builder
     .WithEnvironment("Parameters__StudentAccessCodeGenSecret", studentAccessCodeSecret)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
-    .WithEnvironment("DataRetention__AttendanceRecordDays", attendanceRecordRetentionDays)
-    .WithEnvironment("DataRetention__AttendanceDetectionDays", attendanceDetectionRetentionDays)
     .WithEnvironment("DataRetention__AttendanceEventDays", attendanceEventRetentionDays)
     .WaitForCompletion(migrationService);
 

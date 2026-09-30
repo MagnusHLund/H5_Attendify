@@ -45,19 +45,6 @@ public sealed class ExportPersonalDataEndpoint(
             return;
         }
 
-        var attendance = await dbContext.AttendanceRecords
-            .AsNoTracking()
-            .Where(record => record.UserId == userId)
-            .OrderBy(record => record.AttendanceDate)
-            .Select(record => new ExportPersonalDataResponse.AttendanceData(
-                record.Classroom,
-                record.AttendanceDate,
-                record.ArrivalTime,
-                record.DepartureTime,
-                record.DepartureKnown
-            ))
-            .ToListAsync(ct);
-
         UserId attendanceUserId = UserId.From(userId);
         var attendanceEvents = await dbContext.Attendances
             .AsNoTracking()
@@ -68,16 +55,6 @@ public sealed class ExportPersonalDataEndpoint(
                 eventRecord.AttendanceDate,
                 eventRecord.ArrivedAt,
                 eventRecord.Status.ToString()
-            ))
-            .ToListAsync(ct);
-
-        var detections = await dbContext.AttendanceDetections
-            .AsNoTracking()
-            .Where(detection => detection.UserId == userId)
-            .OrderBy(detection => detection.DetectedAt)
-            .Select(detection => new ExportPersonalDataResponse.DetectionData(
-                detection.Classroom,
-                detection.DetectedAt
             ))
             .ToListAsync(ct);
 
@@ -101,8 +78,6 @@ public sealed class ExportPersonalDataEndpoint(
                 user.AttendanceEnabled
             ),
             attendanceEvents,
-            attendance,
-            detections,
             accessCodes
         );
 
