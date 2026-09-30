@@ -14,7 +14,7 @@ public sealed class JwtTokenService : IJwtTokenService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public string GenerateToken(IReadOnlyList<Claim> claims)
+    public async Task<string> GenerateTokenAsync(IReadOnlyList<Claim> claims)
     {
         DateTime issuedAt = DateTime.UtcNow;
         DateTime expiresAt = issuedAt.AddMinutes(_jwtOptions.LifetimeMinutes);

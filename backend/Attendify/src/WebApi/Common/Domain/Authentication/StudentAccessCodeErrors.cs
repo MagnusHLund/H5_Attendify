@@ -6,6 +6,10 @@ public static class StudentAccessCodeErrors
        "StudentAccessCode.NotFound",
        "Student access code was not found");
 
+    public static readonly Error Invalid = Error.Validation(
+            "StudentAccessCode.Invalid",
+            "Student access code is invalid");
+
     public static readonly Error InvalidUser = Error.Validation(
         "StudentAccessCode.InvalidUser",
         "The current user is invalid");

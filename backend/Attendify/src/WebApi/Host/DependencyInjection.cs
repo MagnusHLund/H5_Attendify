@@ -167,6 +167,18 @@ public static class DependencyInjection
 
                         if (!Guid.TryParse(tokenFamilyIdValue, out Guid tokenFamilyId))
                         {
+                            bool isAccessCodeSession = string.Equals(
+                                context.Principal?.FindFirst(AttendifyClaimTypes.AccessCodeSession)?.Value,
+                                bool.TrueString,
+                                StringComparison.OrdinalIgnoreCase
+                            );
+
+                            if (isAccessCodeSession)
+                            {
+                                // Access-code sessions have no refresh-token family.
+                                return;
+                            }
+
                             context.Fail("The access token has no valid token family.");
                             return;
                         }

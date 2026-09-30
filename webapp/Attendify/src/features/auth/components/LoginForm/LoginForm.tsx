@@ -1,69 +1,71 @@
-import { useForm } from '@tanstack/react-form'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useForm } from "@tanstack/react-form";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Button,
   TextInput,
   useErrorModal,
   useLoadingOverlay,
-} from '../../../../components/ui'
-import './LoginForm.scss'
-import { validEmail, minPasswordLength } from '../../../../lib/validation'
-import { useTranslation } from '../../../../lib/i18n'
-import { loginWithPassword } from '../../api/loginWithPassword'
+} from "../../../../components/ui";
+import "./LoginForm.scss";
+import { validEmail, minPasswordLength } from "../../../../lib/validation";
+import { useTranslation } from "../../../../lib/i18n";
+import { loginWithPassword } from "../../api/loginWithPassword";
 
 export function LoginForm() {
-  const navigate = useNavigate()
-  const { showError } = useErrorModal()
-  const { runWithLoading } = useLoadingOverlay()
-  const { t } = useTranslation()
+  const navigate = useNavigate();
+  const { showError } = useErrorModal();
+  const { runWithLoading } = useLoadingOverlay();
+  const { t } = useTranslation();
 
   const form = useForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
 
     onSubmit: async ({ value }) => {
       try {
         await runWithLoading(() =>
           loginWithPassword(value.email, value.password),
-        )
+        );
+        sessionStorage.setItem("auth-flow", "password");
+
         navigate({
-          to: '/overview',
-        })
+          to: "/overview",
+        });
       } catch (error) {
-        showError(error, t('error.loginFailedTitle'), t('error.loginFailed'))
+        showError(error, t("error.loginFailedTitle"), t("error.loginFailed"));
       }
     },
-  })
+  });
 
   function handleAdministratorLogin() {
     navigate({
-      to: '/login-admin',
-    })
+      to: "/login-admin",
+    });
   }
 
   return (
     <form
       className="login-form"
       onSubmit={(event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        form.handleSubmit()
+        event.preventDefault();
+        event.stopPropagation();
+        form.handleSubmit();
       }}
     >
-      <h1 className="login-form__title">{t('auth.loginStudent')}</h1>
+      <h1 className="login-form__title">{t("auth.loginStudent")}</h1>
 
       <div className="login-form__fields">
         <form.Field
           name="email"
           validators={{
-            onChange: validEmail(t('validation.invalidEmail')),
+            onChange: validEmail(t("validation.invalidEmail")),
           }}
         >
           {(field) => (
             <TextInput
-              label={t('common.email')}
+              label={t("common.email")}
               type="email"
               name={field.name}
               value={field.state.value}
@@ -85,13 +87,13 @@ export function LoginForm() {
           validators={{
             onChange: minPasswordLength(
               8,
-              t('validation.passwordLength', { length: 8 }),
+              t("validation.passwordLength", { length: 8 }),
             ),
           }}
         >
           {(field) => (
             <TextInput
-              label={t('common.password')}
+              label={t("common.password")}
               type="password"
               name={field.name}
               value={field.state.value}
@@ -110,7 +112,7 @@ export function LoginForm() {
       </div>
 
       <div className="login-form__reset-password">
-        <Link to="/reset-password">{t('auth.forgotPassword')}</Link>
+        <Link to="/reset-password">{t("auth.forgotPassword")}</Link>
       </div>
 
       <Button
@@ -118,11 +120,11 @@ export function LoginForm() {
         className="login-form__submit"
         disabled={form.state.isSubmitting}
       >
-        {t('auth.login')}
+        {t("auth.login")}
       </Button>
 
       <div className="login-form__register">
-        <Link to="/register">{t('auth.noAccount')}</Link>
+        <Link to="/register">{t("auth.noAccount")}</Link>
       </div>
 
       <div className="login-form__administrator">
@@ -131,9 +133,9 @@ export function LoginForm() {
           variant="secondary"
           onClick={handleAdministratorLogin}
         >
-          {t('auth.loginAdministrator')}
+          {t("auth.loginAdministrator")}
         </Button>
       </div>
     </form>
-  )
+  );
 }

@@ -61,7 +61,7 @@ public class StudentAccessCodeEndpoint(
                 }
 
                 var (accessCodeEntity, generatedCode) =
-                    await accessCodeGenerator.GenerateAccessCode(userIdClaim.Value, ct);
+                    await accessCodeGenerator.GenerateAccessCodeAsync(userIdClaim.Value, ct);
 
                 attempt.StudentAccessCodes.Add(accessCodeEntity);
                 await attempt.SaveChangesAsync(ct);

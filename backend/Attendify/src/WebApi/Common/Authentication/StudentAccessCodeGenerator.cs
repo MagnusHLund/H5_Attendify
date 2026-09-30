@@ -23,7 +23,7 @@ public sealed class StudentAccessCodeGenerator(
     public Task<(
         studentAccessCodeClass.StudentAccessCode entity,
         string plainTextCode
-    )> GenerateAccessCode(
+    )> GenerateAccessCodeAsync(
         int userId,
         CancellationToken ct)
     {
@@ -81,7 +81,7 @@ public sealed class StudentAccessCodeGenerator(
         return new string(code);
     }
 
-    private static string HashCode(string code)
+    public string HashCode(string code)
     {
         var codeBytes = Encoding.UTF8.GetBytes(code);
         var hashBytes = SHA256.HashData(codeBytes);

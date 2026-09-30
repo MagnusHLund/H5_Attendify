@@ -1,6 +1,6 @@
-export type UserRole = 'student' | 'school_administrator'
+export type UserType = "student" | "school_administrator";
 
 export interface CurrentUser {
-  studentId: string
-  role: UserRole
+  studentId: string;
+  userType: UserType;
 }
