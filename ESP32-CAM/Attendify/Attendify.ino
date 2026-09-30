@@ -1,13 +1,15 @@
 #include "Config.h"
 #include "Camera.h"
+#include "Light.h"
 #include "HttpService.h"
 #include "WiFiManager.h"
 #include "CameraController.h"
 #include <WiFiClientSecure.h>
 
 WiFiManager* _wifiManager;
-HttpService httpService(API_BASE);
+HttpService* _httpService;
 Camera* _camera;
+Light* _light;
 
 CameraController* _cameraController;
 
@@ -18,15 +20,17 @@ void setup() {
 
   _wifiManager = new WiFiManager(WIFI_SSID, WIFI_PASSWORD, WIFI_STATIC_IP, WIFI_GATEWAY, WIFI_SUBNET_MASK);
   _camera = new Camera();
+  _light = new Light(LIGHT_PIN, 1);
 
-  _cameraController = new CameraController(_camera, &httpService);
+  _httpService = new HttpService(API_BASE, API_PORT);
+  _cameraController = new CameraController(_camera, _light, _httpService);
 
   _wifiManager->connect();
   
   while (!_camera->init())
   {
       Serial.println("Camera initialization failed. Retrying...");
-      delay(1000);
+      ESP.restart();
   }
 
   Serial.println("Setup complete");

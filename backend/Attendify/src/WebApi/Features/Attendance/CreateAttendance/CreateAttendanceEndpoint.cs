@@ -6,16 +6,18 @@ using attendanceClass = Attendify.Common.Domain.Attendance;
 
 namespace Attendify.Features.Attendance.CreateAttendance;
 
-
-public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUserIdentifier facialUserIdentifier, IServiceScopeFactory scopeFactory)
-    : Endpoint<CreateAttendanceRequest>
+public class CreateAttendanceEndpoint(
+    ApplicationDbContext dbContext,
+    IFacialUserIdentifier facialUserIdentifier,
+    IServiceScopeFactory scopeFactory
+) : Endpoint<CreateAttendanceRequest>
 {
-
     public override void Configure()
     {
         Post("/");
         Group<AttendanceGroup>();
         AllowAnonymous();
+        AllowFileUploads();
         Description(x => x.WithName("CreateAttendance"));
     }
 
@@ -29,10 +31,16 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUse
             bool recorded = await strategy.ExecuteAsync(async () =>
             {
                 await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-                ApplicationDbContext attempt = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                ApplicationDbContext attempt =
+                    scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 await using var transaction = await attempt.Database.BeginTransactionAsync(ct);
-                if (!await ActiveUserLock.AcquireAsync(attempt, userId.Value, ct) ||
-                    !await attempt.Users.AnyAsync(user => user.Id == userId.Value && user.AttendanceEnabled, ct))
+                if (
+                    !await ActiveUserLock.AcquireAsync(attempt, userId.Value, ct)
+                    || !await attempt.Users.AnyAsync(
+                        user => user.Id == userId.Value && user.AttendanceEnabled,
+                        ct
+                    )
+                )
                     return false;
 
                 attempt.Attendances.Add(attendanceClass.Attendance.Create(req.Classroom, userId));
@@ -44,7 +52,6 @@ public class CreateAttendanceEndpoint(ApplicationDbContext dbContext, IFacialUse
                 throw new NoMatchingUserException("Recognition is disabled for this account.");
 
             await Send.CreatedAtAsync<CreateAttendanceEndpoint>(cancellation: ct);
-
         }
         catch (ArgumentException)
         {

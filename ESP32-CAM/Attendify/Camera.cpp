@@ -26,17 +26,23 @@ bool Camera::init()
     _config.pin_pwdn = PWDN_GPIO_NUM;
     _config.pin_reset = RESET_GPIO_NUM;
 
-    _config.xclk_freq_hz = 20000000;
+    _config.xclk_freq_hz = 10000000;
     _config.pixel_format = PIXFORMAT_JPEG;
 
-    _config.frame_size = _lowResolution;
+    _config.frame_size = _highResolution;
     _config.jpeg_quality = 12;
     _config.fb_count = 1;
 
-    return esp_camera_init(&_config) == ESP_OK;
+    if (esp_camera_init(&_config) != ESP_OK)
+    {
+        return false;
+    }
+
+    setResolution(_lowResolution);
+    return true;
 }
 
-camera_fb_t* Camera::takePicture()
+camera_fb_t *Camera::takePicture()
 {
     Serial.println("Taking picture");
     return esp_camera_fb_get();
@@ -45,10 +51,18 @@ camera_fb_t* Camera::takePicture()
 void Camera::setResolution(framesize_t resolution)
 {
     Serial.println("Setting resolution to " + String(resolution));
-    sensor_t* sensor = esp_camera_sensor_get();
+    sensor_t *sensor = esp_camera_sensor_get();
 
     if (sensor != nullptr)
     {
         sensor->set_framesize(sensor, resolution);
+    }
+
+    // Sensor needs one frame to settle after a resolution switch;
+    // discard it so the next real capture is guaranteed clean.
+    camera_fb_t *warmupFrame = esp_camera_fb_get();
+    if (warmupFrame != nullptr)
+    {
+        esp_camera_fb_return(warmupFrame);
     }
 }

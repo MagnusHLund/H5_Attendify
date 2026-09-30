@@ -1,6 +1,3 @@
 namespace Attendify.Features.Attendance.CreateAttendance;
 
-public sealed record CreateAttendanceRequest(
-    string Picture,
-    string Classroom
-);
+public sealed record CreateAttendanceRequest(IFormFile Picture, string Classroom);
