@@ -5,7 +5,7 @@ public sealed class CreateAttendanceValidator
 {
     private const int MaxPhotoSizeInBytes = 5 * 1024 * 1024;
 
-    private const int MaxBase64Length = ((MaxPhotoSizeInBytes + 2) / 3) * 4;
+    private const int MaxBase64Length = (MaxPhotoSizeInBytes + 2) / 3 * 4;
 
     public CreateAttendanceValidator()
     {
@@ -32,8 +32,7 @@ public sealed class CreateAttendanceValidator
         {
             byte[] decodedPhoto = Convert.FromBase64String(picture);
 
-            return decodedPhoto.Length > 0 &&
-                   decodedPhoto.Length <= MaxPhotoSizeInBytes;
+            return decodedPhoto.Length is > 0 and <= MaxPhotoSizeInBytes;
         }
         catch (FormatException)
         {

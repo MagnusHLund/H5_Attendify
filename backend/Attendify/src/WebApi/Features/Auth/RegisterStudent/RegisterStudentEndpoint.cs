@@ -63,7 +63,7 @@ public sealed class RegisterStudentEndpoint(
                 request.EducationalInstituteId
             );
 
-            await SendEmailAlreadyExistsError(request, ct);
+            await SendEmailAlreadyExistsError(ct);
             return;
         }
 
@@ -74,7 +74,7 @@ public sealed class RegisterStudentEndpoint(
                 request.EducationalInstituteId
             );
 
-            await SendEducationalInstituteNotFoundError(request, ct);
+            await SendEducationalInstituteNotFoundError(ct);
             return;
         }
 
@@ -234,7 +234,6 @@ public sealed class RegisterStudentEndpoint(
     }
 
     private async Task SendEmailAlreadyExistsError(
-        RegisterStudentRequest request,
         CancellationToken ct
     )
     {
@@ -244,7 +243,6 @@ public sealed class RegisterStudentEndpoint(
     }
 
     private async Task SendEducationalInstituteNotFoundError(
-        RegisterStudentRequest request,
         CancellationToken ct
     )
     {

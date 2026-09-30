@@ -1,8 +1,8 @@
-namespace Attendify.Features.Attendance.CreateAttendance;
-
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Domain.Users;
 using Attendify.Common.Domain.FacialRecognition;
+
+namespace Attendify.Features.Attendance.CreateAttendance;
 
 public sealed class FacialUserIdentifier(
     ApplicationDbContext dbContext,
@@ -41,7 +41,7 @@ public sealed class FacialUserIdentifier(
             .Select(user => new
             {
                 user.Id,
-                Embeddings = user.FacialProfile.FacialEmbeddings
+                Embeddings = user.FacialProfile!.FacialEmbeddings
                     .Select(embedding => new
                     {
                         embedding.EncryptedEmbedding,
