@@ -80,7 +80,9 @@ export function RegisterForm() {
     },
 
     onSubmit: async ({ value }) => {
-      if (!value.straightPhoto || !value.leftPhoto || !value.rightPhoto) {
+      const { straightPhoto, leftPhoto, rightPhoto } = value
+
+      if (!straightPhoto || !leftPhoto || !rightPhoto) {
         return
       }
 
@@ -92,9 +94,9 @@ export function RegisterForm() {
             educationalInstituteId:
               detailsForm.state.values.educationalInstituteId,
             studentId: detailsForm.state.values.studentId,
-            straightPhoto: await fileToBase64(value.straightPhoto),
-            leftPhoto: await fileToBase64(value.leftPhoto),
-            rightPhoto: await fileToBase64(value.rightPhoto),
+            straightPhoto: await fileToBase64(straightPhoto),
+            leftPhoto: await fileToBase64(leftPhoto),
+            rightPhoto: await fileToBase64(rightPhoto),
           }
 
           await registerStudent(registration)
