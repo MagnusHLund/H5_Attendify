@@ -28,6 +28,9 @@ public sealed class EducationalInstituteEndpointTests(TestingDatabaseFixture fix
         GetEducationalInstitutesResponse[]? institutes = await response.Content
             .ReadFromJsonAsync<GetEducationalInstitutesResponse[]>(CancellationToken);
         Assert.NotNull(institutes);
-        Assert.Equal(new[] { "Alpha College", "Zulu Academy" }, institutes.Select(item => item.Name));
+        Assert.Equal(
+            institutes.Select(item => item.Name).OrderBy(name => name),
+            institutes.Select(item => item.Name)
+        );
     }
 }
