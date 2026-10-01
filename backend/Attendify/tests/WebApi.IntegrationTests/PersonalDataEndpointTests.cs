@@ -80,6 +80,56 @@ public sealed class PersonalDataEndpointTests(TestingDatabaseFixture fixture)
     }
 
     [Fact]
+    public async Task GetAttendances_ReturnsFirstScanPerClassroomWithDepartureFromSameClassroom()
+    {
+        using HttpClient client = await CreateAuthenticatedStudentClientAsync();
+        User user = await GetService<ApplicationDbContext>()
+            .Users.AsNoTracking()
+            .SingleAsync(cancellationToken: CancellationToken);
+        UserId userId = UserId.From(user.Id);
+        var date = new DateOnly(2026, 9, 1);
+
+        // Inserted out of chronological order so the earliest scan does not have the lowest id.
+        await AddRangeAsync(
+        [
+            CreateScan("Room A", userId, date, new TimeOnly(10, 0)),
+            CreateScan("Room B", userId, date, new TimeOnly(14, 30)),
+            CreateScan("Room A", userId, date, new TimeOnly(8, 0)),
+            CreateScan("Room B", userId, date, new TimeOnly(12, 0)),
+            CreateScan("Room A", userId, date, new TimeOnly(9, 0)),
+        ]);
+        await AddOtherUsersAttendanceAsync(user);
+
+        using HttpResponseMessage response = await client.GetAsync(
+            "/api/attendance?sortBy=classroom&sortDirection=ascending",
+            CancellationToken
+        );
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        PagedList<GetAllAttendancesResponse>? page = await response.Content
+            .ReadFromJsonAsync<PagedList<GetAllAttendancesResponse>>(CancellationToken);
+        Assert.NotNull(page);
+        Assert.Equal(2, page.TotalCount);
+        Assert.Collection(
+            page.Items,
+            roomA =>
+            {
+                Assert.Equal("Room A", roomA.Classroom);
+                Assert.Equal(date, roomA.AttendanceDate);
+                Assert.Equal(new TimeOnly(8, 0), roomA.ArrivedAt);
+                Assert.Equal(new TimeOnly(10, 0), roomA.DepartedAt);
+            },
+            roomB =>
+            {
+                Assert.Equal("Room B", roomB.Classroom);
+                Assert.Equal(date, roomB.AttendanceDate);
+                Assert.Equal(new TimeOnly(12, 0), roomB.ArrivedAt);
+                Assert.Equal(new TimeOnly(14, 30), roomB.DepartedAt);
+            }
+        );
+    }
+
+    [Fact]
     public async Task DeleteAccount_RejectsWrongPasswordThenAnonymizesAccount()
     {
         using HttpClient client = await CreateAuthenticatedStudentClientAsync();
@@ -114,6 +164,20 @@ public sealed class PersonalDataEndpointTests(TestingDatabaseFixture fixture)
             Content = JsonContent.Create(new DeleteAccountRequest(password))
         };
         return await client.SendAsync(request, CancellationToken);
+    }
+
+    private static attendanceClass CreateScan(
+        string classroom,
+        UserId userId,
+        DateOnly date,
+        TimeOnly arrivedAt
+    )
+    {
+        attendanceClass scan = attendanceClass.Create(classroom, userId);
+        scan.AttendanceDate = date;
+        scan.ArrivedAt = arrivedAt;
+        scan.SetCreated(TimeProvider.System, null);
+        return scan;
     }
 
     private async Task AddOtherUsersAttendanceAsync(User existingUser)

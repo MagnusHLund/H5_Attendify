@@ -38,8 +38,9 @@ public class TestingDatabaseFixture : IAsyncLifetime
     /// </summary>
     public async ValueTask DisposeAsync()
     {
-        await _database.DisposeAsync();
+        // Stop the web host (and its background services) before removing the database it uses.
         await _factory.DisposeAsync();
+        await _database.DisposeAsync();
     }
 
     public HttpClient CreateClient() =>
