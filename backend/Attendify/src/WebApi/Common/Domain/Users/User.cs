@@ -1,4 +1,3 @@
-using Attendify.Common.Domain.Attendance;
 using Attendify.Common.Domain.Authentication;
 using Attendify.Common.Domain.Base;
 using Attendify.Common.Domain.FacialRecognition;
@@ -63,10 +62,6 @@ public sealed class User : AggregateRoot<int>
     public EducationalInstituteEntity EducationalInstitute { get; set; } = null!;
 
     public FacialProfile? FacialProfile { get; set; }
-
-    public ICollection<AttendanceDetection> AttendanceDetections { get; } = [];
-
-    public ICollection<AttendanceRecord> AttendanceRecords { get; } = [];
 
     public ICollection<StudentAccessCode> StudentAccessCodes { get; } = [];
 

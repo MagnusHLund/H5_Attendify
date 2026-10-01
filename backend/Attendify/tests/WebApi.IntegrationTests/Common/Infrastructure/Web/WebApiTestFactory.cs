@@ -29,8 +29,6 @@ public class WebApiTestFactory : WebApplicationFactory<IWebApiMarker>
         });
 
         builder.UseSetting("ConnectionStrings:AppDb", _dbConnection.ConnectionString);
-        builder.UseSetting("DataRetention:AttendanceRecordDays", "1825");
-        builder.UseSetting("DataRetention:AttendanceDetectionDays", "1825");
         builder.UseSetting("DataRetention:AttendanceEventDays", "1825");
     }
 }

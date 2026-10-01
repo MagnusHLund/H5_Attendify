@@ -8,7 +8,5 @@ public sealed class DataRetentionOptions
 {
     public const string SectionName = "DataRetention";
 
-    public int AttendanceRecordDays { get; init; }
-    public int AttendanceDetectionDays { get; init; }
     public int AttendanceEventDays { get; init; }
 }

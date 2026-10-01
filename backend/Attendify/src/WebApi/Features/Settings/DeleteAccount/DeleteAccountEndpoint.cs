@@ -62,8 +62,6 @@ public sealed class DeleteAccountEndpoint(
             );
             user.UpdatePassword(passwordHasher.HashPassword(user, Guid.NewGuid().ToString("N")));
 
-            await attempt.AttendanceDetections.Where(item => item.UserId == userId).ExecuteDeleteAsync(ct);
-            await attempt.AttendanceRecords.Where(item => item.UserId == userId).ExecuteDeleteAsync(ct);
             UserId attendanceUserId = UserId.From(userId);
             await attempt.Attendances.Where(item => item.UserId == attendanceUserId).ExecuteDeleteAsync(ct);
             await attempt.StudentAccessCodes.Where(item => item.UserId == userId).ExecuteDeleteAsync(ct);

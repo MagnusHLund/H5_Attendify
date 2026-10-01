@@ -39,22 +39,6 @@ public sealed class DataRetentionWorker(
         ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         DateTimeOffset now = DateTimeOffset.UtcNow;
 
-        DateOnly recordCutoff = DateOnly.FromDateTime(now.UtcDateTime.AddDays(-retention.AttendanceRecordDays));
-        await DeleteCategoryAsync(
-            "attendance records",
-            () => dbContext.AttendanceRecords
-                .Where(record => record.AttendanceDate < recordCutoff)
-                .ExecuteDeleteAsync(ct),
-            ct);
-
-        DateTimeOffset detectionCutoff = now.AddDays(-retention.AttendanceDetectionDays);
-        await DeleteCategoryAsync(
-            "attendance detections",
-            () => dbContext.AttendanceDetections
-                .Where(detection => detection.DetectedAt < detectionCutoff)
-                .ExecuteDeleteAsync(ct),
-            ct);
-
         DateOnly eventCutoff = DateOnly.FromDateTime(now.UtcDateTime.AddDays(-retention.AttendanceEventDays));
         await DeleteCategoryAsync(
             "attendance events",
