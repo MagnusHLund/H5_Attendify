@@ -9,13 +9,11 @@ namespace Attendify.IntegrationTests.Common.Infrastructure.Database;
 /// </summary>
 public class PostgreSqlTestContainer : IAsyncDisposable
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithImage("postgres:18.3-bookworm")
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder("postgres:18.3-bookworm")
         .WithName($"WebApi-IntegrationTests-{Guid.NewGuid()}")
         .WithDatabase("WebApi-IntegrationTests")
         .WithPassword("Password123")
         .WithPortBinding(5432, true)
-        .WithAutoRemove(true)
         .Build();
 
     private const int MaxRetries = 5;
@@ -39,7 +37,12 @@ public class PostgreSqlTestContainer : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await _container.StopAsync();
+        if (Connection is not null)
+        {
+            await Connection.DisposeAsync();
+        }
+
+        // DisposeAsync stops and removes the container; stopping first with auto-remove races with removal.
         await _container.DisposeAsync();
         GC.SuppressFinalize(this);
     }
