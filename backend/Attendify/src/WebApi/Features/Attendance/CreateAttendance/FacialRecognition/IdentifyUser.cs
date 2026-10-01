@@ -1,6 +1,5 @@
-using Attendify.Common.FacialRecognition;
 using Attendify.Common.Domain.Users;
-using Attendify.Common.Domain.FacialRecognition;
+using Attendify.Common.FacialRecognition;
 
 namespace Attendify.Features.Attendance.CreateAttendance;
 
@@ -8,66 +7,67 @@ public sealed class FacialUserIdentifier(
     ApplicationDbContext dbContext,
     IFacialEmbeddingService embeddingService,
     IFacialComparisonService comparisonService,
-    IEmbeddingEncryptor embeddingEncryptor)
-    : IFacialUserIdentifier
+    IEmbeddingEncryptor embeddingEncryptor
+) : IFacialUserIdentifier
 {
     public async Task<UserId> IdentifyUserAsync(
-        string base64Image,
-        CancellationToken cancellationToken)
+        IFormFile image,
+        CancellationToken cancellationToken
+    )
     {
         byte[] imageBytes;
 
         try
         {
-            imageBytes = Convert.FromBase64String(base64Image);
+            using var memoryStream = new MemoryStream();
+            await image.OpenReadStream().CopyToAsync(memoryStream, cancellationToken);
+            imageBytes = memoryStream.ToArray();
         }
         catch (FormatException)
         {
-            throw new ArgumentException(
-                "The provided image is not valid base64.",
-                nameof(base64Image));
+            throw new ArgumentException("The provided image is not valid base64.", nameof(image));
         }
 
-        byte[] candidateEmbedding =
-            await embeddingService.CreateEmbeddingAsync(
-                imageBytes,
-                cancellationToken);
+        byte[] candidateEmbedding = await embeddingService.CreateEmbeddingAsync(
+            imageBytes,
+            cancellationToken
+        );
 
-        var users = await dbContext.Users
-            .AsNoTracking()
+        var users = await dbContext
+            .Users.AsNoTracking()
             .Where(user =>
-                user.FacialProfile != null &&
-                user.FacialProfile.FacialEmbeddings.Any())
+                user.AttendanceEnabled
+                && !user.IsDeleted
+                && user.FacialProfile != null
+                && user.FacialProfile.FacialEmbeddings.Any()
+            )
             .Select(user => new
             {
                 user.Id,
-                Embeddings = user.FacialProfile!.FacialEmbeddings
-                    .Select(embedding => new
+                Embeddings = user.FacialProfile!.FacialEmbeddings.Select(embedding => new
                     {
                         embedding.EncryptedEmbedding,
-                        embedding.Nonce
+                        embedding.Nonce,
                     })
-                    .ToList()
+                    .ToList(),
             })
             .ToListAsync(cancellationToken);
 
         foreach (var user in users)
         {
-            List<byte[]> decryptedEmbeddings = user.Embeddings
-                .Select(embedding =>
-                    embeddingEncryptor.Decrypt(
-                    embedding.EncryptedEmbedding,
-                    embedding.Nonce).Plaintext)
+            List<byte[]> decryptedEmbeddings = user
+                .Embeddings.Select(embedding =>
+                    embeddingEncryptor
+                        .Decrypt(embedding.EncryptedEmbedding, embedding.Nonce)
+                        .Plaintext
+                )
                 .ToList();
-            if (comparisonService.IsMatch(
-                decryptedEmbeddings,
-                candidateEmbedding))
+            if (comparisonService.IsMatch(decryptedEmbeddings, candidateEmbedding))
             {
                 return (UserId)user.Id;
             }
         }
 
-        throw new NoMatchingUserException(
-            "No matching user was found.");
+        throw new NoMatchingUserException("No matching user was found.");
     }
 }

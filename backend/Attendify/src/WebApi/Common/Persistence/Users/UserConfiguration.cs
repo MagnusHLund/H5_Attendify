@@ -27,6 +27,8 @@ public sealed class UserConfiguration : AuditableConfiguration<User>
             .IsRequired();
 
         builder.Property(user => user.AttendanceEnabled).IsRequired();
+        builder.Property(user => user.IsDeleted).IsRequired();
+        builder.Property(user => user.DeletedAt);
 
         builder.HasIndex(user => user.Email).IsUnique();
 

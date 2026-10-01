@@ -86,6 +86,7 @@ export function RegisterForm() {
         return
       }
 
+      const { straightPhoto, leftPhoto, rightPhoto } = value
       try {
         await runWithLoading(async () => {
           const registration = {
@@ -284,9 +285,9 @@ export function RegisterForm() {
         </div>
 
         <Button
-        type="submit"
-        className="register-form__submit"
-        disabled={detailsForm.state.isSubmitting}
+          type="submit"
+          className="register-form__submit"
+          disabled={detailsForm.state.isSubmitting}
         >
           {t('common.next')}
         </Button>
@@ -373,6 +374,11 @@ export function RegisterForm() {
           )}
         </photosForm.Field>
       </div>
+
+      <p className="register-form__privacy-notice">
+        {t('auth.faceRecognitionNotice')}{' '}
+        <Link to="/privacy-policy">{t('footer.privacyPolicy')}</Link>
+      </p>
 
       <Button
         type="submit"

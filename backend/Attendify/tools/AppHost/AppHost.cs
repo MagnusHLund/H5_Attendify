@@ -17,6 +17,13 @@ var controllerEmail = builder.AddParameter("PrivacyPolicyControllerEmail");
 var dpoContact = builder.AddParameter("PrivacyPolicyDpoContact");
 var authorityName = builder.AddParameter("PrivacyPolicyAuthorityName");
 var authorityUrl = builder.AddParameter("PrivacyPolicyAuthorityUrl");
+var legalBasisDetails = builder.AddParameter("PrivacyPolicyLegalBasisDetails");
+var biometricConditionDetails = builder.AddParameter("PrivacyPolicyBiometricConditionDetails");
+var retentionDetails = builder.AddParameter("PrivacyPolicyRetentionDetails");
+var recipientsDetails = builder.AddParameter("PrivacyPolicyRecipientsDetails");
+var transferDetails = builder.AddParameter("PrivacyPolicyTransferDetails");
+var dpiaDetails = builder.AddParameter("PrivacyPolicyDpiaDetails");
+var attendanceEventRetentionDays = builder.AddParameter("AttendanceEventRetentionDays");
 
 var tunnelName = builder.Configuration.GetSection("Parameters")["CloudflareTunnelName"];
 if (string.IsNullOrWhiteSpace(tunnelName))
@@ -37,16 +44,12 @@ var facialEmbeddingEncryptionKey = builder.AddParameter(
 var endpoint = builder.AddParameter("registry-endpoint");
 var repository = builder.AddParameter("registry-repository");
 var registry = builder.AddContainerRegistry("registry", endpoint, repository);
-var postgresPassword = builder.AddParameter(
-    "postgres-password",
-    secret: true);
+var postgresPassword = builder.AddParameter("postgres-password", secret: true);
 
-var k8s = builder.AddKubernetesEnvironment("k8s")
-    .WithContainerRegistry(registry);
+var k8s = builder.AddKubernetesEnvironment("k8s").WithContainerRegistry(registry);
 
 var postgres = builder
-    .AddPostgres("postgres",
-        password: postgresPassword)
+    .AddPostgres("postgres", password: postgresPassword)
     .WithDataVolume()
     .WithLifetime(ContainerLifetime.Persistent);
 
@@ -70,9 +73,11 @@ var api = builder
     .WithEnvironment("Parameters__StudentAccessCodeGenSecret", studentAccessCodeSecret)
     .WithEnvironment("Jwt__SigningKey", jwtSigningKey)
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
+    .WithEnvironment("DataRetention__AttendanceEventDays", attendanceEventRetentionDays)
     .WaitForCompletion(migrationService);
 
-var gateway = builder.AddContainer("gateway", "caddy", "2-alpine")
+var gateway = builder
+    .AddContainer("gateway", "caddy", "2-alpine")
     .WithHttpEndpoint(port: 80, targetPort: 80, name: "http")
     .WithContainerRegistry(registry)
     .WithReference(api)
@@ -88,6 +93,15 @@ if (builder.ExecutionContext.IsRunMode)
         .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
         .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
         .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
+        .WithEnvironment("VITE_PRIVACY_POLICY_LEGAL_BASIS_DETAILS", legalBasisDetails)
+        .WithEnvironment(
+            "VITE_PRIVACY_POLICY_BIOMETRIC_CONDITION_DETAILS",
+            biometricConditionDetails
+        )
+        .WithEnvironment("VITE_PRIVACY_POLICY_RETENTION_DETAILS", retentionDetails)
+        .WithEnvironment("VITE_PRIVACY_POLICY_RECIPIENTS_DETAILS", recipientsDetails)
+        .WithEnvironment("VITE_PRIVACY_POLICY_TRANSFER_DETAILS", transferDetails)
+        .WithEnvironment("VITE_PRIVACY_POLICY_DPIA_DETAILS", dpiaDetails)
         .WithReference(api)
         .WaitFor(api)
         .WithExternalHttpEndpoints();
@@ -95,11 +109,13 @@ if (builder.ExecutionContext.IsRunMode)
     gateway
         .WithReference(webapp)
         .WaitFor(webapp)
-        .WithContainerFiles("/etc/caddy", [
-            new ContainerFile
-            {
-                Name = "Caddyfile",
-                Contents = """
+        .WithContainerFiles(
+            "/etc/caddy",
+            [
+                new ContainerFile
+                {
+                    Name = "Caddyfile",
+                    Contents = """
                     :80 {
                         handle /api/* {
                             reverse_proxy {$services__api__http__0}
@@ -111,9 +127,10 @@ if (builder.ExecutionContext.IsRunMode)
                             }
                         }
                     }
-                    """
-            }
-        ]);
+                    """,
+                },
+            ]
+        );
 }
 else
 {

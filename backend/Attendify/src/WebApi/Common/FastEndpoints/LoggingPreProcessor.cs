@@ -1,38 +1,14 @@
-using Attendify.Common.Interfaces;
-
 namespace Attendify.Common.FastEndpoints;
 
 public class LoggingPreProcessor : IGlobalPreProcessor
 {
-    private readonly Microsoft.Extensions.Logging.ILogger _logger;
+    private readonly Serilog.ILogger _logger = Log.ForContext<LoggingPreProcessor>();
 
-    public LoggingPreProcessor(Microsoft.Extensions.Logging.ILogger<LoggingPreProcessor> logger)
+    public Task PreProcessAsync(IPreProcessorContext context, CancellationToken ct)
     {
-        _logger = logger;
-    }
-
-    public async Task PreProcessAsync(IPreProcessorContext context, CancellationToken ct)
-    {
-        var currentUserService = context.HttpContext.RequestServices.GetRequiredService<ICurrentUserService>();
-
         var requestName = context.Request?.GetType().Name;
-        var userId = currentUserService.UserId ?? string.Empty;
+        _logger.Information("WebApi Request: {Name}", requestName);
 
-        _logger.WebApiRequest(requestName, userId, context.Request?.ToString());
-
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
-}
-
-// Compile-time logging: the source generator emits a level-checked, allocation-free
-// method, which also satisfies CA1873 (the generated call is not an ILogger.Log* shape).
-internal static partial class LoggingPreProcessorLog
-{
-    [LoggerMessage(LogLevel.Information, "WebApi Request: {Name} {@UserId} {@Request}")]
-    public static partial void WebApiRequest(
-        this Microsoft.Extensions.Logging.ILogger logger,
-        string? name,
-        string userId,
-        string? request
-    );
 }

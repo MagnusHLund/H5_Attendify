@@ -1,37 +1,24 @@
 #pragma once
 
 #include <Arduino.h>
-
-struct HttpResponse
-{
-    int statusCode;
-    String body;
-
-    bool isSuccessful() const;
-};
+#include <WiFiClientSecure.h>
 
 class HttpService
 {
-  public:
-    explicit HttpService(const char* baseUrl);
+private:
+    const char *_hostname;
+    uint16_t _port;
 
-    HttpResponse request(
-        const char* method,
-        const char* endpoint,
-        uint8_t* body,
-        size_t bodyLength,
-        const char* contentType
-    );
+    WiFiClientSecure _client;
 
-    HttpResponse request(
-        const char* method,
-        const char* endpoint,
-        const String& body,
-        const char* contentType
-    );
+public:
+    explicit HttpService(
+        const char *hostname,
+        uint16_t port = 80);
 
-  private:
-    String _baseUrl;
-
-    String buildUrl(const char* endpoint) const;
+    bool uploadImage(
+        const char *urlPath,
+        const uint8_t *image,
+        size_t imageLength,
+        const char *classroom);
 };

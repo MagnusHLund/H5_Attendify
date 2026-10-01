@@ -67,97 +67,6 @@ namespace Attendify.Migrations
                     b.ToTable("Attendances");
                 });
 
-            modelBuilder.Entity("Attendify.Common.Domain.Attendance.AttendanceDetection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Classroom")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<DateTimeOffset>("DetectedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AttendanceDetections");
-                });
-
-            modelBuilder.Entity("Attendify.Common.Domain.Attendance.AttendanceRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<TimeOnly>("ArrivalTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<DateOnly>("AttendanceDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Classroom")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<bool>("DepartureKnown")
-                        .HasColumnType("boolean");
-
-                    b.Property<TimeOnly>("DepartureTime")
-                        .HasColumnType("time without time zone");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AttendanceRecords");
-                });
-
             modelBuilder.Entity("Attendify.Common.Domain.Authentication.PasswordResetToken", b =>
                 {
                     b.Property<int>("Id")
@@ -454,6 +363,9 @@ namespace Attendify.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("EducationalInstituteId")
                         .HasColumnType("uuid");
 
@@ -466,6 +378,9 @@ namespace Attendify.Migrations
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -487,28 +402,6 @@ namespace Attendify.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("Attendify.Common.Domain.Attendance.AttendanceDetection", b =>
-                {
-                    b.HasOne("Attendify.Common.Domain.Users.User", "User")
-                        .WithMany("AttendanceDetections")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Attendify.Common.Domain.Attendance.AttendanceRecord", b =>
-                {
-                    b.HasOne("Attendify.Common.Domain.Users.User", "User")
-                        .WithMany("AttendanceRecords")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Attendify.Common.Domain.Authentication.PasswordResetToken", b =>
@@ -589,10 +482,6 @@ namespace Attendify.Migrations
 
             modelBuilder.Entity("Attendify.Common.Domain.Users.User", b =>
                 {
-                    b.Navigation("AttendanceDetections");
-
-                    b.Navigation("AttendanceRecords");
-
                     b.Navigation("FacialProfile");
 
                     b.Navigation("PasswordResetTokens");

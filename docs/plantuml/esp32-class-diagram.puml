@@ -1,0 +1,203 @@
+@startuml ESP32_CAM_Class_Diagram
+title ESP32-CAM — header contracts and implementations
+
+left to right direction
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam nodesep 55
+skinparam ranksep 75
+hide empty members
+
+note as ModelNote
+  Header-to-implementation realization shows the source-file organization.
+  In C++, a .h declaration and its .cpp definitions form one class;
+  they are not separate runtime types and do not imply inheritance.
+end note
+
+package "Firmware" {
+  class "Attendify.ino" as FirmwareSketch <<Arduino sketch>> {
+    - WiFiManager* _wifiManager
+    - HttpService* _httpService
+    - Camera* _camera
+    - Light* _light
+    - CameraController* _cameraController
+    + setup() : void
+    + loop() : void
+  }
+}
+
+package "Header contracts (.h)" {
+  class "CameraController.h" as CameraControllerHeader <<header contract>> {
+    - Camera* _camera
+    - Light* _light
+    - HttpService* _httpService
+    - mtmn_config_t _faceDetectorConfig
+    - bool _isHighResolutionImage
+    + CameraController(Camera*, Light*, HttpService*)
+    + main() : void
+    - isFacePresentInPicture(camera_fb_t*) : bool
+    - sendImage(camera_fb_t*) : void
+  }
+
+  class "Camera.h" as CameraHeader <<header contract>> {
+    - camera_config_t _config
+    + const framesize_t _lowResolution
+    + const framesize_t _highResolution
+    + init() : bool
+    + takePicture() : camera_fb_t*
+    + setResolution(framesize_t) : void
+  }
+
+  class "HttpService.h" as HttpServiceHeader <<header contract>> {
+    - const char* _hostname
+    - uint16_t _port
+    - WiFiClientSecure _client
+    + HttpService(const char*, uint16_t)
+    + uploadImage(const char*, const uint8_t*, size_t, const char*) : bool
+  }
+
+  class "WiFiManager.h" as WiFiManagerHeader <<header contract>> {
+    - const char* _ssid
+    - const char* _password
+    - IPAddress _localIp
+    - IPAddress _dnsServer
+    - IPAddress _gateway
+    - IPAddress _subnet
+    + WiFiManager(const char*, const char*, String, String, String, String)
+    + connect() : void
+    + ensureConnectivity() : void
+  }
+
+  class "Light.h" as LightHeader <<header contract>> {
+    - uint8_t _pin
+    - uint8_t _brightness
+    - TaskHandle_t _taskHandle
+    + Light(uint8_t, uint8_t)
+    + setState(LightState) : void
+    - taskEntry(void*) : void
+    - run() : void
+    - waitForState(TickType_t) : bool
+  }
+
+  enum LightState {
+    Off
+    Detected
+    Uploading
+    Success
+    Failure
+  }
+}
+
+package "Implementations (.cpp)" {
+  class "CameraController.cpp" as CameraControllerCpp <<implementation>> {
+    + CameraController(Camera*, Light*, HttpService*)
+    + main() : void
+    - isFacePresentInPicture(camera_fb_t*) : bool
+    - sendImage(camera_fb_t*) : void
+  }
+
+  class "Camera.cpp" as CameraCpp <<implementation>> {
+    + init() : bool
+    + takePicture() : camera_fb_t*
+    + setResolution(framesize_t) : void
+  }
+
+  class "HttpService.cpp" as HttpServiceCpp <<implementation>> {
+    + HttpService(const char*, uint16_t)
+    + uploadImage(const char*, const uint8_t*, size_t, const char*) : bool
+  }
+
+  class "WiFiManager.cpp" as WiFiManagerCpp <<implementation>> {
+    + WiFiManager(const char*, const char*, String, String, String, String)
+    + connect() : void
+    + ensureConnectivity() : void
+  }
+
+  class "Light.cpp" as LightCpp <<implementation>> {
+    + Light(uint8_t, uint8_t)
+    + setState(LightState) : void
+    - taskEntry(void*) : void
+    - run() : void
+  }
+}
+
+package "External platform APIs" {
+  class ESP32CameraAPI <<external library>> {
+    camera_fb_t
+    camera_config_t
+    sensor_t
+    esp_camera_init()
+    esp_camera_fb_get()
+    esp_camera_fb_return()
+  }
+
+  class FaceDetectionAPI <<external library>> {
+    mtmn_config_t
+    face_detect()
+    fmt2rgb888()
+  }
+
+  class ArduinoWiFiAPI <<external library>> {
+    WiFi
+    IPAddress
+    WiFiClientSecure
+  }
+
+  class FreeRTOSTaskAPI <<external library>> {
+    TaskHandle_t
+    xTaskCreate()
+    xTaskNotify()
+    xTaskNotifyWait()
+  }
+}
+
+' Pair the file declarations with the translation units that define them.
+CameraControllerCpp ..|> CameraControllerHeader : defines
+CameraCpp ..|> CameraHeader : defines
+HttpServiceCpp ..|> HttpServiceHeader : defines
+WiFiManagerCpp ..|> WiFiManagerHeader : defines
+LightCpp ..|> LightHeader : defines
+
+' Keep each declaration/implementation pair in the same row.
+CameraControllerHeader -[hidden]right- CameraControllerCpp
+CameraHeader -[hidden]right- CameraCpp
+HttpServiceHeader -[hidden]right- HttpServiceCpp
+WiFiManagerHeader -[hidden]right- WiFiManagerCpp
+LightHeader -[hidden]right- LightCpp
+
+' Composition root and runtime collaborators.
+FirmwareSketch ..> WiFiManagerHeader : constructs / reconnects
+FirmwareSketch ..> CameraHeader : constructs
+FirmwareSketch ..> LightHeader : constructs
+FirmwareSketch ..> HttpServiceHeader : constructs
+FirmwareSketch ..> CameraControllerHeader : constructs / calls main()
+CameraControllerHeader --> CameraHeader : stores pointer
+CameraControllerHeader --> LightHeader : stores pointer
+CameraControllerHeader --> HttpServiceHeader : stores pointer
+LightHeader ..> LightState : state notifications
+
+' Platform dependencies.
+CameraCpp ..> ESP32CameraAPI : configure / capture
+CameraControllerCpp ..> ESP32CameraAPI : return frame buffers
+CameraControllerCpp ..> FaceDetectionAPI : convert / detect
+HttpServiceCpp ..> ArduinoWiFiAPI : multipart request
+WiFiManagerCpp ..> ArduinoWiFiAPI : configure / reconnect
+LightCpp ..> FreeRTOSTaskAPI : indicator task
+
+note right of CameraControllerCpp
+  Captures at low resolution for face detection.
+  A detected face switches the next capture to high resolution;
+  that frame is uploaded and the camera switches back to low resolution.
+end note
+
+note right of LightCpp
+  waitForState() is declared in Light.h but has no implementation
+  or call site in the current source.
+end note
+
+note bottom of HttpServiceCpp
+  Uses WiFiClientSecure but calls setInsecure(),
+  so server certificates are not verified.
+end note
+
+@enduml

@@ -3,6 +3,7 @@ using Attendify.Common.Domain.FacialRecognition;
 using Attendify.Common.Encoding;
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Interfaces;
+using Attendify.Common.Persistence;
 
 namespace Attendify.Features.Settings.UpdateFacePictures;
 
@@ -56,7 +57,7 @@ public sealed class UpdateFacePicturesEndpoint(
             return;
         }
 
-        if (!await dbContext.Users.AnyAsync(user => user.Id == userId, ct))
+        if (!await dbContext.Users.AnyAsync(user => user.Id == userId && !user.IsDeleted, ct))
         {
             await Send.NotFoundAsync(ct);
             return;
@@ -89,13 +90,17 @@ public sealed class UpdateFacePicturesEndpoint(
 
             await using var transaction = await attemptDbContext.Database.BeginTransactionAsync(ct);
 
+            if (!await ActiveUserLock.AcquireAsync(attemptDbContext, userId, ct))
+                return false;
+
             FacialProfile? profile = await attemptDbContext
                 .FacialProfiles.Include(candidate => candidate.FacialEmbeddings)
                 .SingleOrDefaultAsync(candidate => candidate.UserId == userId, ct);
 
             if (profile is null)
             {
-                return false;
+                profile = FacialProfile.Create(userId);
+                attemptDbContext.FacialProfiles.Add(profile);
             }
 
             attemptDbContext.FacialEmbeddings.RemoveRange(profile.FacialEmbeddings);

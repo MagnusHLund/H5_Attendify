@@ -1,6 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
+using Attendify.Common.Domain.EducationalInstitute;
+using Attendify.Common.Domain.Users;
 using Attendify.Common.Persistence;
+using Attendify.Common.Services;
+using Attendify.Features.Auth.LoginWithPassword;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Attendify.IntegrationTests.Common;
 
@@ -29,8 +35,6 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         await _fixture.TestSetup();
     }
 
-    protected IQueryable<T> GetQueryable<T>() where T : class => _dbContext.Set<T>().AsNoTracking();
-
     protected async Task AddAsync<TEntity>(TEntity entity)
         where TEntity : class
     {
@@ -45,12 +49,49 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         await _dbContext.SaveChangesAsync(CancellationToken);
     }
 
-    protected async Task SaveAsync()
+    protected HttpClient GetAnonymousClient() => _fixture.CreateClient();
+
+    protected TService GetService<TService>()
+        where TService : notnull
     {
-        await _dbContext.SaveChangesAsync(CancellationToken);
+        return _scope.ServiceProvider.GetRequiredService<TService>();
     }
 
-    protected HttpClient GetAnonymousClient() => _fixture.AnonymousClient.Value;
+    protected async Task<HttpClient> CreateAuthenticatedStudentClientAsync(
+        string email = "student@example.com",
+        string password = "correct horse battery",
+        string studentId = "student-123",
+        string educationalInstituteName = "Integration test school"
+    )
+    {
+        EducationalInstitute institute = EducationalInstitute.Create(educationalInstituteName);
+        institute.SetCreated(TimeProvider.System, null);
+        await AddAsync(institute);
+
+        User student = User.Create(
+            institute.Id,
+            email,
+            "temporary-password-hash",
+            GetService<IStudentIdProtector>().Protect(studentId)
+        );
+        student.UpdatePassword(GetService<IPasswordHasher<User>>().HashPassword(student, password));
+        student.SetCreated(TimeProvider.System, null);
+        await AddAsync(student);
+
+        HttpClient client = GetAnonymousClient();
+        using HttpResponseMessage response = await client.PostAsJsonAsync(
+            "/api/auth/login",
+            new LoginWithPasswordRequest { Email = student.Email, Password = password },
+            CancellationToken
+        );
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Contains(response.Headers.GetValues("Set-Cookie"), cookie =>
+            cookie.StartsWith("AccessToken=", StringComparison.Ordinal));
+        Assert.Contains(response.Headers.GetValues("Set-Cookie"), cookie =>
+            cookie.StartsWith("RefreshToken=", StringComparison.Ordinal));
+
+        return client;
+    }
 
     protected CancellationToken CancellationToken => TestContext.Current.CancellationToken;
 

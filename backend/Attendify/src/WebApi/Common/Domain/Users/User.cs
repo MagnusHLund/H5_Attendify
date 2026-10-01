@@ -1,4 +1,3 @@
-using Attendify.Common.Domain.Attendance;
 using Attendify.Common.Domain.Authentication;
 using Attendify.Common.Domain.Base;
 using Attendify.Common.Domain.FacialRecognition;
@@ -56,13 +55,13 @@ public sealed class User : AggregateRoot<int>
 
     public bool AttendanceEnabled { get; set; }
 
+    public bool IsDeleted { get; private set; }
+
+    public DateTimeOffset? DeletedAt { get; private set; }
+
     public EducationalInstituteEntity EducationalInstitute { get; set; } = null!;
 
     public FacialProfile? FacialProfile { get; set; }
-
-    public ICollection<AttendanceDetection> AttendanceDetections { get; } = [];
-
-    public ICollection<AttendanceRecord> AttendanceRecords { get; } = [];
 
     public ICollection<StudentAccessCode> StudentAccessCodes { get; } = [];
 
@@ -96,5 +95,14 @@ public sealed class User : AggregateRoot<int>
             nameof(newHashedPassword)
         );
         PasswordHash = newHashedPassword;
+    }
+
+    public void AnonymizeForDeletion(string anonymizedEmail, string anonymizedStudentId, DateTimeOffset deletedAt)
+    {
+        Email = anonymizedEmail;
+        EncryptedStudentId = anonymizedStudentId;
+        AttendanceEnabled = false;
+        IsDeleted = true;
+        DeletedAt = deletedAt;
     }
 }

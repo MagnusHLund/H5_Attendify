@@ -27,6 +27,28 @@ public sealed class RefreshTokenService : IRefreshTokenService
         CancellationToken cancellationToken
     )
     {
+        if (_dbContext.Database.CurrentTransaction is not null)
+            return await CreateTokenForActiveUserAsync(userId, cancellationToken);
+
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            _dbContext.ChangeTracker.Clear();
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            GeneratedRefreshToken result = await CreateTokenForActiveUserAsync(userId, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
+        });
+    }
+
+    private async Task<GeneratedRefreshToken> CreateTokenForActiveUserAsync(
+        int userId,
+        CancellationToken cancellationToken
+    )
+    {
+        if (!await ActiveUserLock.AcquireAsync(_dbContext, userId, cancellationToken))
+            throw new DeletedAccountException();
+
         byte[] tokenBytes = GenerateTokenBytes();
         byte[] tokenHash = HashToken(tokenBytes);
         Guid tokenFamilyId = Guid.NewGuid();
@@ -119,7 +141,8 @@ public sealed class RefreshTokenService : IRefreshTokenService
                 cancellationToken
             );
 
-            await LockUserRowAsync(tokenFamily.UserId, cancellationToken);
+            if (!await ActiveUserLock.AcquireAsync(_dbContext, tokenFamily.UserId, cancellationToken))
+                return null;
 
             int revokedRows = await _dbContext
                 .RefreshTokens.Where(refreshToken =>
@@ -138,7 +161,7 @@ public sealed class RefreshTokenService : IRefreshTokenService
                 return null;
 
             User? user = await _dbContext.Users.AsNoTracking().SingleOrDefaultAsync(
-                candidate => candidate.Id == tokenFamily.UserId,
+                candidate => candidate.Id == tokenFamily.UserId && !candidate.IsDeleted,
                 cancellationToken
             );
 
@@ -204,7 +227,8 @@ public sealed class RefreshTokenService : IRefreshTokenService
                 cancellationToken
             );
 
-            await LockUserRowAsync(tokenFamily.UserId, cancellationToken);
+            if (!await ActiveUserLock.AcquireAsync(_dbContext, tokenFamily.UserId, cancellationToken))
+                return false;
 
             int revokedRows = await _dbContext.RefreshTokens
                 .Where(refreshToken =>
@@ -238,14 +262,6 @@ public sealed class RefreshTokenService : IRefreshTokenService
         );
     }
 
-    private async Task LockUserRowAsync(int userId, CancellationToken cancellationToken)
-    {
-        await _dbContext.Users
-            .FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Id\" = {userId} FOR UPDATE")
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
     private static byte[] HashToken(byte[] token)
     {
         return SHA256.HashData(token);
@@ -256,3 +272,5 @@ public sealed class RefreshTokenService : IRefreshTokenService
         return RandomNumberGenerator.GetBytes(TokenSizeBytes);
     }
 }
+
+public sealed class DeletedAccountException : Exception { }
