@@ -44,11 +44,12 @@ public class GetAllAttendancesEndpoint(ApplicationDbContext dbContext)
 
         var attendances = await dbContext.Attendances
         .Where(a => a.UserId == userId)
-        // Only return the first scan for each day
+        // Return the first scan for each day and classroom.
         .Where(a => a.Id == dbContext.Attendances
             .Where(x =>
                 x.UserId == a.UserId &&
-                x.AttendanceDate == a.AttendanceDate)
+                x.AttendanceDate == a.AttendanceDate &&
+                x.Classroom == a.Classroom)
             .OrderBy(x => x.ArrivedAt)
             .Select(x => x.Id)
             .First())
@@ -61,6 +62,7 @@ public class GetAllAttendancesEndpoint(ApplicationDbContext dbContext)
                 .Where(x =>
                     x.UserId == a.UserId &&
                     x.AttendanceDate == a.AttendanceDate &&
+                    x.Classroom == a.Classroom &&
                     x.Id != a.Id)
                 .OrderByDescending(x => x.ArrivedAt)
                 .Select(x => (TimeOnly?)x.ArrivedAt)
