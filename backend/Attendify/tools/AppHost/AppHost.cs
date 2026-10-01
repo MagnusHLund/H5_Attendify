@@ -1,4 +1,4 @@
-using Aspire.Hosting.Yarp.Transforms;
+using Aspire.Hosting.ApplicationModel;
 using Projects;
 
 #pragma warning disable ASPIRECOMPUTE003
@@ -72,28 +72,60 @@ var api = builder
     .WithEnvironment("FacialEmbedding__EncryptionKey", facialEmbeddingEncryptionKey)
     .WaitForCompletion(migrationService);
 
-var webapp = builder
-    .AddViteApp("webapp", "../../../../webapp/Attendify")
-    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_NAME", controllerName)
-    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_ADDRESS", controllerAddress)
-    .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_EMAIL", controllerEmail)
-    .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
-    .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
-    .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
-    .WithReference(api)
+var gateway = builder.AddContainer("gateway", "caddy", "2-alpine")
+    .WithHttpEndpoint(port: 80, targetPort: 80, name: "http")
     .WithContainerRegistry(registry)
-    .WaitFor(api)
-    .WithExternalHttpEndpoints();
+    .WithReference(api)
+    .WaitFor(api);
 
-var gateway = builder.AddYarp("gateway")
-    .WithHttpEndpoint(port: 80, targetPort: 5000, name: "http")
-    .WithConfiguration(yarp =>
-    {
-        yarp.AddRoute("/api/{**catch-all}", api);
+if (builder.ExecutionContext.IsRunMode)
+{
+    var webapp = builder
+        .AddViteApp("webapp", "../../../../webapp/Attendify")
+        .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_NAME", controllerName)
+        .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_ADDRESS", controllerAddress)
+        .WithEnvironment("VITE_PRIVACY_POLICY_CONTROLLER_EMAIL", controllerEmail)
+        .WithEnvironment("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
+        .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
+        .WithEnvironment("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl)
+        .WithReference(api)
+        .WaitFor(api)
+        .WithExternalHttpEndpoints();
 
-        if (builder.ExecutionContext.IsRunMode)
-            yarp.AddRoute("{**catch-all}", webapp);
-    }).PublishWithStaticFiles(webapp);
+    gateway
+        .WithReference(webapp)
+        .WaitFor(webapp)
+        .WithContainerFiles("/etc/caddy", [
+            new ContainerFile
+            {
+                Name = "Caddyfile",
+                Contents = """
+                    :80 {
+                        handle /api/* {
+                            reverse_proxy {$services__api__http__0}
+                        }
+
+                        handle {
+                            reverse_proxy {$services__webapp__http__0} {
+                                header_up Host aspire.dev.internal
+                            }
+                        }
+                    }
+                    """
+            }
+        ]);
+}
+else
+{
+    gateway
+        .WithDockerfile("../../../../", "backend/Attendify/tools/AppHost/Dockerfile.gateway")
+        .WithBuildArg("VITE_PRIVACY_POLICY_CONTROLLER_NAME", controllerName)
+        .WithBuildArg("VITE_PRIVACY_POLICY_CONTROLLER_ADDRESS", controllerAddress)
+        .WithBuildArg("VITE_PRIVACY_POLICY_CONTROLLER_EMAIL", controllerEmail)
+        .WithBuildArg("VITE_PRIVACY_POLICY_DPO_CONTACT", dpoContact)
+        .WithBuildArg("VITE_PRIVACY_POLICY_AUTHORITY_NAME", authorityName)
+        .WithBuildArg("VITE_PRIVACY_POLICY_AUTHORITY_URL", authorityUrl);
+}
 
 gateway.WithCloudflareTunnel(tunnel, hostname: hostname);
 
