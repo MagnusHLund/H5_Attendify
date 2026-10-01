@@ -1,15 +1,11 @@
 using System.Data.Common;
-using Attendify.Common.Domain.Users;
+using Attendify.Common.Interfaces;
 using Attendify.Common.FacialRecognition;
 using Attendify.Common.Persistence;
-using Attendify.Features.Attendance.CreateAttendance;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.AspNetCore.TestHost;
-using Attendify.Common.Interfaces;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Attendify.IntegrationTests.Common.Infrastructure.Web;
@@ -51,16 +47,14 @@ public class WebApiTestFactory : WebApplicationFactory<IWebApiMarker>
         {
             services.RemoveAll<IFacialEmbeddingService>();
             services.AddSingleton<IFacialEmbeddingService, DeterministicFacialEmbeddingService>();
-            services.RemoveAll<IFacialUserIdentifier>();
-            services.AddScoped<IFacialUserIdentifier, DeterministicFacialUserIdentifier>();
+            services.RemoveAll<IFacialComparisonService>();
+            services.AddSingleton<IFacialComparisonService, DeterministicFacialComparisonService>();
         });
     }
 }
 
 internal sealed class DeterministicFacialEmbeddingService : IFacialEmbeddingService
 {
-    private static readonly byte[] Embedding = [1, 2, 3];
-
     public Task<IReadOnlyList<byte[]>> CreateEmbeddingsAsync(
         IReadOnlyList<byte[]> photos,
         CancellationToken cancellationToken
@@ -68,39 +62,21 @@ internal sealed class DeterministicFacialEmbeddingService : IFacialEmbeddingServ
     {
         cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult<IReadOnlyList<byte[]>>(
-            photos.Select(_ => Embedding.ToArray()).ToArray()
+            photos.Select(photo => photo.ToArray()).ToArray()
         );
     }
 
-    public Task<byte[]> CreateEmbeddingAsync(byte[] _, CancellationToken cancellationToken)
+    public Task<byte[]> CreateEmbeddingAsync(byte[] photo, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return Task.FromResult(Embedding.ToArray());
+        return Task.FromResult(photo.ToArray());
     }
 }
 
-internal sealed class DeterministicFacialUserIdentifier(ApplicationDbContext dbContext)
-    : IFacialUserIdentifier
+internal sealed class DeterministicFacialComparisonService : IFacialComparisonService
 {
-    public async Task<UserId> IdentifyUserAsync(
-        IFormFile image,
-        CancellationToken cancellationToken
-    )
-    {
-        int? userId = await dbContext.Users
-            .Where(user =>
-                user.AttendanceEnabled
-                && !user.IsDeleted
-                && user.FacialProfile != null
-                && user.FacialProfile.FacialEmbeddings.Any()
-            )
-            .Select(user => (int?)user.Id)
-            .FirstOrDefaultAsync(cancellationToken);
-        if (userId is null)
-            throw new Attendify.Common.FacialRecognition.NoMatchingUserException(
-                "No active student has a face profile."
-            );
-
-        return UserId.From(userId.Value);
-    }
+    public bool IsMatch(IReadOnlyList<byte[]> referenceEmbeddings, byte[] candidateEmbedding) =>
+        referenceEmbeddings.Any(referenceEmbedding =>
+            referenceEmbedding.SequenceEqual(candidateEmbedding)
+        );
 }

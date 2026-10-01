@@ -60,10 +60,11 @@ public abstract class IntegrationTestBase : IAsyncLifetime
     protected async Task<HttpClient> CreateAuthenticatedStudentClientAsync(
         string email = "student@example.com",
         string password = "correct horse battery",
-        string studentId = "student-123"
+        string studentId = "student-123",
+        string educationalInstituteName = "Integration test school"
     )
     {
-        EducationalInstitute institute = EducationalInstitute.Create("Integration test school");
+        EducationalInstitute institute = EducationalInstitute.Create(educationalInstituteName);
         institute.SetCreated(TimeProvider.System, null);
         await AddAsync(institute);
 

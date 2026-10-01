@@ -65,8 +65,9 @@ public sealed class AttendancePreferenceEndpointTests(TestingDatabaseFixture fix
     {
         using HttpClient client = await CreateAuthenticatedStudentClientAsync();
         User user = await GetService<ApplicationDbContext>()
-            .Users.AsNoTracking()
+            .Users.AsTracking()
             .SingleAsync(cancellationToken: CancellationToken);
+        user.AttendanceEnabled = false;
         FacialProfile profile = FacialProfile.Create(user.Id);
         profile.SetCreated(TimeProvider.System, null);
         profile.FacialEmbeddings.Add(FacialEmbedding.Create([1, 2, 3], [4, 5, 6]));
