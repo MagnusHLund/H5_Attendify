@@ -72,7 +72,7 @@ internal sealed class DeterministicFacialEmbeddingService : IFacialEmbeddingServ
         );
     }
 
-    public Task<byte[]> CreateEmbeddingAsync(byte[] photo, CancellationToken cancellationToken)
+    public Task<byte[]> CreateEmbeddingAsync(byte[] _, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult(Embedding.ToArray());
