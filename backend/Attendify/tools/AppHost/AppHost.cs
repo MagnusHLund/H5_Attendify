@@ -49,7 +49,7 @@ var postgresPassword = builder.AddParameter("postgres-password", secret: true);
 var k8s = builder.AddKubernetesEnvironment("k8s").WithContainerRegistry(registry);
 
 var postgresData = k8s.AddPersistentVolume("postgres-data")
-    .WithStorageClass("managed-csi")
+    .WithStorageClass("local-path")
     .WithCapacity("20Gi");
 
 var postgres = builder
