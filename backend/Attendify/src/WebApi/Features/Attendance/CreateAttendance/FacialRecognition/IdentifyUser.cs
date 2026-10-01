@@ -44,8 +44,7 @@ public sealed class FacialUserIdentifier(
             .Select(user => new
             {
                 user.Id,
-                Embeddings = user
-                    .FacialProfile.FacialEmbeddings.Select(embedding => new
+                Embeddings = user.FacialProfile!.FacialEmbeddings.Select(embedding => new
                     {
                         embedding.EncryptedEmbedding,
                         embedding.Nonce,

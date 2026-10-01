@@ -30,7 +30,7 @@ public sealed class ResendEmailSender : IEmailSender
 
         foreach (OutboundEmailAttachment attachment in email.Attachments)
         {
-            message?.Attachments?.Add(
+            message.Attachments?.Add(
                 new EmailAttachment
                 {
                     Filename = attachment.Filename,
@@ -41,6 +41,6 @@ public sealed class ResendEmailSender : IEmailSender
             );
         }
 
-        await _resend.EmailSendAsync(message, cancellationToken);
+        await _resend.EmailSendAsync(message!, cancellationToken);
     }
 }

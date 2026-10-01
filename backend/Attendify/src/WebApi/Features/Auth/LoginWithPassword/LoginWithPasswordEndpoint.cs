@@ -25,10 +25,13 @@ public sealed class LoginWithPasswordEndpoint(
     {
         string email = EmailNormalizer.Normalize(req.Email);
 
-        User? user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted, ct);
+        User? user = await dbContext.Users.FirstOrDefaultAsync(
+            u => u.Email == email && !u.IsDeleted,
+            ct
+        );
         if (user == null)
         {
-            await SendLoginFailedError(email, ct);
+            await SendLoginFailedError(ct);
             return;
         }
 
@@ -41,7 +44,7 @@ public sealed class LoginWithPasswordEndpoint(
         if (verificationResult == PasswordVerificationResult.Failed)
         {
             _logger.Warning("Login attempt failed: incorrect password");
-            await SendLoginFailedError(email, ct);
+            await SendLoginFailedError(ct);
             return;
         }
 
@@ -54,7 +57,7 @@ public sealed class LoginWithPasswordEndpoint(
         }
         catch (DeletedAccountException)
         {
-            await SendLoginFailedError(email, ct);
+            await SendLoginFailedError(ct);
             return;
         }
         authenticationSessionService.SetSessionCookies(session);
@@ -62,7 +65,7 @@ public sealed class LoginWithPasswordEndpoint(
         await Send.NoContentAsync(cancellation: ct);
     }
 
-    private async Task SendLoginFailedError(string email, CancellationToken ct)
+    private async Task SendLoginFailedError(CancellationToken ct)
     {
         AddError("Invalid email or password.");
 

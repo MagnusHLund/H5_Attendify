@@ -4,14 +4,12 @@ on:
   pull_request:
   push:
     branches: [main]
-    tags: ['*']
+    tags: ["*"]
 
 env:
   IMAGE_TAG: ${{ github.sha }}
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  Parameters__CloudflareTunnelName: AttendifyCiCd
-  Parameters__Hostname: attendify.online
 
 jobs:
   test:
@@ -32,6 +30,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    env:
+      Parameters__CloudflareTunnelName: AttendifyCiCd
     container:
       image: ghcr.io/magnushlund/cicd:latest
       credentials:
@@ -45,37 +45,44 @@ jobs:
           submodules: recursive
       - run: make build IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
 
-  push:
-    needs: build
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/magnushlund/cicd:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Configure submodule auth
-        run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - run: make push IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
-
   deploy:
-    needs: push
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: self-hosted
     environment: production
+    env:
+      KUBECONFIG: /root/.kube/config
+    permissions:
+      contents: read
+      packages: write
     container:
       image: ghcr.io/magnushlund/cicd:latest
+      options: --add-host=host.docker.internal:host-gateway
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      volumes:
+        - /root/.kube/config:/root/.kube/config:ro
     steps:
       - name: Configure submodule auth
         run: git config --global url."https://Jorjo6712:${{ secrets.GITLAB_PAT }}@gitlab.com/".insteadOf "https://gitlab.com/"
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - run: make deploy IMAGE_TAG=$IMAGE_TAG REGISTRY=$REGISTRY
+      - name: Log in to GitHub Container Registry
+        run: printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Kubernetes access from the job container
+        run: |
+          sed -E 's#^([[:space:]]*)server: https://127\.0\.0\.1:6443$#\1server: https://host.docker.internal:6443\n\1tls-server-name: 127.0.0.1#' \
+            "$KUBECONFIG" > "$RUNNER_TEMP/kubeconfig"
+          grep -q 'server: https://host.docker.internal:6443' "$RUNNER_TEMP/kubeconfig" || {
+            echo "Could not update the kubeconfig API server address" >&2
+            exit 1
+          }
+          echo "KUBECONFIG=$RUNNER_TEMP/kubeconfig" >> "$GITHUB_ENV"
+          KUBECONFIG="$RUNNER_TEMP/kubeconfig" helm list --namespace default >/dev/null
+      - name: Deploy with Aspire
+        run: make deploy
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

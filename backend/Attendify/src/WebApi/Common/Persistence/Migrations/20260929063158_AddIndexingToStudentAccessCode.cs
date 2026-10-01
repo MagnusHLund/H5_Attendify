@@ -7,6 +7,8 @@ namespace Attendify.Common.Persistence.Migrations
     /// <inheritdoc />
     public partial class AddIndexingToStudentAccessCode : Migration
     {
+        private static readonly string[] IndexColumns = { "UserId", "GenerationDate" };
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,7 +19,7 @@ namespace Attendify.Common.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_StudentAccessCodes_UserId_GenerationDate",
                 table: "StudentAccessCodes",
-                columns: new[] { "UserId", "GenerationDate" },
+                columns: IndexColumns,
                 unique: true);
         }
 

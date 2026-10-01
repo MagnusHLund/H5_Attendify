@@ -80,7 +80,9 @@ export function RegisterForm() {
     },
 
     onSubmit: async ({ value }) => {
-      if (!value.straightPhoto || !value.leftPhoto || !value.rightPhoto) {
+      const { straightPhoto, leftPhoto, rightPhoto } = value
+
+      if (!straightPhoto || !leftPhoto || !rightPhoto) {
         return
       }
 

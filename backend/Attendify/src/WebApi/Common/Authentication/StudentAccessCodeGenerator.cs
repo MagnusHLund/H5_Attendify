@@ -49,7 +49,7 @@ public sealed class StudentAccessCodeGenerator(
                 generationDate: generationDate);
 
         return Task.FromResult(
-            (entity: accessCode, plainTextCode: plainTextCode));
+            (entity: accessCode, plainTextCode));
     }
 
     public string GetPlainTextCode(
