@@ -90,7 +90,9 @@ var gateway = builder.AddYarp("gateway")
     .WithConfiguration(yarp =>
     {
         yarp.AddRoute("/api/{**catch-all}", api);
-        yarp.AddRoute("{**catch-all}", webapp);
+
+        if (builder.ExecutionContext.IsRunMode)
+            yarp.AddRoute("{**catch-all}", webapp);
     }).PublishWithStaticFiles(webapp);
 
 gateway.WithCloudflareTunnel(tunnel, hostname: hostname);
