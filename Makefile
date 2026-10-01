@@ -16,4 +16,4 @@ deploy:
 	trap 'rm -f "$(BACKEND_DIR)/tools/AppHost/appsettings.Production.json"' EXIT; \
 	sops decrypt "$(BACKEND_DIR)/tools/AppHost/appsettings.Production.sops.json" > "$(BACKEND_DIR)/tools/AppHost/appsettings.Production.json"; \
 	cd $(BACKEND_DIR); \
-	DOTNET_ENVIRONMENT=Production aspire deploy
+	DOTNET_ENVIRONMENT=Production aspire deploy --clear-cache
