@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { useForm } from '@tanstack/react-form'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "@tanstack/react-form";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Button,
   Dropdown,
@@ -9,68 +9,68 @@ import {
   TextInput,
   useErrorModal,
   useLoadingOverlay,
-} from '../../../../components/ui'
-import { useEducationalInstitutes } from '../../../../features/educationalInstitutes/hooks/useEducationalInstitutes'
-import { fileToBase64 } from '../../../../lib/encoding/base64'
+} from "../../../../components/ui";
+import { useEducationalInstitutes } from "../../../../features/educationalInstitutes/hooks/useEducationalInstitutes";
+import { fileToBase64 } from "../../../../lib/encoding/base64";
 import {
   minPasswordLength,
   required,
   validEmail,
-} from '../../../../lib/validation'
-import { useTranslation } from '../../../../lib/i18n'
-import { registerStudent } from '../../api/registerStudent'
-import './RegisterForm.scss'
+} from "../../../../lib/validation";
+import { useTranslation } from "../../../../lib/i18n";
+import { registerStudent } from "../../api/registerStudent";
+import "./RegisterForm.scss";
 
-type RegistrationStep = 'details' | 'photos'
+type RegistrationStep = "details" | "photos";
 
 export function RegisterForm() {
-  const [step, setStep] = useState<RegistrationStep>('details')
-  const { showError } = useErrorModal()
-  const { runWithLoading } = useLoadingOverlay()
-  const navigate = useNavigate()
+  const [step, setStep] = useState<RegistrationStep>("details");
+  const { showError } = useErrorModal();
+  const { runWithLoading } = useLoadingOverlay();
+  const navigate = useNavigate();
   const {
     data: educationalInstitutes,
     isPending,
     isError,
-  } = useEducationalInstitutes()
-  const { t } = useTranslation()
+  } = useEducationalInstitutes();
+  const { t } = useTranslation();
 
-  const institutesErrorShown = useRef(false)
+  const institutesErrorShown = useRef(false);
 
   const institutesUnavailable =
     !isPending &&
-    (isError || !educationalInstitutes || educationalInstitutes.length === 0)
+    (isError || !educationalInstitutes || educationalInstitutes.length === 0);
 
   useEffect(() => {
     if (!institutesUnavailable) {
-      institutesErrorShown.current = false
-      return
+      institutesErrorShown.current = false;
+      return;
     }
 
-    if (institutesErrorShown.current) return
+    if (institutesErrorShown.current) return;
 
-    institutesErrorShown.current = true
+    institutesErrorShown.current = true;
     showError(
-      new Error(t('error.educationalInstitutesNotFound')),
-      t('error.educationalInstitutesNotFoundTitle'),
-      t('error.educationalInstitutesNotFound'),
-    )
-  }, [institutesUnavailable, showError, t])
+      new Error(t("error.educationalInstitutesNotFound")),
+      t("error.educationalInstitutesNotFoundTitle"),
+      t("error.educationalInstitutesNotFound"),
+    );
+  }, [institutesUnavailable, showError, t]);
 
   const detailsForm = useForm({
     defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: '',
-      educationalInstituteId: '',
-      studentId: '',
+      email: "",
+      password: "",
+      confirmPassword: "",
+      educationalInstituteId: "",
+      studentId: "",
     },
 
     onSubmit: async () => {
       // The details are valid, so move to the photo step.
-      setStep('photos')
+      setStep("photos");
     },
-  })
+  });
 
   const photosForm = useForm({
     defaultValues: {
@@ -80,13 +80,12 @@ export function RegisterForm() {
     },
 
     onSubmit: async ({ value }) => {
-      const { straightPhoto, leftPhoto, rightPhoto } = value
+      const { straightPhoto, leftPhoto, rightPhoto } = value;
 
       if (!straightPhoto || !leftPhoto || !rightPhoto) {
-        return
+        return;
       }
 
-      const { straightPhoto, leftPhoto, rightPhoto } = value
       try {
         await runWithLoading(async () => {
           const registration = {
@@ -98,48 +97,50 @@ export function RegisterForm() {
             straightPhoto: await fileToBase64(straightPhoto),
             leftPhoto: await fileToBase64(leftPhoto),
             rightPhoto: await fileToBase64(rightPhoto),
-          }
+          };
 
-          await registerStudent(registration)
-        })
+          await registerStudent(registration);
+        });
 
-        await navigate({ to: '/overview' })
+        await navigate({ to: "/overview" });
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : t('error.registrationFailed')
+          error instanceof Error
+            ? error.message
+            : t("error.registrationFailed");
 
         showError(
           new Error(message),
-          t('error.registrationFailedTitle'),
-          t('error.registrationFailed'),
-        )
+          t("error.registrationFailedTitle"),
+          t("error.registrationFailed"),
+        );
       }
     },
-  })
+  });
 
   function handleBack() {
-    setStep('details')
+    setStep("details");
   }
 
   if (isPending) {
-    return <Spinner className="register-form__spinner" />
+    return <Spinner className="register-form__spinner" />;
   }
 
   if (institutesUnavailable) {
-    return null
+    return null;
   }
 
-  if (step === 'details') {
+  if (step === "details") {
     return (
       <form
         className="register-form"
         onSubmit={(event) => {
-          event.preventDefault()
-          event.stopPropagation()
-          void detailsForm.handleSubmit()
+          event.preventDefault();
+          event.stopPropagation();
+          void detailsForm.handleSubmit();
         }}
       >
-        <h1 className="register-form__title">{t('auth.registerTitle')}</h1>
+        <h1 className="register-form__title">{t("auth.registerTitle")}</h1>
 
         <div className="register-form__fields">
           <detailsForm.Field
@@ -147,13 +148,13 @@ export function RegisterForm() {
             validators={{
               onChange: ({ value }) =>
                 !value.trim()
-                  ? required(t('validation.emailRequired'))({ value })
-                  : validEmail(t('validation.invalidEmail'))({ value }),
+                  ? required(t("validation.emailRequired"))({ value })
+                  : validEmail(t("validation.invalidEmail"))({ value }),
             }}
           >
             {(field) => (
               <TextInput
-                label={t('common.email')}
+                label={t("common.email")}
                 type="email"
                 name={field.name}
                 value={field.state.value}
@@ -175,16 +176,16 @@ export function RegisterForm() {
             validators={{
               onChange: ({ value }) =>
                 !value
-                  ? t('validation.passwordRequired')
+                  ? t("validation.passwordRequired")
                   : minPasswordLength(
                       8,
-                      t('validation.passwordLength', { length: 8 }),
+                      t("validation.passwordLength", { length: 8 }),
                     )({ value }),
             }}
           >
             {(field) => (
               <TextInput
-                label={t('common.password')}
+                label={t("common.password")}
                 type="password"
                 name={field.name}
                 value={field.state.value}
@@ -204,16 +205,16 @@ export function RegisterForm() {
           <detailsForm.Field
             name="confirmPassword"
             validators={{
-              onChangeListenTo: ['password'],
+              onChangeListenTo: ["password"],
               onChange: ({ value, fieldApi }) =>
-                value !== fieldApi.form.getFieldValue('password')
-                  ? t('validation.passwordMismatch')
+                value !== fieldApi.form.getFieldValue("password")
+                  ? t("validation.passwordMismatch")
                   : undefined,
             }}
           >
             {(field) => (
               <TextInput
-                label={t('auth.confirmPassword')}
+                label={t("auth.confirmPassword")}
                 type="password"
                 name={field.name}
                 value={field.state.value}
@@ -233,19 +234,19 @@ export function RegisterForm() {
           <detailsForm.Field
             name="educationalInstituteId"
             validators={{
-              onChange: required(t('validation.instituteRequired')),
+              onChange: required(t("validation.instituteRequired")),
             }}
           >
             {(field) => (
               <Dropdown
-                label={t('auth.educationalInstitute')}
+                label={t("auth.educationalInstitute")}
                 name={field.name}
                 value={field.state.value}
                 options={educationalInstitutes.map((institute) => ({
                   value: institute.id,
                   label: institute.name,
                 }))}
-                placeholder={t('auth.selectEducationalInstitute')}
+                placeholder={t("auth.selectEducationalInstitute")}
                 required
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.target.value)}
@@ -261,12 +262,12 @@ export function RegisterForm() {
           <detailsForm.Field
             name="studentId"
             validators={{
-              onChange: required(t('validation.studentIdRequired')),
+              onChange: required(t("validation.studentIdRequired")),
             }}
           >
             {(field) => (
               <TextInput
-                label={t('auth.studentId')}
+                label={t("auth.studentId")}
                 type="text"
                 name={field.name}
                 value={field.state.value}
@@ -289,38 +290,38 @@ export function RegisterForm() {
           className="register-form__submit"
           disabled={detailsForm.state.isSubmitting}
         >
-          {t('common.next')}
+          {t("common.next")}
         </Button>
 
         <div className="register-form__login">
-          <Link to="/login">{t('auth.alreadyUser')}</Link>
+          <Link to="/login">{t("auth.alreadyUser")}</Link>
         </div>
       </form>
-    )
+    );
   }
 
   return (
     <form
       className="register-form"
       onSubmit={(event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        void photosForm.handleSubmit()
+        event.preventDefault();
+        event.stopPropagation();
+        void photosForm.handleSubmit();
       }}
     >
-      <h1 className="register-form__title">{t('auth.registerTitle')}</h1>
+      <h1 className="register-form__title">{t("auth.registerTitle")}</h1>
 
       <div className="register-form__photos">
         <photosForm.Field
           name="straightPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : t('validation.photoRequired'),
+              value ? undefined : t("validation.photoRequired"),
           }}
         >
           {(field) => (
             <FileInput
-              label={t('auth.photoStraight')}
+              label={t("auth.photoStraight")}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -336,12 +337,12 @@ export function RegisterForm() {
           name="leftPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : t('validation.photoRequired'),
+              value ? undefined : t("validation.photoRequired"),
           }}
         >
           {(field) => (
             <FileInput
-              label={t('auth.photoLeft')}
+              label={t("auth.photoLeft")}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -357,12 +358,12 @@ export function RegisterForm() {
           name="rightPhoto"
           validators={{
             onChange: ({ value }) =>
-              value ? undefined : t('validation.photoRequired'),
+              value ? undefined : t("validation.photoRequired"),
           }}
         >
           {(field) => (
             <FileInput
-              label={t('auth.photoRight')}
+              label={t("auth.photoRight")}
               accept="image/*"
               onChange={field.handleChange}
               error={
@@ -376,8 +377,8 @@ export function RegisterForm() {
       </div>
 
       <p className="register-form__privacy-notice">
-        {t('auth.faceRecognitionNotice')}{' '}
-        <Link to="/privacy-policy">{t('footer.privacyPolicy')}</Link>
+        {t("auth.faceRecognitionNotice")}{" "}
+        <Link to="/privacy-policy">{t("footer.privacyPolicy")}</Link>
       </p>
 
       <Button
@@ -385,14 +386,14 @@ export function RegisterForm() {
         className="register-form__submit"
         disabled={photosForm.state.isSubmitting}
       >
-        {t('auth.completeRegistration')}
+        {t("auth.completeRegistration")}
       </Button>
 
       <div className="register-form__back">
         <Button type="button" variant="secondary" onClick={handleBack}>
-          {t('common.back')}
+          {t("common.back")}
         </Button>
       </div>
     </form>
-  )
+  );
 }
